@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Lémbramo</string>
+
+    <string name="hello_world">Benvido á aplicación</string>
+    <string name="action_settings">Preferencias</string>
+
+    <string name="btn_medicamentos">Medicamentos</string>
+    <string name="title_activity_medicamentos">Medicamentos</string>
+    <string name="act_medicamentos">Gestión de medicamentos</string>
+
+    <string name="lbl_nombre">Nombre medicamento</string>
+    <string name="lbl_fotocaja">Foto caja</string>
+    <string name="lbl_fotomedicamento">Foto medicamento</string>
+    <string name="lbl_comentario">Comentario</string>
+</resources>
