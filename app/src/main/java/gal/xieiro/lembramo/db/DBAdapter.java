@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo;
+package gal.xieiro.lembramo.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,9 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/**
- * Created by admin on 03/07/2015.
- */
 public class DBAdapter {
     static final String TAG = "DBAdapter";
 

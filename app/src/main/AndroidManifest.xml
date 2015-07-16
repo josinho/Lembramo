@@ -28,6 +28,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="gal.xieiro.lembramo.MainActivity" />
         </activity>
+        <activity
+            android:name=".NewMedicamentoActivity"
+            android:label="@string/title_activity_new_medicamento"
+            android:parentActivityName=".MedicamentosActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="gal.xieiro.lembramo.MedicamentosActivity" />
+        </activity>
     </application>
 
 </manifest>

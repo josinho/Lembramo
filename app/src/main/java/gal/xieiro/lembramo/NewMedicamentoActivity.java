@@ -1,38 +1,28 @@
 package gal.xieiro.lembramo;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 
-public class MainActivity extends BaseActivity {
-
-    static final String TAG = "MainActivity";
+public class NewMedicamentoActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Log.v(TAG,"onCreate MainActivity OK");
         super.onCreate(savedInstanceState);
-        setNavigationIcon(R.mipmap.ic_launcher);
-        /*
-        DBAdapter db = new DBAdapter(this);
-        db.open();
-        db.close();
-        */
     }
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.activity_main;
+        // indicar el layout de esta activity, necesario para BaseActivity
+        return R.layout.activity_new_medicamento;
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_new_medicamento, menu);
         return true;
     }
 
@@ -49,12 +39,5 @@ public class MainActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    public void editMedicamentos(View view) {
-        //cargar la pantalla para editar medicamentos
-        Intent intent = new Intent(this, MedicamentosActivity.class);
-        startActivity(intent);
     }
 }

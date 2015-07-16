@@ -1,10 +1,8 @@
-package gal.xieiro.lembramo;
+package gal.xieiro.lembramo.db;
 
 import android.provider.BaseColumns;
 
-/**
- * Created by admin on 03/07/2015.
- */
+
 // Contract class para definir los campos de la tabla
 public final class DBContract {
 

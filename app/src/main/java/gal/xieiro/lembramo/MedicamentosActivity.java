@@ -1,5 +1,6 @@
 package gal.xieiro.lembramo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Menu;
@@ -40,11 +41,19 @@ public class MedicamentosActivity extends BaseActivity {
         }
 
         final CustomAdapter adapter = new CustomAdapter(MedicamentosActivity.this, list);
+
+
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 list.add("New Item");
                 adapter.notifyDataSetChanged();
+                */
+
+                //cargar la activity para crear un medicamento
+                Intent intent = new Intent(MedicamentosActivity.this, NewMedicamentoActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -82,6 +91,4 @@ public class MedicamentosActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
