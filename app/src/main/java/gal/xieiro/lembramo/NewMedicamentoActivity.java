@@ -1,6 +1,7 @@
 package gal.xieiro.lembramo;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -10,6 +11,11 @@ public class NewMedicamentoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // usar un aspa como forma de retroceder a la anterior activity
+        // simulando un cancelar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
     }
 
     @Override

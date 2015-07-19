@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:orientation="vertical">
 
-
-    <include layout="@layout/toolbar"/>
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+    <!-- navigationIcon Sólo funciona en API Levek 21 en adelante
+            android:navigationIcon="@drawable/ic_clear_black_24dp"
+    -->
 
     <EditText
         android:id="@+id/txtNombre"
@@ -30,48 +30,46 @@
         android:lines="5"
         android:maxLength="150" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
-        <View
-            android:id="@+id/alineadorVertical"
-            android:layout_width="0dp"
+        <RelativeLayout
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible" />
+            android:layout_width="0dp"
+            android:layout_weight="1">
 
-        <ImageView
-            android:id="@+id/imgCaja"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/generic_view_margin"
-            android:scaleType="fitXY"
-            android:src="@drawable/caja"
-            android:layout_alignRight="@id/alineadorVertical"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/lbl_fotocaja"
+                android:padding="1dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/caja" />
 
-        <ImageView
-            android:id="@+id/imgMedicamento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/alineadorVertical"
-            android:layout_margin="@dimen/generic_view_margin"
-            android:scaleType="fitXY"
-            android:src="@drawable/pastilla" />
+            <include layout="@layout/image_border" />
 
-        <TextView
-            android:id="@+id/lblFotoCaja"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_fotocaja"
-            android:layout_below="@+id/imgCaja"/>
+            <include layout="@layout/edit_button" />
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/lblFotoMedicamento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_fotomedicamento"
-            android:layout_below="@id/imgMedicamento"
-            android:layout_alignLeft="@id/alineadorVertical"/>
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/lbl_fotomedicamento"
+                android:padding="1dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pastilla" />
+
+            <include layout="@layout/image_border" />
+
+            <include layout="@layout/edit_button" />
+        </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>
