@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="gal.xieiro.lembramo.NewMedicamentoActivity">
 
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
-    <!-- navigationIcon Sólo funciona en API Levek 21 en adelante
-            android:navigationIcon="@drawable/ic_clear_black_24dp"
+    <!--
+    navigationIcon Sólo funciona en API Levek 21 en adelante
+    android:navigationIcon="@drawable/ic_clear_white_24dp"
     -->
 
     <EditText
         android:id="@+id/txtNombre"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/generic_view_margin"
-        android:hint="@string/lbl_nombre"
+        android:hint="@string/hint_nombre"
         android:maxLength="25" />
 
     <EditText
         android:id="@+id/txtComentario"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtNombre"
         android:layout_margin="@dimen/generic_view_margin"
-        android:hint="@string/lbl_comentario"
+        android:hint="@string/hint_comentario"
         android:inputType="textMultiLine"
         android:lines="5"
         android:maxLength="150" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         android:weightSum="2">
 
-        <RelativeLayout
-            android:layout_height="match_parent"
+        <gal.xieiro.lembramo.ui.ImageSelector
+            android:id="@+id/imagenCaja"
             android:layout_width="0dp"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/lbl_fotocaja"
-                android:padding="1dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/caja" />
-
-            <include layout="@layout/image_border" />
-
-            <include layout="@layout/edit_button" />
-        </RelativeLayout>
-
-        <RelativeLayout
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
+
+        <gal.xieiro.lembramo.ui.ImageSelector
+            android:id="@+id/imagenPastilla"
             android:layout_width="0dp"
-            android:layout_weight="1">
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/lbl_fotomedicamento"
-                android:padding="1dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/pastilla" />
+        <!--
+        <include
+            android:id="@+id/imagenCaja"
+            layout="@layout/image_selector"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
 
-            <include layout="@layout/image_border" />
+        <include
+            android:id="@+id/imagenPastilla"
+            layout="@layout/image_selector"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
 
-            <include layout="@layout/edit_button" />
-        </RelativeLayout>
+-->
     </LinearLayout>
 </LinearLayout>

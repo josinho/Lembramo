@@ -8,10 +8,12 @@
     <string name="title_activity_medicamentos">Medicamentos</string>
     <string name="act_medicamentos">Gestión de medicamentos</string>
 
-    <string name="lbl_nombre">Nombre medicamento</string>
+    <string name="hint_nombre">Escribe un nombre de medicamento...</string>
     <string name="lbl_fotocaja">Foto caja</string>
     <string name="lbl_fotomedicamento">Foto medicamento</string>
-    <string name="lbl_comentario">Comentario</string>
+    <string name="hint_comentario">Escribe un comentario...</string>
+    <string name="content_description">Imagen</string>
+
     <string name="title_activity_new_medicamento">Nuevo medicamento</string>
 
     <string name="action_save">Guardar</string>

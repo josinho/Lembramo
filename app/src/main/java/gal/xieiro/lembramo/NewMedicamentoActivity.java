@@ -4,6 +4,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import gal.xieiro.lembramo.ui.ImageSelector;
 
 
 public class NewMedicamentoActivity extends BaseActivity {
@@ -16,6 +21,11 @@ public class NewMedicamentoActivity extends BaseActivity {
         // simulando un cancelar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+
+
+        // poner imágenes por defecto
+        ((ImageSelector)findViewById(R.id.imagenCaja)).setImageResource(R.drawable.caja);
+        ((ImageSelector)findViewById(R.id.imagenPastilla)).setImageResource(R.drawable.pastilla);
     }
 
     @Override
