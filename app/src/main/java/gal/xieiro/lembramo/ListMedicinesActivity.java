@@ -13,7 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
-public class MedicamentosActivity extends BaseActivity {
+public class ListMedicinesActivity extends BaseActivity {
 
     private ListView myList;
 
@@ -26,7 +26,7 @@ public class MedicamentosActivity extends BaseActivity {
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MedicamentosActivity.this,
+                Toast.makeText(ListMedicinesActivity.this,
                         "Row " + position + " clicked", Toast.LENGTH_SHORT).show();
             }
         });
@@ -40,7 +40,7 @@ public class MedicamentosActivity extends BaseActivity {
             list.add("Item " + i);
         }
 
-        final CustomAdapter adapter = new CustomAdapter(MedicamentosActivity.this, list);
+        final CustomAdapter adapter = new CustomAdapter(ListMedicinesActivity.this, list);
 
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -52,7 +52,7 @@ public class MedicamentosActivity extends BaseActivity {
                 */
 
                 //cargar la activity para crear un medicamento
-                Intent intent = new Intent(MedicamentosActivity.this, NewMedicamentoActivity.class);
+                Intent intent = new Intent(ListMedicinesActivity.this, DetailMedicineActivity.class);
                 startActivity(intent);
             }
         });
@@ -66,7 +66,7 @@ public class MedicamentosActivity extends BaseActivity {
     @Override
     protected int getLayoutResource() {
         // indicar el layout de esta activity, necesario para BaseActivity
-        return R.layout.activity_medicamentos;
+        return R.layout.activity_list_medicines;
     }
 
     @Override

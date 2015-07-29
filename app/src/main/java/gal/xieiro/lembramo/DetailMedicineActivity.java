@@ -1,17 +1,16 @@
 package gal.xieiro.lembramo;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
 
-import gal.xieiro.lembramo.ui.ImageSelector;
+import gal.xieiro.lembramo.ui.ImageSelectorFragment;
 
 
-public class NewMedicamentoActivity extends BaseActivity {
+public class DetailMedicineActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,16 +21,18 @@ public class NewMedicamentoActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
 
-
-        // poner imágenes por defecto
-        ((ImageSelector)findViewById(R.id.imagenCaja)).setImageResource(R.drawable.caja);
-        ((ImageSelector)findViewById(R.id.imagenPastilla)).setImageResource(R.drawable.pastilla);
+        //colocar los fragments con las imágenes por defecto
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.imagenCaja_container, ImageSelectorFragment.newInstance(R.drawable.caja));
+        ft.add(R.id.imagenPastilla_container, ImageSelectorFragment.newInstance(R.drawable.pastilla));
+        ft.commit();
     }
 
     @Override
     protected int getLayoutResource() {
         // indicar el layout de esta activity, necesario para BaseActivity
-        return R.layout.activity_new_medicamento;
+        return R.layout.activity_detail_medicine;
     }
 
 

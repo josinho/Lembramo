@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MedicamentosActivity"
+            android:name=".ListMedicinesActivity"
             android:label="@string/title_activity_medicamentos"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -29,13 +29,15 @@
                 android:value="gal.xieiro.lembramo.MainActivity" />
         </activity>
         <activity
-            android:name=".NewMedicamentoActivity"
+            android:name=".DetailMedicineActivity"
             android:label="@string/title_activity_new_medicamento"
-            android:parentActivityName=".MedicamentosActivity" >
+            android:parentActivityName=".ListMedicinesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="gal.xieiro.lembramo.MedicamentosActivity" />
+                android:value=".ListMedicinesActivity" />
         </activity>
     </application>
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

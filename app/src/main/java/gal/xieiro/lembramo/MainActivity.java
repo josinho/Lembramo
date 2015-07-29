@@ -54,7 +54,7 @@ public class MainActivity extends BaseActivity {
 
     public void editMedicamentos(View view) {
         //cargar la pantalla para editar medicamentos
-        Intent intent = new Intent(this, MedicamentosActivity.class);
+        Intent intent = new Intent(this, ListMedicinesActivity.class);
         startActivity(intent);
     }
 }
