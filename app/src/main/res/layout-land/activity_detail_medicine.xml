@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="gal.xieiro.lembramo.DetailMedicineActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+    <!--
+    navigationIcon Sólo funciona en API Levek 21 en adelante
+    android:navigationIcon="@drawable/ic_clear_white_24dp"
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:orientation="vertical"
+            android:layout_weight="2"
+            android:weightSum="2">
+
+            <FrameLayout
+                android:id="@+id/imagenCaja_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1" />
+
+            <FrameLayout
+                android:id="@+id/imagenPastilla_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/txtNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/generic_view_margin"
+                android:hint="@string/hint_nombre"
+                android:maxLength="25" />
+
+            <EditText
+                android:id="@+id/txtComentario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/generic_view_margin"
+                android:hint="@string/hint_comentario"
+                android:inputType="textMultiLine"
+                android:lines="5"
+                android:maxLength="150" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

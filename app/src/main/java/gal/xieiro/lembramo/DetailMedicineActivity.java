@@ -12,6 +12,8 @@ import gal.xieiro.lembramo.ui.ImageSelectorFragment;
 
 public class DetailMedicineActivity extends BaseActivity {
 
+    private final static String TAG = "DetailMedicineActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,9 +23,15 @@ public class DetailMedicineActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
 
+        // evitar overlapping de fragments si venimos de una restauración
+        if (savedInstanceState != null) {
+            return;
+        }
+
         //colocar los fragments con las imágenes por defecto
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+
         ft.add(R.id.imagenCaja_container, ImageSelectorFragment.newInstance(R.drawable.caja));
         ft.add(R.id.imagenPastilla_container, ImageSelectorFragment.newInstance(R.drawable.pastilla));
         ft.commit();

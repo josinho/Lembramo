@@ -2,7 +2,10 @@ package gal.xieiro.lembramo.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,10 +14,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import gal.xieiro.lembramo.R;
 
@@ -28,15 +35,22 @@ import gal.xieiro.lembramo.R;
  */
 public class ImageSelectorFragment extends Fragment {
     private static final String TAG = "ImageSelectorFragment";
-    private static final String ARG_PARAM1 = "imageResource"; //imagen inicial
+    private static final String ARG_PARAM1 = "imageResource"; //parámetro imagen inicial
+
+    //request codes para startActivityForResult()
     private static final int IMAGE_PICK = 1;
     private static final int IMAGE_CAPTURE = 2;
 
+
     private int mImageResource;
     private View mView; //root view of layout
-
-
+    private ImageView mImageView;
+    private Bitmap mImageBitmap;
     //private OnFragmentInteractionListener mListener;
+
+    public ImageSelectorFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -54,8 +68,24 @@ public class ImageSelectorFragment extends Fragment {
         return fragment;
     }
 
-    public ImageSelectorFragment() {
-        // Required empty public constructor
+    /**
+     * Indicates whether the specified action can be used as an intent. This
+     * method queries the package manager for installed packages that can
+     * respond to an intent with the specified action. If no suitable package is
+     * found, this method returns false.
+     * http://android-developers.blogspot.com/2009/01/can-i-use-this-intent.html
+     *
+     * @param context The application's environment.
+     * @param action  The Intent action to check for availability.
+     * @return True if an Intent with the specified action can be sent and
+     * responded to, false otherwise.
+     */
+    public static boolean isIntentAvailable(Context context, String action) {
+        final PackageManager packageManager = context.getPackageManager();
+        final Intent intent = new Intent(action);
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
     }
 
     @Override
@@ -64,6 +94,7 @@ public class ImageSelectorFragment extends Fragment {
         if (getArguments() != null) {
             mImageResource = getArguments().getInt(ARG_PARAM1);
         }
+        mImageBitmap = null;
     }
 
     @Override
@@ -71,17 +102,30 @@ public class ImageSelectorFragment extends Fragment {
         mView = inflater.inflate(R.layout.image_selector, container, false);
 
         //cambiar la imagen por defecto
-        ((ImageView) mView.findViewById(R.id.imagen)).setImageResource(mImageResource);
+        mImageView = (ImageView) mView.findViewById(R.id.imagen);
+
+        if (savedInstanceState == null)
+            mImageBitmap = BitmapFactory.decodeResource(getResources(), mImageResource);
+        else
+            mImageBitmap = savedInstanceState.getParcelable("imageBitmap");
+
+        mImageView.setImageBitmap(mImageBitmap);
 
         //manejador para al pinchar el botón sobre la imagen
         setPopupMenu();
 
+        //setOnclickView();
         return mView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    private void setOnclickView() {
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            // TODO: meter aquí la ampliación de la imagen a toda pantalla
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Id: " + mImageView.getId(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /*
@@ -93,6 +137,11 @@ public class ImageSelectorFragment extends Fragment {
     }
     *
     */
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -111,6 +160,9 @@ public class ImageSelectorFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        //Log.v(TAG,"onDetach()");
+        //mImageBitmap.recycle();
+        //mImageBitmap = null;
         //mListener = null;
     }
 
@@ -135,9 +187,11 @@ public class ImageSelectorFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //mostrar menú popup con las opciones de imágen
+                        //mostrar menú popup con las opciones de imagen
                         PopupMenu popup = new PopupMenu(getActivity(), v);
                         popup.inflate(R.menu.menu_image_selector);
+                        checkOptionsAvailable(popup);
+
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
@@ -145,19 +199,21 @@ public class ImageSelectorFragment extends Fragment {
                                     case (R.id.action_select_image):
                                         //coger imagen de la galería
                                         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                                         galleryIntent.setType("image/*");
                                         startActivityForResult(galleryIntent, IMAGE_PICK);
                                         return true;
 
                                     case (R.id.action_take_photo):
                                         //sacar foto
-                                        Intent photoIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                        Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                         startActivityForResult(photoIntent, IMAGE_CAPTURE);
                                         return true;
 
                                     case (R.id.action_delete_image):
-                                        ((ImageView) mView.findViewById(R.id.imagen)).setImageResource(R.drawable.no_image);
+                                        mImageBitmap = BitmapFactory.decodeResource(getResources(),
+                                                R.drawable.no_image);
+                                        mImageView.setImageBitmap(mImageBitmap);
                                         return true;
 
                                     default:
@@ -170,15 +226,14 @@ public class ImageSelectorFragment extends Fragment {
                 });
     }
 
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case IMAGE_PICK:
-                    this.imageFromGallery(resultCode, data);
+                    this.imageFromGallery(data);
                     break;
                 case IMAGE_CAPTURE:
-                    this.imageFromCamera(resultCode, data);
+                    this.imageFromCamera(data);
                     break;
                 default:
                     break;
@@ -191,9 +246,10 @@ public class ImageSelectorFragment extends Fragment {
      * * @param resultCode
      * * @param data
      */
-    private void imageFromCamera(int resultCode, Intent data) {
-        ImageView imagen = (ImageView) mView.findViewById(R.id.imagen);
-        imagen.setImageBitmap((Bitmap) data.getExtras().get("data"));
+    private void imageFromCamera(Intent data) {
+        //TODO: hacer que funcione con setImage()
+        //TODO: hasSystemFeature(PackageManager.FEATURE_CAMERA).
+        mImageView.setImageBitmap((Bitmap) data.getExtras().get("data"));
     }
 
     /**
@@ -201,15 +257,96 @@ public class ImageSelectorFragment extends Fragment {
      * * @param resultCode
      * * @param data
      */
-    private void imageFromGallery(int resultCode, Intent data) {
-        ImageView imagen = (ImageView) mView.findViewById(R.id.imagen);
+    private void imageFromGallery(Intent data) {
         Uri selectedImage = data.getData();
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+        Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                filePathColumn, null, null, null);
         cursor.moveToFirst();
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         String filePath = cursor.getString(columnIndex);
         cursor.close();
-        imagen.setImageBitmap(BitmapFactory.decodeFile(filePath));
+
+        setImage(mImageView, filePath);
+    }
+
+    /**
+     * Deshabilita las opciones del PopupMenu asociado a botón de selección de imagen
+     * Si no hay un Intent que pueda resolver la acción se deshabilita
+     *
+     * @param popupMenu El PopupMenu al que deshabilitar opciones
+     */
+    private void checkOptionsAvailable(PopupMenu popupMenu) {
+        Menu menu = popupMenu.getMenu();
+        if (isIntentAvailable(getActivity(), Intent.ACTION_PICK))
+            menu.findItem(R.id.action_select_image).setEnabled(true);
+        else
+            //deshabilitar la opción de escoger de galería si no hay intent que pueda resolver
+            menu.findItem(R.id.action_select_image).setEnabled(false);
+
+        if (isIntentAvailable(getActivity(), MediaStore.ACTION_IMAGE_CAPTURE))
+            menu.findItem(R.id.action_take_photo).setEnabled(true);
+        else
+            //deshabilitar la opción de sacar foto si no hay posibilidad de cámara
+            menu.findItem(R.id.action_take_photo).setEnabled(false);
+    }
+
+
+    /**
+     * Fija una imagen del sistema en el ImageView especificado escalando según sea necesario
+     *
+     * @param imageView El ImageView de destino donde mostrar la imagen
+     * @param imagePath La ruta de origen de la imagen
+     */
+    private void setImage(ImageView imageView, String imagePath) {
+
+		/* There isn't enough memory to open up more than a couple camera photos */
+        /* So pre-scale the target bitmap into which the file is decoded */
+
+		/* Get the size of the ImageView */
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+		/* Get the size of the image */
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+		/* Figure out which way needs to be reduced less */
+        int scaleFactor = 1;
+        if ((targetW > 0) || (targetH > 0)) {
+            scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+        }
+
+		/* Set bitmap options to scale the image decode target */
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+/*
+        Log.v(TAG,"photoW="+photoW+" photoH="+photoH);
+        Log.v(TAG,"targetW="+targetW+" targetH="+targetH);
+        Log.v(TAG,"scaleFactor: " + scaleFactor);
+*/
+        if (mImageBitmap != null) mImageBitmap.recycle();
+
+        /* Decode the JPEG file into a Bitmap */
+        mImageBitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+
+		/* Associate the Bitmap to the ImageView */
+
+        imageView.setImageBitmap(mImageBitmap);
+    }
+
+    // para recuperar la imagen cuando recree la vista desde cero
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mImageBitmap != null)
+            outState.putParcelable("imageBitmap", mImageBitmap);
+
+        //Log.v(TAG,"onSaveInstanceState()");
+        super.onSaveInstanceState(outState);
     }
 }
