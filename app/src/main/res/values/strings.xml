@@ -20,4 +20,7 @@
     <string name="action_select_image">Escoger imagen de galería</string>
     <string name="action_take_photo">Sacar foto</string>
     <string name="action_delete_image">Borrar imagen</string>
+
+    <string name="error_db_toast">Error al abrir base de datos</string>
+    <string name="ok_db_toast">Guardado con éxito</string>
 </resources>

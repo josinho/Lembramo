@@ -2,11 +2,18 @@ package gal.xieiro.lembramo;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import gal.xieiro.lembramo.db.DBAdapter;
+import gal.xieiro.lembramo.model.Medicament;
 import gal.xieiro.lembramo.ui.ImageSelectorFragment;
 
 
@@ -56,13 +63,58 @@ public class DetailMedicineActivity extends BaseActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                saveMedicineBD();
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private void saveMedicineBD() {
+        boolean result;
+        Medicament med = new Medicament();
+        FragmentManager fm = getFragmentManager();
+
+        // obtener los datos a guardar de la UI
+        med.name = ((EditText) findViewById(R.id.txtNombre)).getText().toString();
+        med.comment = ((EditText) findViewById(R.id.txtComentario)).getText().toString();
+        med.pillboxImage = ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenCaja_container)).getImagePath();
+        med.pillImage = ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenPastilla_container)).getImagePath();
+
+        //TODO: validar datos
+
+        // ejecutar el guardaddo en un hilo distinto a la UI
+        AsyncDBTask saveMed = new AsyncDBTask();
+        result = saveMed.doInBackground(this, med);
+        if(result)
+            Toast.makeText(this, R.string.ok_db_toast, Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(this, R.string.error_db_toast, Toast.LENGTH_LONG).show();
+    }
+
+    private class AsyncDBTask extends AsyncTask<Object, Void, Boolean> {
+        private boolean result = false;
+
+        @Override
+        protected Boolean doInBackground(Object... params) {
+
+            Context context = (Context) params[0];
+            Medicament med = (Medicament) params[1];
+
+            DBAdapter dbAdapter = new DBAdapter(context);
+            try {
+                dbAdapter.open();
+                dbAdapter.insertMedicamento(med.name, med.comment, med.pillboxImage, med.pillImage);
+                dbAdapter.close();
+                return true;
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+                return false;
+            }
         }
 
-        return super.onOptionsItemSelected(item);
     }
 }

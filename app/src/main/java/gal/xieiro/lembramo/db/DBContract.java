@@ -11,7 +11,7 @@ public final class DBContract {
     }
 
     public static abstract class DBInfo {
-        public static final String DBNAME = "lembrame.db";
+        public static final String DBNAME = "lembramo.db";
         public static final int DBVERSION = 1;
     }
 
