@@ -1,10 +1,12 @@
-package gal.xieiro.lembramo;
+package gal.xieiro.lembramo.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import gal.xieiro.lembramo.R;
 
 
 public class MainActivity extends BaseActivity {

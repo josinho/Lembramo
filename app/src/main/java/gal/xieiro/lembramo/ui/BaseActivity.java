@@ -1,8 +1,10 @@
-package gal.xieiro.lembramo;
+package gal.xieiro.lembramo.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import gal.xieiro.lembramo.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

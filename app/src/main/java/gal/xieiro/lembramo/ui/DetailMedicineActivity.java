@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo;
+package gal.xieiro.lembramo.ui;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -12,8 +12,10 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBAdapter;
 import gal.xieiro.lembramo.model.Medicament;
+import gal.xieiro.lembramo.ui.BaseActivity;
 import gal.xieiro.lembramo.ui.ImageSelectorFragment;
 
 
@@ -73,7 +75,7 @@ public class DetailMedicineActivity extends BaseActivity {
         }
     }
 
-    private void saveMedicineBD() {
+    protected void saveMedicineBD() {
         boolean result;
         Medicament med = new Medicament();
         FragmentManager fm = getFragmentManager();
@@ -86,22 +88,17 @@ public class DetailMedicineActivity extends BaseActivity {
 
         //TODO: validar datos
 
-        // ejecutar el guardaddo en un hilo distinto a la UI
-        AsyncDBTask saveMed = new AsyncDBTask();
-        result = saveMed.doInBackground(this, med);
-        if(result)
-            Toast.makeText(this, R.string.ok_db_toast, Toast.LENGTH_LONG).show();
-        else
-            Toast.makeText(this, R.string.error_db_toast, Toast.LENGTH_LONG).show();
+        // guardar en segundo plano en otro hilo
+        new AsyncDBTask().execute(this, med);
     }
 
-    private class AsyncDBTask extends AsyncTask<Object, Void, Boolean> {
+    protected class AsyncDBTask extends AsyncTask<Object, Void, Boolean> {
         private boolean result = false;
+        private Context context;
 
         @Override
         protected Boolean doInBackground(Object... params) {
-
-            Context context = (Context) params[0];
+            context = (Context) params[0];
             Medicament med = (Medicament) params[1];
 
             DBAdapter dbAdapter = new DBAdapter(context);
@@ -116,5 +113,12 @@ public class DetailMedicineActivity extends BaseActivity {
             }
         }
 
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if(result)
+                Toast.makeText(context, R.string.ok_db_toast, Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(context, R.string.error_db_toast, Toast.LENGTH_LONG).show();
+        }
     }
 }

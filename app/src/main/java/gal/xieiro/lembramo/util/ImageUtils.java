@@ -34,10 +34,14 @@ public class ImageUtils {
         // comprobar que el almacenamiento externo está disponible
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 
+            // si queremos guardar en la parte privada de la app
             storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
             // getExternalFilesDir() crea el directorio si no existiese
+
             /*
+            // Si queremos guardar en la parte pública:
+            storageDir = Environment.getExternalStorageDirectory();
+            // faltaría indicar un subdirectorio
             if (storageDir != null) {
                 if (!storageDir.mkdirs()) {
                     if (!storageDir.exists()) {
@@ -95,15 +99,16 @@ public class ImageUtils {
         through and then decode again using the new inSampleSize value and inJustDecodeBounds
         set to false.
      */
+
     /**
      * Calculate an inSampleSize for use in a {@link android.graphics.BitmapFactory.Options} object when decoding
      * bitmaps using the decode* methods from {@link android.graphics.BitmapFactory}. This implementation calculates
      * the closest inSampleSize that is a power of 2 and will result in the final decoded bitmap
      * having a width and height equal to or larger than the requested width and height.
      *
-     * @param options An options object with out* params already populated (run through a decode*
-     *            method with inJustDecodeBounds==true
-     * @param reqWidth The requested width of the resulting bitmap
+     * @param options   An options object with out* params already populated (run through a decode*
+     *                  method with inJustDecodeBounds==true
+     * @param reqWidth  The requested width of the resulting bitmap
      * @param reqHeight The requested height of the resulting bitmap
      * @return The value to be used for inSampleSize
      */

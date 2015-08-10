@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.util.ImageUtils;
-import gal.xieiro.lembramo.util.IntentUtils;
+import gal.xieiro.lembramo.util.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -157,7 +157,8 @@ public class ImageSelectorFragment extends Fragment {
     }
 
     /**
-     *  Método de retorno del Intent
+     * Método de retorno del Intent
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -243,13 +244,13 @@ public class ImageSelectorFragment extends Fragment {
      */
     private void checkOptionsAvailable(PopupMenu popupMenu) {
         Menu menu = popupMenu.getMenu();
-        if (IntentUtils.isIntentAvailable(getActivity(), Intent.ACTION_PICK))
+        if (Utils.isIntentAvailable(getActivity(), Intent.ACTION_PICK))
             menu.findItem(R.id.action_select_image).setEnabled(true);
         else
             //deshabilitar la opción de escoger de galería si no hay intent que pueda resolver
             menu.findItem(R.id.action_select_image).setEnabled(false);
 
-        if (IntentUtils.isIntentAvailable(getActivity(), MediaStore.ACTION_IMAGE_CAPTURE))
+        if (Utils.isIntentAvailable(getActivity(), MediaStore.ACTION_IMAGE_CAPTURE))
             menu.findItem(R.id.action_take_photo).setEnabled(true);
         else
             //deshabilitar la opción de sacar foto si no hay posibilidad de cámara

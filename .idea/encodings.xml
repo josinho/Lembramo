@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/gal/xieiro/lembramo/BaseActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/gal/xieiro/lembramo/db/DBAdapter.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/gal/xieiro/lembramo/db/DBContract.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/gal/xieiro/lembramo/ui/BaseActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/edit_states.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/image_border.xml" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />

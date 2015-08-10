@@ -29,10 +29,10 @@ public class DBAdapter {
         public void onCreate(SQLiteDatabase db) {
             try {
                 db.execSQL(DBContract.Medicamentos.CREATE_TABLE);
-                Log.v(TAG,"Base de datos creada con éxito");
+                Log.v(TAG, "Base de datos creada con éxito");
             } catch (SQLException e) {
                 e.printStackTrace();
-                Log.e(TAG,"Error creando base de datos");
+                Log.e(TAG, "Error creando base de datos");
             }
         }
 
@@ -75,7 +75,8 @@ public class DBAdapter {
     public Cursor getAllMedicamentos() {
         return db.query(
                 DBContract.Medicamentos.TABLE_NAME,
-                new String[]{DBContract.Medicamentos._ID,
+                new String[]{
+                        DBContract.Medicamentos._ID,
                         DBContract.Medicamentos.COLUMN_NAME_NAME,
                         DBContract.Medicamentos.COLUMN_NAME_COMMENT,
                         DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO,
@@ -87,7 +88,8 @@ public class DBAdapter {
     public Cursor getMedicamento(long rowId) throws SQLException {
         Cursor mCursor =
                 db.query(true, DBContract.Medicamentos.TABLE_NAME,
-                        new String[]{DBContract.Medicamentos._ID,
+                        new String[]{
+                                DBContract.Medicamentos._ID,
                                 DBContract.Medicamentos.COLUMN_NAME_NAME,
                                 DBContract.Medicamentos.COLUMN_NAME_COMMENT,
                                 DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO,
