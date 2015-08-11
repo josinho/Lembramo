@@ -3,7 +3,9 @@ package gal.xieiro.lembramo.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
@@ -75,14 +77,23 @@ public class ImageUtils {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, bmOptions);
+
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
-		/* Figure out which way needs to be reduced less */
         int scaleFactor = 1;
         if ((targetWidth > 0) || (targetHeight > 0)) {
             scaleFactor = Math.min(photoW / targetWidth, photoH / targetHeight);
         }
+
+        //int scaleFactor = calculateInSampleSize(bmOptions, targetWidth, targetHeight);
+        /*String msg = "targetWidth = " + targetWidth;
+        msg += " | targetHeight = " + targetHeight;
+        msg += " | imageWidth = " + photoW;
+        msg += " | imageHeight = " + photoH;
+        msg += " --> scaleFactor = " + scaleFactor;
+        Log.v(TAG, msg);
+        */
 
 		/* Set bitmap options to scale the image decode target */
         bmOptions.inJustDecodeBounds = false;
@@ -93,12 +104,6 @@ public class ImageUtils {
         return BitmapFactory.decodeFile(imagePath, bmOptions);
     }
 
-
-    /*
-        To use this method, first decode with inJustDecodeBounds set to true, pass the options
-        through and then decode again using the new inSampleSize value and inJustDecodeBounds
-        set to false.
-     */
 
     /**
      * Calculate an inSampleSize for use in a {@link android.graphics.BitmapFactory.Options} object when decoding
@@ -130,24 +135,14 @@ public class ImageUtils {
                     && (halfWidth / inSampleSize) > reqWidth) {
                 inSampleSize *= 2;
             }
-
-            // This offers some additional logic in case the image has a strange
-            // aspect ratio. For example, a panorama may have a much larger
-            // width than height. In these cases the total pixels might still
-            // end up being too large to fit comfortably in memory, so we should
-            // be more aggressive with sample down the image (=larger inSampleSize).
-
-            long totalPixels = width * height / inSampleSize;
-
-            // Anything more than 2x the requested pixels we'll sample down further
-            final long totalReqPixelsCap = reqWidth * reqHeight * 2;
-
-            while (totalPixels > totalReqPixelsCap) {
-                inSampleSize *= 2;
-                totalPixels /= 2;
-            }
         }
-
         return inSampleSize;
+    }
+
+    public static Bitmap  getSquareBitmap(Bitmap bitmap) {
+        int dimension;
+
+        dimension = bitmap.getWidth() > bitmap.getHeight() ? bitmap.getHeight() : bitmap.getWidth();
+        return ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
     }
 }

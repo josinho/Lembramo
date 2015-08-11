@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/content_description"
         android:padding="1dp"
-        android:scaleType="centerInside"
+        android:scaleType="fitCenter"
         android:src="@drawable/no_image"
         android:background="@drawable/image_border"/>
 
