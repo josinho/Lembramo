@@ -8,15 +8,16 @@ import gal.xieiro.lembramo.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
+    protected final String TAG = this.getClass().getSimpleName();
+    protected Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResource());
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (mToolbar != null) {
+            setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -25,6 +26,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getLayoutResource();
 
     protected void setNavigationIcon(int iconRes) {
-        toolbar.setNavigationIcon(iconRes);
+        mToolbar.setNavigationIcon(iconRes);
+    }
+
+    protected void setToolbarTitle(int resId) {
+        //si no ejecuta setSupportActionbar() no hace el setTitle()
+        setSupportActionBar(mToolbar);
+        mToolbar.setTitle(resId);
     }
 }

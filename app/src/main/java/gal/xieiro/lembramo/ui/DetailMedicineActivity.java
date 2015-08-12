@@ -23,7 +23,7 @@ import gal.xieiro.lembramo.model.Medicament;
 public class DetailMedicineActivity extends BaseActivity {
     private static final long NO_ID = -1;
 
-    private final static String TAG = "DetailMedicineActivity";
+    //private final static String TAG = "DetailMedicineActivity";
     private long id = NO_ID;
 
     @Override
@@ -32,10 +32,8 @@ public class DetailMedicineActivity extends BaseActivity {
 
         // usar un aspa como forma de retroceder a la anterior activity
         // simulando un cancelar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //si no ejecuto setSupportActionBar() no funciona el setTitle()
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        setNavigationIcon(R.drawable.ic_clear_white_24dp);
+
 
         // evitar overlapping de fragments si venimos de una restauración
         if (savedInstanceState != null) {
@@ -55,7 +53,7 @@ public class DetailMedicineActivity extends BaseActivity {
         id = intent.getLongExtra("id", NO_ID);
         if (id != NO_ID) {
             //modo editar
-            toolbar.setTitle(R.string.title_activity_edit_medicamento);
+            setToolbarTitle(R.string.title_activity_edit_medicamento);
             new DBGetAsyncTask().execute(this);
         }
     }
