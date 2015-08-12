@@ -11,18 +11,10 @@ import gal.xieiro.lembramo.R;
 
 public class MainActivity extends BaseActivity {
 
-    static final String TAG = "MainActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Log.v(TAG,"onCreate MainActivity OK");
         super.onCreate(savedInstanceState);
         setNavigationIcon(R.mipmap.ic_launcher);
-        /*
-        DBAdapter db = new DBAdapter(this);
-        db.open();
-        db.close();
-        */
     }
 
     @Override
@@ -52,7 +44,6 @@ public class MainActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
     public void editMedicamentos(View view) {
         //cargar la pantalla para editar medicamentos

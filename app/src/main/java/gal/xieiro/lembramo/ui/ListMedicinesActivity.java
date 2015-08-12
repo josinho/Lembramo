@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,9 +19,16 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+
+import java.io.File;
+import java.net.URI;
+
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBAdapter;
 import gal.xieiro.lembramo.db.DBContract;
+import gal.xieiro.lembramo.util.ImageCacheManager;
 import gal.xieiro.lembramo.util.ImageUtils;
 
 
@@ -68,7 +77,7 @@ public class ListMedicinesActivity extends BaseActivity {
 
     private void startDetailActivity(long id) {
         Intent intent = new Intent(ListMedicinesActivity.this, DetailMedicineActivity.class);
-        if(id != NO_ID) {
+        if (id != NO_ID) {
             intent.putExtra("id", id);
         }
         startActivity(intent);
@@ -154,6 +163,7 @@ public class ListMedicinesActivity extends BaseActivity {
             String path;
             int targetWidth, targetHeight, columnIndex;
 
+            ImageCacheManager imageCacheManager = ImageCacheManager.getInstance();
 
             if (cursor != null) {
                 //long id = cursor.getLong(cursor.getColumnIndex("_id"));
@@ -169,28 +179,56 @@ public class ListMedicinesActivity extends BaseActivity {
 
                 // tratar la imagen de la caja
                 SquareImageView caja = (SquareImageView) view.findViewById(R.id.imagenCaja);
-                targetWidth = caja.getWidth();
-                targetHeight = caja.getHeight();
+                //targetWidth = caja.getWidth();
+                //targetHeight = caja.getHeight();
                 columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO);
                 path = cursor.getString(columnIndex);
                 if (path == null)
                     caja.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.caja));
                 else
-                    //caja.setImageBitmap(ImageUtils.scaleImage(path, targetWidth, targetHeight));
-                    caja.setImageBitmap(ImageUtils.getSquareBitmap(ImageUtils.scaleImage(path, 100, 100)));
+                    caja.setImageBitmap(ImageUtils.scaleImage(path, 100, 100));
+                /*{
+                    path= "file://" + path;
+                    imageCacheManager.getImage(path, new BitmapListener(caja, 100));
+                }*/
 
                 //tratar la imagen de la pastilla
                 SquareImageView pastilla = (SquareImageView) view.findViewById(R.id.imagenPastilla);
-                targetWidth = pastilla.getWidth();
-                targetHeight = pastilla.getHeight();
+                //targetWidth = pastilla.getWidth();
+                //targetHeight = pastilla.getHeight();
                 columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO);
                 path = cursor.getString(columnIndex);
                 if (path == null)
                     pastilla.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pastilla));
                 else
-                    //pastilla.setImageBitmap(ImageUtils.scaleImage(path, targetWidth, targetHeight));
-                    pastilla.setImageBitmap(ImageUtils.getSquareBitmap(ImageUtils.scaleImage(path, 100, 100)));
+                    pastilla.setImageBitmap(ImageUtils.scaleImage(path, 100, 100));
+                    //imageCacheManager.getImage(path, new BitmapListener(pastilla, 100));
             }
         }
     }
+
+/*
+    private class BitmapListener implements ImageLoader.ImageListener {
+        private SquareImageView mImageView;
+        private int mSize;
+
+        public BitmapListener(SquareImageView imageView, int size) {
+            mImageView = imageView;
+            mSize = size;
+        }
+
+        @Override
+        public void onResponse(ImageLoader.ImageContainer response, boolean isInmediate) {
+            Bitmap bitmap = response.getBitmap();
+            if (bitmap != null) {
+                mImageView.setImageBitmap(bitmap);
+            }
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+
+        }
+    }
+*/
 }

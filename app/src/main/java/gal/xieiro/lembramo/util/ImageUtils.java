@@ -139,7 +139,7 @@ public class ImageUtils {
         return inSampleSize;
     }
 
-    public static Bitmap  getSquareBitmap(Bitmap bitmap) {
+    public static Bitmap getSquareBitmap(Bitmap bitmap) {
         int dimension;
 
         dimension = bitmap.getWidth() > bitmap.getHeight() ? bitmap.getHeight() : bitmap.getWidth();
