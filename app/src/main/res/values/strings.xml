@@ -18,6 +18,7 @@
     <string name="title_activity_edit_medicamento">Editar medicamento</string>
 
     <string name="action_save">Guardar</string>
+    <string name="action_delete">Borrar</string>
     <string name="action_select_image">Escoger imagen de galería</string>
     <string name="action_take_photo">Sacar foto</string>
     <string name="action_delete_image">Borrar imagen</string>

@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -69,6 +71,14 @@ public class ImageSelectorFragment extends Fragment {
 
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setImage(String uri) {
+        //viene con el esquema file://
+        if (mImageView != null && uri != null) {
+            ImageLoader.getInstance().displayImage(uri, mImageView);
+            mCurrentImagePath = uri;
+        }
     }
 
     @Override
@@ -211,7 +221,7 @@ public class ImageSelectorFragment extends Fragment {
 
     private void imageFromCamera() {
         setImage(mImageView, mCurrentPhotoPath);
-        galleryAddPic();
+        //galleryAddPic();
     }
 
     private void galleryAddPic() {
@@ -273,7 +283,7 @@ public class ImageSelectorFragment extends Fragment {
         int targetW = imageView.getWidth();
         int targetH = imageView.getHeight();
         mImageBitmap = ImageUtils.scaleImage(imagePath, targetW, targetH);
-        mCurrentImagePath = imagePath;
+        mCurrentImagePath = "file://" + imagePath;
 
 		/* Associate the Bitmap to the ImageView */
         imageView.setImageBitmap(mImageBitmap);

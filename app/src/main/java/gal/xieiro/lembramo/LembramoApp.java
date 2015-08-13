@@ -1,25 +1,48 @@
 package gal.xieiro.lembramo;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 
-import gal.xieiro.lembramo.util.ImageCacheManager;
-import gal.xieiro.lembramo.util.RequestManager;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.process.BitmapProcessor;
+
+import gal.xieiro.lembramo.util.ImageUtils;
 
 public class LembramoApp extends Application {
-
-    private final static int IMAGECACHE_SIZE = 1024*1024*10; // 10MB
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //init();
+        initUniversalImageLoader();
     }
 
-    private void init() {
-        //inicializar la librería de Volley
-        RequestManager.init(this);
+    private void initUniversalImageLoader() {
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.no_image)
+                .showImageOnFail(R.drawable.no_image)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .preProcessor(new SquareProcessor())
+                .build();
 
-        //inicializar la caché de imágenes
-        ImageCacheManager.getInstance().init(IMAGECACHE_SIZE);
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .memoryCacheSize(10) //10% de la memoria de la app para la LruMemoryCache
+                .defaultDisplayImageOptions(options)
+                .build();
+
+        ImageLoader.getInstance().init(config);
+    }
+
+    public class SquareProcessor implements BitmapProcessor {
+        @Override
+        public Bitmap process(Bitmap bitmap) {
+            Bitmap result;
+
+            result = ImageUtils.getSquareBitmap(bitmap);
+            if(result != bitmap) bitmap.recycle();
+            return result;
+        }
     }
 }

@@ -4,32 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-
-import java.io.File;
-import java.net.URI;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBAdapter;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.util.ImageCacheManager;
-import gal.xieiro.lembramo.util.ImageUtils;
 
 
 public class ListMedicinesActivity extends BaseActivity {
@@ -51,6 +45,42 @@ public class ListMedicinesActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //cargar la activity para editar un medicamento
                 startDetailActivity(id);
+            }
+        });
+
+        mListaMedicamentos.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListaMedicamentos.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            //TODO: mirar ListAdapter para que haga el trabajo de la selección
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_delete, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                //listviewadapter.removeSelection();
+            }
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode,
+                                                  int position, long id, boolean checked) {
+
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.delete:
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
             }
         });
 
@@ -87,12 +117,11 @@ public class ListMedicinesActivity extends BaseActivity {
     public void onStart() {
         super.onStart();
 
+        mAdapter = new ListAdapter(this, null);
+        mListaMedicamentos.setAdapter(mAdapter);
         //obtener el cursor con los medicamentos en segundo plano
         mDBAdapter = new DBAdapter(this);
         new AsyncDBTask().execute(mDBAdapter);
-
-        mAdapter = new ListAdapter(this, null);
-        mListaMedicamentos.setAdapter(mAdapter);
     }
 
     @Override
@@ -161,12 +190,12 @@ public class ListMedicinesActivity extends BaseActivity {
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             String path;
-            int targetWidth, targetHeight, columnIndex;
-
-            ImageCacheManager imageCacheManager = ImageCacheManager.getInstance();
+            int columnIndex;
+            ImageLoader imageLoader;
 
             if (cursor != null) {
                 //long id = cursor.getLong(cursor.getColumnIndex("_id"));
+                imageLoader = ImageLoader.getInstance();
 
                 TextView ruta = (TextView) view.findViewById(R.id.ruta);
                 columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO);
@@ -179,56 +208,23 @@ public class ListMedicinesActivity extends BaseActivity {
 
                 // tratar la imagen de la caja
                 SquareImageView caja = (SquareImageView) view.findViewById(R.id.imagenCaja);
-                //targetWidth = caja.getWidth();
-                //targetHeight = caja.getHeight();
                 columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO);
                 path = cursor.getString(columnIndex);
                 if (path == null)
                     caja.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.caja));
                 else
-                    caja.setImageBitmap(ImageUtils.scaleImage(path, 100, 100));
-                /*{
-                    path= "file://" + path;
-                    imageCacheManager.getImage(path, new BitmapListener(caja, 100));
-                }*/
+                    imageLoader.displayImage(path, caja);
 
                 //tratar la imagen de la pastilla
                 SquareImageView pastilla = (SquareImageView) view.findViewById(R.id.imagenPastilla);
-                //targetWidth = pastilla.getWidth();
-                //targetHeight = pastilla.getHeight();
                 columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO);
                 path = cursor.getString(columnIndex);
                 if (path == null)
                     pastilla.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pastilla));
                 else
-                    pastilla.setImageBitmap(ImageUtils.scaleImage(path, 100, 100));
-                    //imageCacheManager.getImage(path, new BitmapListener(pastilla, 100));
+                    imageLoader.displayImage(path, pastilla);
             }
         }
     }
 
-/*
-    private class BitmapListener implements ImageLoader.ImageListener {
-        private SquareImageView mImageView;
-        private int mSize;
-
-        public BitmapListener(SquareImageView imageView, int size) {
-            mImageView = imageView;
-            mSize = size;
-        }
-
-        @Override
-        public void onResponse(ImageLoader.ImageContainer response, boolean isInmediate) {
-            Bitmap bitmap = response.getBitmap();
-            if (bitmap != null) {
-                mImageView.setImageBitmap(bitmap);
-            }
-        }
-
-        @Override
-        public void onErrorResponse(VolleyError error) {
-
-        }
-    }
-*/
 }

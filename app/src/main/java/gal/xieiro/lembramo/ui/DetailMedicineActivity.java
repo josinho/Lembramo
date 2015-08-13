@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -23,8 +22,9 @@ import gal.xieiro.lembramo.model.Medicament;
 public class DetailMedicineActivity extends BaseActivity {
     private static final long NO_ID = -1;
 
-    //private final static String TAG = "DetailMedicineActivity";
     private long id = NO_ID;
+    private ImageSelectorFragment mCaja, mPastilla;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +44,11 @@ public class DetailMedicineActivity extends BaseActivity {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
-        ft.add(R.id.imagenCaja_container, ImageSelectorFragment.newInstance(R.drawable.caja));
-        ft.add(R.id.imagenPastilla_container, ImageSelectorFragment.newInstance(R.drawable.pastilla));
+        mCaja = ImageSelectorFragment.newInstance(R.drawable.caja);
+        mPastilla = ImageSelectorFragment.newInstance(R.drawable.pastilla);
+
+        ft.add(R.id.imagenCaja_container, mCaja);
+        ft.add(R.id.imagenPastilla_container, mPastilla);
         ft.commit();
 
 
@@ -99,10 +102,9 @@ public class DetailMedicineActivity extends BaseActivity {
         med.pillImage = ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenPastilla_container)).getImagePath();
 
         //TODO: validar datos
-        //TODO: Guardar con update
 
         // guardar en segundo plano en otro hilo
-        new DBSaveAsyncTask().execute(this, med);
+        new DBSaveAsyncTask().execute(this, med, (id == NO_ID));
     }
 
     protected class DBSaveAsyncTask extends AsyncTask<Object, Void, Boolean> {
@@ -113,11 +115,17 @@ public class DetailMedicineActivity extends BaseActivity {
         protected Boolean doInBackground(Object... params) {
             context = (Context) params[0];
             Medicament med = (Medicament) params[1];
+            boolean nuevoMed = (Boolean) params[2];
 
             DBAdapter dbAdapter = new DBAdapter(context);
             try {
                 dbAdapter.open();
-                dbAdapter.insertMedicamento(med.name, med.comment, med.pillboxImage, med.pillImage);
+
+                if (nuevoMed)
+                    dbAdapter.insertMedicamento(med.name, med.comment, med.pillboxImage, med.pillImage);
+                else
+                    dbAdapter.updateMedicamento(id, med.name, med.comment, med.pillboxImage, med.pillImage);
+
                 dbAdapter.close();
                 return true;
             } catch (SQLException sqle) {
@@ -164,10 +172,11 @@ public class DetailMedicineActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Medicament result) {
-            if(med.id == id) {
-                ((EditText)findViewById(R.id.txtNombre)).setText(med.name);
-                ((EditText)findViewById(R.id.txtComentario)).setText(med.comment);
-                //TODO cargar imagenes
+            if (med.id == id) {
+                ((EditText) findViewById(R.id.txtNombre)).setText(med.name);
+                ((EditText) findViewById(R.id.txtComentario)).setText(med.comment);
+                mCaja.setImage(med.pillboxImage);
+                mPastilla.setImage(med.pillImage);
             }
         }
     }
