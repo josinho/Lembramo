@@ -14,8 +14,10 @@
         android:id="@+id/listaMedicamentos"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:choiceMode="multipleChoiceModal"
+        android:longClickable="true"
         android:cacheColorHint="#00000000"
-        android:transcriptMode="alwaysScroll"
+        android:transcriptMode="normal"
         android:layout_below="@id/toolbar"/>
 
     <android.support.design.widget.FloatingActionButton

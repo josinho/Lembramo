@@ -7,7 +7,10 @@ import android.database.SQLException;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,16 +33,22 @@ public class ListMedicinesActivity extends BaseActivity {
 
     private static final long NO_ID = -1;
 
+    private Context mContext;
     private ListView mListaMedicamentos;
     private DBAdapter mDBAdapter;
     private ListAdapter mAdapter;
+    private ActionMode mActionMode = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //relate the listView from java to the one created in xml
+        mContext = this;
         mListaMedicamentos = (ListView) findViewById(R.id.listaMedicamentos);
+        mListaMedicamentos.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListaMedicamentos.setMultiChoiceModeListener(new ActionModeCallback());
+
+
         mListaMedicamentos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -48,53 +57,19 @@ public class ListMedicinesActivity extends BaseActivity {
             }
         });
 
-        mListaMedicamentos.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        mListaMedicamentos.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            //TODO: mirar ListAdapter para que haga el trabajo de la selección
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_delete, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                //listviewadapter.removeSelection();
-            }
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode,
-                                                  int position, long id, boolean checked) {
-
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.delete:
-                        mode.finish();
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
-
-        mListaMedicamentos.setLongClickable(true);
+        /*
         mListaMedicamentos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(ListMedicinesActivity.this,
-                        "LONG CLICK | Row " + position, Toast.LENGTH_SHORT).show();
+                if (mActionMode != null)
+                    return false;
 
+                mActionMode = startActionMode(mActionModeCallback);
+                view.setSelected(true);
                 return true;
             }
         });
-
+*/
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +78,36 @@ public class ListMedicinesActivity extends BaseActivity {
                 startDetailActivity(NO_ID);
             }
         });
+
+        mAdapter = new ListAdapter(this, null);
+        mListaMedicamentos.setAdapter(mAdapter);
+
+        //obtener el cursor con los medicamentos en segundo plano
+        mDBAdapter = new DBAdapter(this);
+        new AsyncDBTask().execute(mDBAdapter);
+
+        if (savedInstanceState != null) {
+            //venimos de un cambio de orientación
+
+            final int[] checked = savedInstanceState.getIntArray("selected");
+            if (checked != null) {
+                //retrasar la restauración un poco
+                //al girar pantalla con un Adaptador basado en CursorAdapter
+                //deselecciona los elementos uno a uno
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //hacer la restauración 200ms después para que Android haga sus
+                        //"de-selecciones" en una lista que no existe
+                        //RAREZAS
+                        for (int aChecked : checked) {
+                            mListaMedicamentos.setItemChecked(aChecked, true);
+                        }
+                    }
+                }, 200);
+            }
+        }
     }
 
     private void startDetailActivity(long id) {
@@ -114,20 +119,10 @@ public class ListMedicinesActivity extends BaseActivity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        mAdapter = new ListAdapter(this, null);
-        mListaMedicamentos.setAdapter(mAdapter);
-        //obtener el cursor con los medicamentos en segundo plano
-        mDBAdapter = new DBAdapter(this);
-        new AsyncDBTask().execute(mDBAdapter);
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         mDBAdapter.close();
+        if (mActionMode != null) mActionMode.finish();
     }
 
     @Override
@@ -141,6 +136,26 @@ public class ListMedicinesActivity extends BaseActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_medicamentos, menu);
         return true;
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mActionMode != null) {
+            outState.putIntArray("selected", getSelectedPositions());
+        }
+    }
+
+    private int[] getSelectedPositions() {
+        //SparseBooleanArray no es Parcelable -> conversión a int[]
+        SparseBooleanArray checked = mAdapter.getSelectedPositions();
+        int[] copy = new int[checked.size()];
+
+        for (int i = 0; i < checked.size(); i++) {
+            copy[i] = checked.keyAt(i);
+        }
+        return copy;
     }
 
 
@@ -177,14 +192,15 @@ public class ListMedicinesActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Cursor c) {
             mAdapter.changeCursor(c);
-            //  adapter.notifyDataSetChanged();
         }
     }
 
     private class ListAdapter extends ResourceCursorAdapter {
+        private SparseBooleanArray mSelectedItems;
 
         public ListAdapter(Context context, Cursor cursor) {
             super(context, R.layout.medicine_item, cursor, false);
+            mSelectedItems = new SparseBooleanArray();
         }
 
         @Override
@@ -223,6 +239,82 @@ public class ListMedicinesActivity extends BaseActivity {
                     pastilla.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pastilla));
                 else
                     imageLoader.displayImage(path, pastilla);
+            }
+        }
+
+        public void selectView(int position, boolean value) {
+            if (value)
+                mSelectedItems.put(position, true);
+            else
+                mSelectedItems.delete(position);
+            notifyDataSetChanged();
+        }
+
+        public void toggleSelection(int position) {
+            selectView(position, !mSelectedItems.get(position));
+        }
+
+        public int getSelectedCount() {
+            return mSelectedItems.size();
+        }
+
+        public SparseBooleanArray getSelectedPositions() {
+            return mSelectedItems;
+        }
+
+        public void removeSelection() {
+            mSelectedItems = new SparseBooleanArray();
+            notifyDataSetChanged();
+        }
+    }
+
+
+    private class ActionModeCallback implements AbsListView.MultiChoiceModeListener {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.menu_delete, menu);
+            mActionMode = mode;
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mAdapter.removeSelection();
+            mActionMode = null;
+        }
+
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            mAdapter.toggleSelection(position);
+            int num = mAdapter.getSelectedCount();
+            mode.setTitle(getResources().getQuantityString(R.plurals.selected, num, num));
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    //hacer borrado de verdad
+                    deleteMed();
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void deleteMed() {
+            SparseBooleanArray checked = mAdapter.getSelectedPositions();
+            for (int i = (checked.size() - 1); i >= 0; i--) {
+                if (checked.valueAt(i)) {
+                    long id = mAdapter.getItemId(checked.keyAt(i));
+                    Toast.makeText(mContext, "Delete Id: " + id, Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
