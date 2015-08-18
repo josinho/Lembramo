@@ -42,6 +42,7 @@ public class ListMedicinesActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         mContext = this;
         mListaMedicamentos = (ListView) findViewById(R.id.listaMedicamentos);
@@ -84,7 +85,7 @@ public class ListMedicinesActivity extends BaseActivity {
 
         //obtener el cursor con los medicamentos en segundo plano
         mDBAdapter = new DBAdapter(this);
-        new AsyncDBTask().execute(mDBAdapter);
+        new GetAllMedAsync().execute();
 
         if (savedInstanceState != null) {
             //venimos de un cambio de orientación
@@ -115,14 +116,31 @@ public class ListMedicinesActivity extends BaseActivity {
         if (id != NO_ID) {
             intent.putExtra("id", id);
         }
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v(TAG, "onActivityResult() resultCode=" + resultCode);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                mAdapter.notifyDataSetChanged();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mDBAdapter.close();
+        Log.v(TAG, "onDestroy()");
+        mAdapter.changeCursor(null);
         if (mActionMode != null) mActionMode.finish();
+        mDBAdapter.close();
     }
 
     @Override
@@ -175,14 +193,13 @@ public class ListMedicinesActivity extends BaseActivity {
     }
 
 
-    private class AsyncDBTask extends AsyncTask<DBAdapter, Void, Cursor> {
+    private class GetAllMedAsync extends AsyncTask<Void, Void, Cursor> {
 
         @Override
-        protected Cursor doInBackground(DBAdapter... param) {
-            DBAdapter dbAdapter = param[0];
+        protected Cursor doInBackground(Void... param) {
             try {
-                dbAdapter.open();
-                return dbAdapter.getAllMedicamentos();
+                mDBAdapter.open();
+                return mDBAdapter.getAllMedicamentos();
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
                 return null;
@@ -313,10 +330,31 @@ public class ListMedicinesActivity extends BaseActivity {
             for (int i = (checked.size() - 1); i >= 0; i--) {
                 if (checked.valueAt(i)) {
                     long id = mAdapter.getItemId(checked.keyAt(i));
-                    Toast.makeText(mContext, "Delete Id: " + id, Toast.LENGTH_LONG).show();
+                    new DeleteMedAsync().execute(id);
                 }
             }
         }
     }
 
+    private class DeleteMedAsync extends AsyncTask<Long, Void, Void> {
+        private long mId;
+
+        @Override
+        protected Void doInBackground(Long... param) {
+            mId = param[0];
+            try {
+                mDBAdapter.open();
+                mDBAdapter.deleteMedicamento(mId);
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v){
+            mAdapter.notifyDataSetChanged();
+            Toast.makeText(mContext, "Delete Id: " + mId, Toast.LENGTH_LONG).show();
+        }
+    }
 }

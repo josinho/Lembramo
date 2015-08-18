@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -25,9 +26,15 @@ public class DetailMedicineActivity extends BaseActivity {
     private long id = NO_ID;
     private ImageSelectorFragment mCaja, mPastilla;
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v(TAG, "onDestroy()");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         // usar un aspa como forma de retroceder a la anterior activity
@@ -83,12 +90,15 @@ public class DetailMedicineActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.action_save:
                 saveMedicineBD();
+                setResult(RESULT_OK);
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
     protected void saveMedicineBD() {
         boolean result;

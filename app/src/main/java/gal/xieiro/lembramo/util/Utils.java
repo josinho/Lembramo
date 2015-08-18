@@ -1,28 +1,20 @@
-/*
- * Copyright (C) 2012 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package gal.xieiro.lembramo.util;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Environment;
+import android.util.Log;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -32,6 +24,55 @@ import java.util.List;
 public class Utils {
 
     private Utils() {
+    }
+
+    private static final String TAG = "ImageUtils";
+    private static final String JPEG_FILE_PREFIX = "IMG_";
+    private static final String JPEG_FILE_SUFFIX = ".jpg";
+    private static final String CAMERA_DIR = "/dcim/";
+
+
+    public static File createImageFile(String albumName) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = JPEG_FILE_PREFIX + timeStamp + JPEG_FILE_SUFFIX;  //+ "_";
+        File imageDirectory = getImageDirectory(albumName);
+
+        //return File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, imageDirectory);
+        return new File(imageDirectory, imageFileName);
+    }
+
+    public static File getImageDirectory(String albumName) {
+        File storageDir = null;
+
+        // comprobar que el almacenamiento externo está disponible
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+
+            // si queremos guardar en la parte privada de la app
+            //storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            // getExternalFilesDir() crea el directorio si no existiese
+
+            // Si queremos guardar en la parte pública:
+            storageDir = new File(Environment.getExternalStorageDirectory() + CAMERA_DIR + albumName);
+            // faltaría indicar un subdirectorio
+            if (storageDir != null) {
+                if (!storageDir.mkdirs()) {
+                    if (!storageDir.exists()) {
+                        Log.d(TAG, "Failed to create directory");
+                        return null;
+                    }
+                }
+            }
+        } else {
+            Log.v(TAG, "External storage is not mounted READ/WRITE.");
+        }
+        return storageDir;
+    }
+
+    public static Bitmap getSquareBitmap(Bitmap bitmap) {
+        int dimension;
+
+        dimension = bitmap.getWidth() > bitmap.getHeight() ? bitmap.getHeight() : bitmap.getWidth();
+        return ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
     }
 
     /**

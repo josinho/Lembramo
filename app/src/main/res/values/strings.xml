@@ -3,6 +3,7 @@
 
     <string name="hello_world">Benvido á aplicación</string>
     <string name="action_settings">Preferencias</string>
+    <string name="album_name">lembramo</string>
 
     <string name="btn_medicamentos">Medicamentos</string>
     <string name="title_activity_medicamentos">Medicamentos</string>

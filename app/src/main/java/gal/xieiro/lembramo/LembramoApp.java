@@ -8,7 +8,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
-import gal.xieiro.lembramo.util.ImageUtils;
+import gal.xieiro.lembramo.util.Utils;
 
 public class LembramoApp extends Application {
 
@@ -40,7 +40,7 @@ public class LembramoApp extends Application {
         public Bitmap process(Bitmap bitmap) {
             Bitmap result;
 
-            result = ImageUtils.getSquareBitmap(bitmap);
+            result = Utils.getSquareBitmap(bitmap);
             if(result != bitmap) bitmap.recycle();
             return result;
         }

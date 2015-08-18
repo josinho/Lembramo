@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 
 import gal.xieiro.lembramo.R;
-import gal.xieiro.lembramo.util.ImageUtils;
 import gal.xieiro.lembramo.util.Utils;
 
 /**
@@ -49,9 +48,7 @@ public class ImageSelectorFragment extends Fragment {
     private View mView; //root view of layout
     private ImageView mImageView;
     private Bitmap mImageBitmap;
-    private String mCurrentPhotoPath;
     private String mCurrentImagePath;
-    //private OnFragmentInteractionListener mListener;
 
     public ImageSelectorFragment() {
         // Required empty public constructor
@@ -74,7 +71,6 @@ public class ImageSelectorFragment extends Fragment {
     }
 
     public void setImage(String uri) {
-        //viene con el esquema file://
         if (mImageView != null && uri != null) {
             ImageLoader.getInstance().displayImage(uri, mImageView);
             mCurrentImagePath = uri;
@@ -89,7 +85,6 @@ public class ImageSelectorFragment extends Fragment {
         } else mImageResource = 0;
 
         mImageBitmap = null;
-        mCurrentPhotoPath = null;
         mCurrentImagePath = null;
     }
 
@@ -117,12 +112,11 @@ public class ImageSelectorFragment extends Fragment {
     }
 
     private void setOnclickView() {
-        //TODO: hacer una ampliación de la foto a toda pantalla
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             // TODO: meter aquí la ampliación de la imagen a toda pantalla
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Id: " + mImageView.getId(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Pendiente ampliación imagen", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -169,9 +163,9 @@ public class ImageSelectorFragment extends Fragment {
     /**
      * Método de retorno del Intent
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode Código de la acción
+     * @param resultCode Código que indica si el resultado fue correcto
+     * @param data Resultado
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -201,13 +195,14 @@ public class ImageSelectorFragment extends Fragment {
         Intent photoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         try {
-            File f = ImageUtils.createImageFile(getActivity());
-            mCurrentPhotoPath = f.getAbsolutePath();
-            photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+            File f = Utils.createImageFile(getString(R.string.album_name));
+            Uri uri = Uri.fromFile(f);
+            mCurrentImagePath = uri.toString();
+            photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         } catch (IOException ioe) {
             Log.v(TAG, "Fallo al crear fichero para foto.");
             ioe.printStackTrace();
-            mCurrentPhotoPath = null;
+            mCurrentImagePath = null;
         }
         startActivityForResult(photoIntent, IMAGE_CAPTURE);
     }
@@ -220,13 +215,13 @@ public class ImageSelectorFragment extends Fragment {
     }
 
     private void imageFromCamera() {
-        setImage(mImageView, mCurrentPhotoPath);
-        //galleryAddPic();
+        ImageLoader.getInstance().displayImage(mCurrentImagePath, mImageView);
+        galleryAddPic();
     }
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-        File f = new File(mCurrentPhotoPath);
+        File f = new File(mCurrentImagePath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         getActivity().sendBroadcast(mediaScanIntent);
@@ -243,7 +238,8 @@ public class ImageSelectorFragment extends Fragment {
         String filePath = cursor.getString(columnIndex);
         cursor.close();
 
-        setImage(mImageView, filePath);
+        mCurrentImagePath = Uri.fromFile(new File(filePath)).toString();
+        ImageLoader.getInstance().displayImage(mCurrentImagePath, mImageView);
     }
 
     /**
@@ -267,35 +263,11 @@ public class ImageSelectorFragment extends Fragment {
             menu.findItem(R.id.action_take_photo).setEnabled(false);
     }
 
-
-    /**
-     * Fija una imagen del sistema en el ImageView especificado escalando según sea necesario
-     *
-     * @param imageView El ImageView de destino donde mostrar la imagen
-     * @param imagePath La ruta de origen de la imagen
-     */
-    private void setImage(ImageView imageView, String imagePath) {
-
-		/* There isn't enough memory to open up more than a couple camera photos */
-        /* So pre-scale the target bitmap into which the file is decoded */
-
-		/* Get the size of the ImageView */
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-        mImageBitmap = ImageUtils.scaleImage(imagePath, targetW, targetH);
-        mCurrentImagePath = "file://" + imagePath;
-
-		/* Associate the Bitmap to the ImageView */
-        imageView.setImageBitmap(mImageBitmap);
-    }
-
     // para recuperar la imagen cuando recree la vista desde cero
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (mImageBitmap != null)
             outState.putParcelable("imageBitmap", mImageBitmap);
-
-        //Log.v(TAG,"onSaveInstanceState()");
         super.onSaveInstanceState(outState);
     }
 
