@@ -1,11 +1,12 @@
 package gal.xieiro.lembramo.ui;
 
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -25,24 +26,24 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import gal.xieiro.lembramo.R;
-import gal.xieiro.lembramo.db.DBAdapter;
 import gal.xieiro.lembramo.db.DBContract;
+import gal.xieiro.lembramo.db.MedicamentContentProvider;
 
 
-public class ListMedicinesActivity extends BaseActivity {
+public class ListMedicinesActivity extends BaseActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final long NO_ID = -1;
+    private static final int LOADER_ID = 1;
 
     private Context mContext;
     private ListView mListaMedicamentos;
-    private DBAdapter mDBAdapter;
     private ListAdapter mAdapter;
     private ActionMode mActionMode = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         mContext = this;
         mListaMedicamentos = (ListView) findViewById(R.id.listaMedicamentos);
@@ -84,8 +85,9 @@ public class ListMedicinesActivity extends BaseActivity {
         mListaMedicamentos.setAdapter(mAdapter);
 
         //obtener el cursor con los medicamentos en segundo plano
-        mDBAdapter = new DBAdapter(this);
-        new GetAllMedAsync().execute();
+        //mDBAdapter = new DBAdapter(this);
+        //new GetAllMedAsync().execute();
+        getLoaderManager().initLoader(LOADER_ID, null, this);
 
         if (savedInstanceState != null) {
             //venimos de un cambio de orientación
@@ -122,25 +124,28 @@ public class ListMedicinesActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v(TAG, "onActivityResult() resultCode=" + resultCode);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 mAdapter.notifyDataSetChanged();
+                restartLoader();
             }
+            /*
             if (resultCode == RESULT_CANCELED) {
                 //Write your code if there's no result
             }
+            */
         }
     }
 
 
+    private void restartLoader() {
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v(TAG, "onDestroy()");
-        mAdapter.changeCursor(null);
         if (mActionMode != null) mActionMode.finish();
-        mDBAdapter.close();
     }
 
     @Override
@@ -190,26 +195,6 @@ public class ListMedicinesActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private class GetAllMedAsync extends AsyncTask<Void, Void, Cursor> {
-
-        @Override
-        protected Cursor doInBackground(Void... param) {
-            try {
-                mDBAdapter.open();
-                return mDBAdapter.getAllMedicamentos();
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Cursor c) {
-            mAdapter.changeCursor(c);
-        }
     }
 
     private class ListAdapter extends ResourceCursorAdapter {
@@ -326,35 +311,38 @@ public class ListMedicinesActivity extends BaseActivity {
         }
 
         private void deleteMed() {
+            String where = DBContract.Medicamentos._ID + " IN(";
             SparseBooleanArray checked = mAdapter.getSelectedPositions();
             for (int i = (checked.size() - 1); i >= 0; i--) {
                 if (checked.valueAt(i)) {
-                    long id = mAdapter.getItemId(checked.keyAt(i));
-                    new DeleteMedAsync().execute(id);
+                    where += mAdapter.getItemId(checked.keyAt(i)) + ",";
                 }
             }
+            where = where.substring(0, where.length() - 1) + ")";
+            int result = getContentResolver().delete(MedicamentContentProvider.CONTENT_URI, where, null);
+            Toast.makeText(mContext, result + " borrados", Toast.LENGTH_LONG).show();
+            restartLoader();
         }
     }
 
-    private class DeleteMedAsync extends AsyncTask<Long, Void, Void> {
-        private long mId;
 
-        @Override
-        protected Void doInBackground(Long... param) {
-            mId = param[0];
-            try {
-                mDBAdapter.open();
-                mDBAdapter.deleteMedicamento(mId);
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            }
-            return null;
-        }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                MedicamentContentProvider.CONTENT_URI, null, null, null, null);
+    }
 
-        @Override
-        protected void onPostExecute(Void v){
-            mAdapter.notifyDataSetChanged();
-            Toast.makeText(mContext, "Delete Id: " + mId, Toast.LENGTH_LONG).show();
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case LOADER_ID:
+                mAdapter.changeCursor(cursor);
+                break;
         }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.changeCursor(null);
     }
 }

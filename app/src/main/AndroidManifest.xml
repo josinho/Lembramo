@@ -37,6 +37,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ListMedicinesActivity" />
         </activity>
+        <provider android:name=".db.MedicamentContentProvider"
+            android:authorities="gal.xieiro.lembramo.provider"
+            android:exported="false"/>
     </application>
 
     <uses-permission

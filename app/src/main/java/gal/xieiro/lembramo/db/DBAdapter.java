@@ -11,13 +11,11 @@ import android.util.Log;
 public class DBAdapter {
     static final String TAG = "DBAdapter";
 
-    final Context context;
-    DatabaseHelper DBHelper;
-    SQLiteDatabase db;
+    private DatabaseHelper mDBHelper;
+    private SQLiteDatabase mSQLiteDatabase;
 
-    public DBAdapter(Context ctx) {
-        this.context = ctx;
-        DBHelper = new DatabaseHelper(context);
+    public DBAdapter(Context context) {
+        mDBHelper = new DatabaseHelper(context);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -47,14 +45,22 @@ public class DBAdapter {
 
     // abrir base de datos
     public DBAdapter open() throws SQLException {
-        db = DBHelper.getWritableDatabase();
+        mSQLiteDatabase = mDBHelper.getWritableDatabase();
         return this;
     }
 
     // cerrar base de datos
     public void close() {
-        DBHelper.close();
+        mDBHelper.close();
     }
+
+    public SQLiteDatabase getWritableDatabase() throws SQLException {
+        open();
+        return mSQLiteDatabase;
+    }
+
+
+    //Todo: los siguientes métodos tal vez desaparezcan al usar el Content Provider
 
     // insertar un medicamento en la base de datos
     public long insertMedicamento(String nombre, String comentario, String fotocaja, String fotomedicamento) {
@@ -63,17 +69,18 @@ public class DBAdapter {
         initialValues.put(DBContract.Medicamentos.COLUMN_NAME_COMMENT, comentario);
         initialValues.put(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO, fotocaja);
         initialValues.put(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO, fotomedicamento);
-        return db.insert(DBContract.Medicamentos.TABLE_NAME, null, initialValues);
+        return mSQLiteDatabase.insert(DBContract.Medicamentos.TABLE_NAME, null, initialValues);
     }
 
     // borrar un medicamento de la base de datos
     public boolean deleteMedicamento(long rowId) {
-        return db.delete(DBContract.Medicamentos.TABLE_NAME, DBContract.Medicamentos._ID + " =" + rowId, null) > 0;
+        return mSQLiteDatabase.delete(
+                DBContract.Medicamentos.TABLE_NAME, DBContract.Medicamentos._ID + " =" + rowId, null) > 0;
     }
 
     // devolver todos los medicamentos
     public Cursor getAllMedicamentos() {
-        return db.query(
+        return mSQLiteDatabase.query(
                 DBContract.Medicamentos.TABLE_NAME,
                 new String[]{
                         DBContract.Medicamentos._ID,
@@ -87,7 +94,7 @@ public class DBAdapter {
     // devolver un medicamento concreto
     public Cursor getMedicamento(long rowId) throws SQLException {
         Cursor mCursor =
-                db.query(true, DBContract.Medicamentos.TABLE_NAME,
+                mSQLiteDatabase.query(true, DBContract.Medicamentos.TABLE_NAME,
                         new String[]{
                                 DBContract.Medicamentos._ID,
                                 DBContract.Medicamentos.COLUMN_NAME_NAME,
@@ -109,6 +116,7 @@ public class DBAdapter {
         args.put(DBContract.Medicamentos.COLUMN_NAME_COMMENT, comentario);
         args.put(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO, fotocaja);
         args.put(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO, fotomedicamento);
-        return db.update(DBContract.Medicamentos.TABLE_NAME, args, DBContract.Medicamentos._ID + " =" + rowId, null) > 0;
+        return mSQLiteDatabase.update(
+                DBContract.Medicamentos.TABLE_NAME, args, DBContract.Medicamentos._ID + " =" + rowId, null) > 0;
     }
 }

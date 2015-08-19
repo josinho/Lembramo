@@ -2,39 +2,33 @@ package gal.xieiro.lembramo.ui;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import gal.xieiro.lembramo.R;
-import gal.xieiro.lembramo.db.DBAdapter;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.model.Medicament;
+import gal.xieiro.lembramo.db.MedicamentContentProvider;
 
 
-public class DetailMedicineActivity extends BaseActivity {
+public class DetailMedicineActivity extends BaseActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
     private static final long NO_ID = -1;
+    private static final int LOADER_ID = 1;
 
     private long id = NO_ID;
     private ImageSelectorFragment mCaja, mPastilla;
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.v(TAG, "onDestroy()");
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         // usar un aspa como forma de retroceder a la anterior activity
@@ -64,7 +58,10 @@ public class DetailMedicineActivity extends BaseActivity {
         if (id != NO_ID) {
             //modo editar
             setToolbarTitle(R.string.title_activity_edit_medicamento);
-            new DBGetAsyncTask().execute(this);
+            Bundle bundle = new Bundle();
+            bundle.putLong(DBContract.Medicamentos._ID, id);
+            getLoaderManager().initLoader(LOADER_ID, bundle, this);
+            //new DBGetAsyncTask().execute(this);
         }
     }
 
@@ -98,96 +95,53 @@ public class DetailMedicineActivity extends BaseActivity {
         }
     }
 
-
-
     protected void saveMedicineBD() {
-        boolean result;
-        Medicament med = new Medicament();
         FragmentManager fm = getFragmentManager();
-
-        // obtener los datos a guardar de la UI
-        med.name = ((EditText) findViewById(R.id.txtNombre)).getText().toString();
-        med.comment = ((EditText) findViewById(R.id.txtComentario)).getText().toString();
-        med.pillboxImage = ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenCaja_container)).getImagePath();
-        med.pillImage = ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenPastilla_container)).getImagePath();
-
         //TODO: validar datos
 
-        // guardar en segundo plano en otro hilo
-        new DBSaveAsyncTask().execute(this, med, (id == NO_ID));
-    }
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_NAME,
+                ((EditText) findViewById(R.id.txtNombre)).getText().toString());
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_COMMENT,
+                ((EditText) findViewById(R.id.txtComentario)).getText().toString());
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO,
+                ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenCaja_container)).getImagePath());
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO,
+                ((ImageSelectorFragment) fm.findFragmentById(R.id.imagenPastilla_container)).getImagePath());
 
-    protected class DBSaveAsyncTask extends AsyncTask<Object, Void, Boolean> {
-        private boolean result = false;
-        private Context context;
-
-        @Override
-        protected Boolean doInBackground(Object... params) {
-            context = (Context) params[0];
-            Medicament med = (Medicament) params[1];
-            boolean nuevoMed = (Boolean) params[2];
-
-            DBAdapter dbAdapter = new DBAdapter(context);
-            try {
-                dbAdapter.open();
-
-                if (nuevoMed)
-                    dbAdapter.insertMedicamento(med.name, med.comment, med.pillboxImage, med.pillImage);
-                else
-                    dbAdapter.updateMedicamento(id, med.name, med.comment, med.pillboxImage, med.pillImage);
-
-                dbAdapter.close();
-                return true;
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result)
-                Toast.makeText(context, R.string.ok_db_toast, Toast.LENGTH_LONG).show();
-            else
-                Toast.makeText(context, R.string.error_db_toast, Toast.LENGTH_LONG).show();
+        if (id == NO_ID) {
+            //create
+            getContentResolver().insert(MedicamentContentProvider.CONTENT_URI, cv);
+        } else {
+            //update
+            String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + id;
+            getContentResolver().update(Uri.parse(uri), cv, null, null);
         }
     }
 
-    protected class DBGetAsyncTask extends AsyncTask<Object, Void, Medicament> {
-        private Context context;
-        Medicament med = new Medicament();
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        long key = args.getLong(DBContract.Medicamentos._ID);
+        String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + key;
+        return new CursorLoader(this, Uri.parse(uri), null, null, null, null);
+    }
 
-        @Override
-        protected Medicament doInBackground(Object... params) {
-            context = (Context) params[0];
-
-            DBAdapter dbAdapter = new DBAdapter(context);
-            try {
-                dbAdapter.open();
-                Cursor c = dbAdapter.getMedicamento(id);
-                if (c != null) {
-                    med.id = c.getLong(c.getColumnIndex(DBContract.Medicamentos._ID));
-                    med.name = c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_NAME));
-                    med.comment = c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_COMMENT));
-                    med.pillboxImage = c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO));
-                    med.pillImage = c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO));
-                    c.close();
-                }
-                dbAdapter.close();
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            }
-            return med;
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+        if (c != null) {
+            c.moveToFirst();
+            ((EditText) findViewById(R.id.txtNombre)).setText(
+                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_NAME)));
+            ((EditText) findViewById(R.id.txtComentario)).setText(
+                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_COMMENT)));
+            mCaja.setImage(
+                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO)));
+            mPastilla.setImage(
+                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO)));
         }
+    }
 
-        @Override
-        protected void onPostExecute(Medicament result) {
-            if (med.id == id) {
-                ((EditText) findViewById(R.id.txtNombre)).setText(med.name);
-                ((EditText) findViewById(R.id.txtComentario)).setText(med.comment);
-                mCaja.setImage(med.pillboxImage);
-                mPastilla.setImage(med.pillImage);
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
     }
 }
