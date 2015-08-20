@@ -83,6 +83,7 @@ public class ListMedicinesActivity extends BaseActivity implements
 
         mAdapter = new ListAdapter(this, null);
         mListaMedicamentos.setAdapter(mAdapter);
+        mListaMedicamentos.setEmptyView(findViewById(R.id.empty));
 
         //obtener el cursor con los medicamentos en segundo plano
         //mDBAdapter = new DBAdapter(this);
@@ -214,10 +215,6 @@ public class ListMedicinesActivity extends BaseActivity implements
             if (cursor != null) {
                 //long id = cursor.getLong(cursor.getColumnIndex("_id"));
                 imageLoader = ImageLoader.getInstance();
-
-                TextView ruta = (TextView) view.findViewById(R.id.ruta);
-                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO);
-                ruta.setText(cursor.getString(columnIndex));
 
                 // tratar el nombre del medicamento
                 TextView nombre = (TextView) view.findViewById(R.id.nombre);

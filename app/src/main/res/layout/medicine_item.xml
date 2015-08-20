@@ -8,9 +8,12 @@
     android:background="?android:attr/activatedBackgroundIndicator">
 
     <TextView
-        android:id="@+id/ruta"
+        android:id="@+id/nombre"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:padding="10dp"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,13 +40,6 @@
         android:src="@drawable/no_image"
         android:background="@drawable/image_border"/>
 
-    <TextView
-        android:id="@+id/nombre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:padding="10dp"
-        android:textSize="20sp" />
     </LinearLayout>
 
 </LinearLayout>

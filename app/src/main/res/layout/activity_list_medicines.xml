@@ -33,4 +33,32 @@
         app:pressedTranslationZ="12dp"
         app:borderWidth="0dp"/>
 
+    <RelativeLayout
+        android:id="@+id/empty"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:layout_below="@id/toolbar">
+        <ImageView
+            android:id="@+id/pill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/pastilla"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="@string/no_medicament"
+            android:layout_below="@+id/pill"
+            android:layout_alignLeft="@+id/pill"
+            android:layout_alignStart="@+id/pill" />
+    </RelativeLayout>
+
 </RelativeLayout>

@@ -26,4 +26,5 @@
 
     <string name="error_db_toast">Error al abrir base de datos</string>
     <string name="ok_db_toast">Guardado con éxito</string>
+    <string name="no_medicament">No hay ningún medicamento</string>
 </resources>
