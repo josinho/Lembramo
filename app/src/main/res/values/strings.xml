@@ -17,6 +17,7 @@
 
     <string name="title_activity_new_medicamento">Nuevo medicamento</string>
     <string name="title_activity_edit_medicamento">Editar medicamento</string>
+    <string name="title_activity_image_zoom">Ampliación de imagen</string>
 
     <string name="action_save">Guardar</string>
     <string name="action_delete">Borrar</string>
@@ -27,4 +28,8 @@
     <string name="error_db_toast">Error al abrir base de datos</string>
     <string name="ok_db_toast">Guardado con éxito</string>
     <string name="no_medicament">No hay ningún medicamento</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

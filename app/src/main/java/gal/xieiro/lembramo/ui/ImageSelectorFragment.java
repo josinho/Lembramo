@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -37,18 +34,18 @@ import gal.xieiro.lembramo.util.Utils;
  */
 public class ImageSelectorFragment extends Fragment {
     private static final String TAG = "ImageSelectorFragment";
-    private static final String ARG_PARAM1 = "imageResource"; //parámetro imagen inicial
+    private static final String IMAGE_RESOURCE = "imageResource";
+    private static final String IMAGE_URI = "imageUri";
 
     //request codes para startActivityForResult()
     private static final int IMAGE_PICK = 1;
     private static final int IMAGE_CAPTURE = 2;
 
 
-    private int mImageResource;
     private View mView; //root view of layout
     private ImageView mImageView;
-    private Bitmap mImageBitmap;
-    private String mCurrentImagePath;
+    private String mImagePath;
+    private int mImageResource;
 
     public ImageSelectorFragment() {
         // Required empty public constructor
@@ -61,11 +58,11 @@ public class ImageSelectorFragment extends Fragment {
      * @param imageResource Id de fichero de imagen.
      * @return A new instance of fragment ImageSelectorFragment.
      */
-    public static ImageSelectorFragment newInstance(int imageResource) {
+    public static ImageSelectorFragment newInstance(int imageResource, String uri) {
         ImageSelectorFragment fragment = new ImageSelectorFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, imageResource);
-
+        args.putInt(IMAGE_RESOURCE, imageResource);
+        args.putString(IMAGE_URI, uri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,19 +70,23 @@ public class ImageSelectorFragment extends Fragment {
     public void setImage(String uri) {
         if (mImageView != null && uri != null) {
             ImageLoader.getInstance().displayImage(uri, mImageView);
-            mCurrentImagePath = uri;
+            mImagePath = uri;
         }
+    }
+
+    public void setImage(int resId) {
+        if (mImageView != null)
+            mImageView.setImageResource(resId);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mImagePath = null;
         if (getArguments() != null) {
-            mImageResource = getArguments().getInt(ARG_PARAM1);
-        } else mImageResource = 0;
-
-        mImageBitmap = null;
-        mCurrentImagePath = null;
+            mImageResource = getArguments().getInt(IMAGE_RESOURCE, 0);
+            mImagePath = getArguments().getString(IMAGE_URI, null);
+        }
     }
 
     @Override
@@ -95,28 +96,27 @@ public class ImageSelectorFragment extends Fragment {
         //cambiar la imagen por defecto
         mImageView = (ImageView) mView.findViewById(R.id.imagen);
 
-        if (savedInstanceState == null) {
-            if (mImageResource != 0)
-                mImageBitmap = BitmapFactory.decodeResource(getResources(), mImageResource);
-        } else
-            mImageBitmap = savedInstanceState.getParcelable("imageBitmap");
-
-        if (mImageBitmap != null)
-            mImageView.setImageBitmap(mImageBitmap);
+        if(mImagePath != null)
+            ImageLoader.getInstance().displayImage(mImagePath, mImageView);
+        else if(mImageResource > 0)
+            mImageView.setImageResource(mImageResource);
 
         //manejador para al pinchar el botón sobre la imagen
         setPopupMenu();
 
-        //setOnclickView();
+        setOnclickView();
         return mView;
     }
 
     private void setOnclickView() {
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            // TODO: meter aquí la ampliación de la imagen a toda pantalla
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Pendiente ampliación imagen", Toast.LENGTH_LONG).show();
+                if (mImagePath != null) {
+                    Intent intent = new Intent(getActivity(), TouchImageActivity.class);
+                    intent.putExtra("image", mImagePath);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -164,8 +164,8 @@ public class ImageSelectorFragment extends Fragment {
      * Método de retorno del Intent
      *
      * @param requestCode Código de la acción
-     * @param resultCode Código que indica si el resultado fue correcto
-     * @param data Resultado
+     * @param resultCode  Código que indica si el resultado fue correcto
+     * @param data        Resultado
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -197,31 +197,29 @@ public class ImageSelectorFragment extends Fragment {
         try {
             File f = Utils.createImageFile(getString(R.string.album_name));
             Uri uri = Uri.fromFile(f);
-            mCurrentImagePath = uri.toString();
+            mImagePath = uri.toString();
             photoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         } catch (IOException ioe) {
             Log.v(TAG, "Fallo al crear fichero para foto.");
             ioe.printStackTrace();
-            mCurrentImagePath = null;
+            mImagePath = null;
         }
         startActivityForResult(photoIntent, IMAGE_CAPTURE);
     }
 
     private void dispatchDeleteImage() {
-        mImageResource = R.drawable.no_image;
-        mImageBitmap = BitmapFactory.decodeResource(getResources(), mImageResource);
-        mImageView.setImageBitmap(mImageBitmap);
-        mCurrentImagePath = null;
+        mImageView.setImageResource(R.drawable.no_image);
+        mImagePath = null;
     }
 
     private void imageFromCamera() {
-        ImageLoader.getInstance().displayImage(mCurrentImagePath, mImageView);
+        ImageLoader.getInstance().displayImage(mImagePath, mImageView);
         galleryAddPic();
     }
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-        File f = new File(mCurrentImagePath);
+        File f = new File(mImagePath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         getActivity().sendBroadcast(mediaScanIntent);
@@ -238,8 +236,8 @@ public class ImageSelectorFragment extends Fragment {
         String filePath = cursor.getString(columnIndex);
         cursor.close();
 
-        mCurrentImagePath = Uri.fromFile(new File(filePath)).toString();
-        ImageLoader.getInstance().displayImage(mCurrentImagePath, mImageView);
+        mImagePath = Uri.fromFile(new File(filePath)).toString();
+        ImageLoader.getInstance().displayImage(mImagePath, mImageView);
     }
 
     /**
@@ -263,15 +261,7 @@ public class ImageSelectorFragment extends Fragment {
             menu.findItem(R.id.action_take_photo).setEnabled(false);
     }
 
-    // para recuperar la imagen cuando recree la vista desde cero
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if (mImageBitmap != null)
-            outState.putParcelable("imageBitmap", mImageBitmap);
-        super.onSaveInstanceState(outState);
-    }
-
     public String getImagePath() {
-        return mCurrentImagePath;
+        return mImagePath;
     }
 }

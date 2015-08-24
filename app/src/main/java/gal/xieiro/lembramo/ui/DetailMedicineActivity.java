@@ -26,44 +26,48 @@ public class DetailMedicineActivity extends BaseActivity implements
 
     private long id = NO_ID;
     private ImageSelectorFragment mCaja, mPastilla;
+    private String mCajaUri, mPastillaUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // usar un aspa como forma de retroceder a la anterior activity
-        // simulando un cancelar
+        // usar un aspa como forma de retroceder a la anterior activity simulando un cancelar
         setNavigationIcon(R.drawable.ic_clear_white_24dp);
-
-
-        // evitar overlapping de fragments si venimos de una restauración
-        if (savedInstanceState != null) {
-            return;
-        }
-
-        //colocar los fragments con las imágenes por defecto
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-
-        mCaja = ImageSelectorFragment.newInstance(R.drawable.caja);
-        mPastilla = ImageSelectorFragment.newInstance(R.drawable.pastilla);
-
-        ft.add(R.id.imagenCaja_container, mCaja);
-        ft.add(R.id.imagenPastilla_container, mPastilla);
-        ft.commit();
-
 
         Intent intent = getIntent();
         id = intent.getLongExtra("id", NO_ID);
         if (id != NO_ID) {
             //modo editar
             setToolbarTitle(R.string.title_activity_edit_medicamento);
-            Bundle bundle = new Bundle();
-            bundle.putLong(DBContract.Medicamentos._ID, id);
-            getLoaderManager().initLoader(LOADER_ID, bundle, this);
-            //new DBGetAsyncTask().execute(this);
         }
+
+        if (savedInstanceState != null) {
+            //venimos de una restauración
+            mCajaUri = savedInstanceState.getString("imagenCaja");
+            mPastillaUri = savedInstanceState.getString("imagenPastilla");
+        } else {
+            mCajaUri = mPastillaUri = null;
+            if (id != NO_ID) {
+                //modo editar y no venimos de una restauración
+                Bundle bundle = new Bundle();
+                bundle.putLong(DBContract.Medicamentos._ID, id);
+                getLoaderManager().initLoader(LOADER_ID, bundle, this);
+            }
+        }
+
+        //colocar los fragments con las imágenes por defecto
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        mCaja = ImageSelectorFragment.newInstance(R.drawable.caja, mCajaUri);
+        mPastilla = ImageSelectorFragment.newInstance(R.drawable.pastilla, mPastillaUri);
+
+        ft.add(R.id.imagenCaja_container, mCaja);
+        ft.add(R.id.imagenPastilla_container, mPastilla);
+        ft.commit();
     }
+
 
     @Override
     protected int getLayoutResource() {
@@ -143,5 +147,13 @@ public class DetailMedicineActivity extends BaseActivity implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("imagenCaja", mCaja.getImagePath());
+        outState.putString("imagenPastilla", mPastilla.getImagePath());
     }
 }
