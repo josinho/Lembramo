@@ -131,7 +131,7 @@ public class ListMedicinesActivity extends BaseActivity implements
             }
             /*
             if (resultCode == RESULT_CANCELED) {
-                //Write your code if there's no result
+
             }
             */
         }
@@ -155,14 +155,6 @@ public class ListMedicinesActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_medicamentos, menu);
-        return true;
-    }
-
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mActionMode != null) {
@@ -181,21 +173,6 @@ public class ListMedicinesActivity extends BaseActivity implements
         return copy;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     private class ListAdapter extends ResourceCursorAdapter {
         private SparseBooleanArray mSelectedItems;
@@ -316,7 +293,9 @@ public class ListMedicinesActivity extends BaseActivity implements
             }
             where = where.substring(0, where.length() - 1) + ")";
             int result = getContentResolver().delete(MedicamentContentProvider.CONTENT_URI, where, null);
-            Toast.makeText(mContext, result + " borrados", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext,
+                    getResources().getQuantityString(R.plurals.deleted, result, result),
+                    Toast.LENGTH_LONG).show();
             restartLoader();
         }
     }

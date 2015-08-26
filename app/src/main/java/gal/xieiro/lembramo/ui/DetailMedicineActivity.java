@@ -72,7 +72,7 @@ public class DetailMedicineActivity extends BaseActivity implements
     @Override
     protected int getLayoutResource() {
         // indicar el layout de esta activity, necesario para BaseActivity
-        return R.layout.activity_detail_medicine;
+        return R.layout.fragment_detail_medicine;
     }
 
 

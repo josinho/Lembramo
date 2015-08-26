@@ -75,6 +75,11 @@ public class Utils {
         return ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
     }
 
+    public static String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(new Date());
+    }
+
     /**
      * Indicates whether the specified action can be used as an intent. This
      * method queries the package manager for installed packages that can

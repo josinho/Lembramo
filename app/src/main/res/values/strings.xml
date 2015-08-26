@@ -24,12 +24,18 @@
     <string name="action_select_image">Escoger imagen de galería</string>
     <string name="action_take_photo">Sacar foto</string>
     <string name="action_delete_image">Borrar imagen</string>
+    <string name="action_accept">Aceptar</string>
+    <string name="action_cancel">Cancelar</string>
 
     <string name="error_db_toast">Error al abrir base de datos</string>
     <string name="ok_db_toast">Guardado con éxito</string>
     <string name="no_medicament">No hay ningún medicamento</string>
 
-    <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="tab1">Medicamento</string>
+    <string name="tab2">Frecuencia</string>
+    <string name="tab3">Intervalo</string>
+    <string name="tab4">Duración</string>
+
+    <string name="lbl_initial_date">Fecha de inicio</string>
+    <string name="lbl_daily_frecuency">Frecuencia diaria</string>
 </resources>

@@ -5,4 +5,10 @@
         <item quantity="one">%d seleccionado</item>
         <item quantity="other">%d seleccionados</item>
     </plurals>
+
+    <plurals name="deleted">
+        <item quantity="zero">Ninguno borrado</item>
+        <item quantity="one">%d borrado</item>
+        <item quantity="other">%d borrados</item>
+    </plurals>
 </resources>
