@@ -98,8 +98,8 @@ public class NumberPickerDialogFragment extends DialogFragment {
         mListener = listener;
     }
 
-
-    public void onSavedInstanceState(Bundle outState) {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("currentValue", mNumberPicker.getValue());
     }

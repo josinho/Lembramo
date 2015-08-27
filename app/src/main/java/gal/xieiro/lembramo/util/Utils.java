@@ -80,6 +80,10 @@ public class Utils {
         return sdf.format(new Date());
     }
 
+    public static String getCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        return sdf.format(new Date());
+    }
     /**
      * Indicates whether the specified action can be used as an intent. This
      * method queries the package manager for installed packages that can
