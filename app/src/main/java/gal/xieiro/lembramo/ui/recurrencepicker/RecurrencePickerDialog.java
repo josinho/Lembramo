@@ -15,16 +15,16 @@
  */
 
 /*
-    Se sustituye com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialog
-   por android.app.DatePickerDialog
+   Se sustituye com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialog
+   por android.app.DatePickerDialog.
 */
 
 
 package gal.xieiro.lembramo.ui.recurrencepicker;
 
-import android.app.Activity;
+//import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
+//import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -98,6 +98,7 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
     private static class RecurrenceModel implements Parcelable {
 
         // Should match EventRecurrence.DAILY, etc
+        static final int FREQ_HOURLY = 0;
         static final int FREQ_DAILY = 0;
         static final int FREQ_WEEKLY = 1;
         static final int FREQ_MONTHLY = 2;
@@ -340,7 +341,7 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
     private static final String BUNDLE_MODEL = "bundle_model";
     private static final String BUNDLE_END_COUNT_HAS_FOCUS = "bundle_end_count_has_focus";
 
-    private static final String FRAG_TAG_DATE_PICKER = "tag_date_picker_frag";
+    //private static final String FRAG_TAG_DATE_PICKER = "tag_date_picker_frag";
 
     private SwitchCompat mRepeatSwitch;
 
@@ -697,8 +698,8 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
         mResources = getResources();
         mView = inflater.inflate(R.layout.recurrencepicker, container, true);
 
-        final Activity activity = getActivity();
-        final Configuration config = activity.getResources().getConfiguration();
+        //final Activity activity = getActivity();
+        //final Configuration config = activity.getResources().getConfiguration();
 
         mRepeatSwitch = (SwitchCompat) mView.findViewById(R.id.repeat_switch);
         mRepeatSwitch.setChecked(mModel.recurrenceState == RecurrenceModel.STATE_RECURRENCE);
@@ -783,7 +784,7 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
         mWeekGroup2 = (LinearLayout) mView.findViewById(R.id.weekGroup2);
 
         // In Calendar.java day of week order e.g Sun = 1 ... Sat = 7
-        String[] dayOfWeekString = new DateFormatSymbols().getWeekdays();
+        String[] dayOfWeekString; // = new DateFormatSymbols().getWeekdays();
 
         mMonthRepeatByDayOfWeekStrs = new String[7][];
         // from Time.SUNDAY as 0 through Time.SATURDAY as 6
@@ -1053,7 +1054,7 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
     }
 
     /**
-     * @param endDateString
+     * @param endDateString end date string
      */
     private void setEndSpinnerEndDateStr(final String endDateString) {
         mEndSpinnerArray.set(1, endDateString);

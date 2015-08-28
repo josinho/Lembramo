@@ -203,9 +203,11 @@
                             android:layout_marginRight="8dp"
                             android:background="@drawable/spinner_background_holo_light"
                             android:dropDownSelector="@drawable/item_background_holo_light"
-                            android:entries="@array/recurrence_freq"
+
                             android:gravity="left|center_vertical"
                             android:padding="0dp" />
+
+                        <!-- android:entries="@array/recurrence_freq" -->
 
                         <EditText
                             android:id="@+id/endCount"
