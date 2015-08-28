@@ -25,4 +25,10 @@
         android:layout_height="wrap_content"
         android:onClick="startViewPager"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prueba Recurrence Picker"
+        android:id="@+id/button2" />
+
 </LinearLayout>

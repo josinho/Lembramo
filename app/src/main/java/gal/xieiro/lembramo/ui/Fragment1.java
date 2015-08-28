@@ -44,6 +44,12 @@ public class Fragment1 extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        RecurrencePickerDialog rpd =
+                (RecurrencePickerDialog) fm.findFragmentByTag("RecurrentPickerTAG");
+        if (rpd != null) {
+            rpd.setOnRecurrenceSetListener(this);
+        }
     }
 
     @Override
