@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,8 @@ public class Fragment1 extends Fragment
     private NumberPicker np;
     private TextView mTextView;
     private Button mButton;
-    private String mRrule;
-    private EventRecurrence mEventRecurrence = new EventRecurrence();
+    private String mRule;
+    private EventRecurrence mEventRecurrence;
 
     public static Fragment1 newInstance() {
         return new Fragment1();
@@ -50,6 +51,7 @@ public class Fragment1 extends Fragment
         if (rpd != null) {
             rpd.setOnRecurrenceSetListener(this);
         }
+        mEventRecurrence = new EventRecurrence();
     }
 
     @Override
@@ -99,6 +101,15 @@ public class Fragment1 extends Fragment
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Time t = new Time();
+                        t.setToNow();
+                        mEventRecurrence.setStartDate(t);
+                        Bundle b = new Bundle();
+                        b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS,
+                                t.toMillis(false));
+                        b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE,
+                                t.timezone);
+                        b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRule);
                         FragmentManager fm = getActivity().getSupportFragmentManager();
                         RecurrencePickerDialog rpd =
                                 (RecurrencePickerDialog) fm.findFragmentByTag("RecurrentPickerTAG");
@@ -106,6 +117,7 @@ public class Fragment1 extends Fragment
                             rpd.dismiss();
                         }
                         rpd = new RecurrencePickerDialog();
+                        rpd.setArguments(b);
                         rpd.setOnRecurrenceSetListener(Fragment1.this);
                         rpd.show(fm, "RecurrentPickerTAG");
                     }
@@ -123,9 +135,9 @@ public class Fragment1 extends Fragment
 
     @Override
     public void onRecurrenceSet(String rrule) {
-        mRrule = rrule;
-        if (mRrule != null) {
-            mEventRecurrence.parse(mRrule);
+        mRule = rrule;
+        if (mRule != null) {
+            mEventRecurrence.parse(mRule);
         }
         populateRepeats();
     }
@@ -133,11 +145,11 @@ public class Fragment1 extends Fragment
     private void populateRepeats() {
         Resources r = getResources();
         String repeatString = "";
-        if (!TextUtils.isEmpty(mRrule)) {
+        if (!TextUtils.isEmpty(mRule)) {
             repeatString = EventRecurrenceFormatter.getRepeatString(
                     getActivity(), r, mEventRecurrence, true);
         }
 
-        mTextView.setText(mRrule + "\n" + repeatString);
+        mTextView.setText(mRule + "\n" + repeatString);
     }
 }

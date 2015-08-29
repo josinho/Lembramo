@@ -105,6 +105,13 @@
     <string name="recurrence_end_count_label">Un número de veces</string>
 
     <!-- Strings to describe how frequently to repeat an event (e.g. every 5 days) -->
+    <plurals name="recurrence_interval_hourly">
+        <!-- Singular form [CHAR LIMIT=30] -->
+        <item quantity="one">Cada <xliff:g id="count">%d</xliff:g> hora</item>
+        <!-- Plural form [CHAR LIMIT=30] -->
+        <item quantity="other">Cada <xliff:g id="count">%d</xliff:g> horas</item>
+    </plurals>
+    <!-- Strings to describe how frequently to repeat an event (e.g. every 5 days) -->
     <plurals name="recurrence_interval_daily">
         <!-- Singular form [CHAR LIMIT=30] -->
         <item quantity="one">Cada <xliff:g id="count">%d</xliff:g> día</item>
@@ -150,9 +157,15 @@
         <item quantity="one">; una vez</item>
         <item quantity="other">; <xliff:g id="number">%d</xliff:g> veces</item>
     </plurals>
+
+    <!-- A description for an event that repeats hourly. For example, Every 2 hours [CHAR LIMIT=15]-->
+    <plurals name="hourly">
+        <item quantity="one">Cada hora</item>
+        <item quantity="other">Cada <xliff:g id="number">%d</xliff:g> horas</item>
+    </plurals>
     <!-- A description for an event that repeats daily. For example, Every 2 days [CHAR LIMIT=15]-->
     <plurals name="daily">
-        <item quantity="one">Diario</item>
+        <item quantity="one">Se repite cada día</item>
         <item quantity="other">Cada <xliff:g id="number">%d</xliff:g> días</item>
     </plurals>
     <!-- A label in a multiple-choice list for the specifying that an event
@@ -161,14 +174,14 @@
     <!-- A description for an event that repeats weekly on some day of the week. For example,
          'Weekly on Tuesday' or Every 2 weeks on Monday, Tuesday.  [CHAR LIMIT=25]-->
     <plurals name="weekly">
-        <item quantity="one">Semanal los <xliff:g id="days_of_week">%2$s</xliff:g></item>
+        <item quantity="one">Se repite cada semana los <xliff:g id="days_of_week">%2$s</xliff:g></item>
         <item quantity="other">Cada <xliff:g id="number">%1$d</xliff:g> semanas los <xliff:g id="days_of_week">%2$s</xliff:g></item>
     </plurals>
     <!-- The common portion of a string describing how often an event repeats,
          example: 'Monthly (on day 2)' -->
-    <string name="monthly">Mensual</string>
+    <string name="monthly">Se repite cada mes</string>
     <!-- Calendar spinner item, to select that an event recurs every year. -->
-    <string name="yearly_plain">Anual</string>
+    <string name="yearly_plain">Se repite cada año</string>
 
     <!-- Hint text to encourage the user to enter a country name to find a time zone
      [CHAR LIMIT=25] -->

@@ -22,9 +22,10 @@ import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.TimeFormatException;
 
-import gal.xieiro.lembramo.R;
-
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import gal.xieiro.lembramo.R;
 
 public class EventRecurrenceFormatter {
 
@@ -57,6 +58,8 @@ public class EventRecurrenceFormatter {
         // TODO Implement "Until" portion of string, as well as custom settings
         int interval = recurrence.interval <= 1 ? 1 : recurrence.interval;
         switch (recurrence.freq) {
+            case EventRecurrence.HOURLY:   //añadido
+                return r.getQuantityString(R.plurals.hourly, interval, interval) + endString;
             case EventRecurrence.DAILY:
                 return r.getQuantityString(R.plurals.daily, interval, interval) + endString;
             case EventRecurrence.WEEKLY: {

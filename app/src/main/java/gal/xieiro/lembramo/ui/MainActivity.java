@@ -3,6 +3,7 @@ package gal.xieiro.lembramo.ui;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,8 @@ import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
 
 public class MainActivity extends BaseActivity
         implements RecurrencePickerDialog.OnRecurrenceSetListener {
+
+    private String mRule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,14 @@ public class MainActivity extends BaseActivity
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Time t = new Time();
+                        t.setToNow();
+                        Bundle b = new Bundle();
+                        b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS,
+                                t.toMillis(false));
+                        b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE,
+                                t.timezone);
+                        b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRule);
                         FragmentManager fm = getSupportFragmentManager();
                         RecurrencePickerDialog rpd =
                                 (RecurrencePickerDialog) fm.findFragmentByTag("RecurrentPickerTAG");
@@ -57,7 +68,7 @@ public class MainActivity extends BaseActivity
                             rpd.dismiss();
                         }
                         rpd = new RecurrencePickerDialog();
-                        Log.v(TAG, "MainActivity: Creating RecurrencePickerDialog");
+                        rpd.setArguments(b);
                         rpd.setOnRecurrenceSetListener(MainActivity.this);
                         rpd.show(fm, "RecurrentPickerTAG");
                     }
@@ -67,6 +78,6 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onRecurrenceSet(String rrule) {
-
+        mRule = rrule;
     }
 }
