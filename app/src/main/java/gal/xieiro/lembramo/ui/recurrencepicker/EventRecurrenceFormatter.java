@@ -22,7 +22,6 @@ import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.TimeFormatException;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import gal.xieiro.lembramo.R;
