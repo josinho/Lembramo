@@ -1,7 +1,6 @@
 package gal.xieiro.lembramo.ui;
 
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,8 @@ import android.support.v4.view.ViewPager;
 
 import gal.xieiro.lembramo.R;
 
-public class ViewPagerActivity extends BaseActivity {
+public class ViewPagerActivity extends BaseActivity implements
+    HourFragment.OnFragmentInteractionListener{
 
     @Override
     protected int getLayoutResource() {
@@ -26,7 +26,7 @@ public class ViewPagerActivity extends BaseActivity {
         viewPager.setAdapter(
                 new MedicineFragmentPagerAdapter(
                         getSupportFragmentManager(),
-                        getTabTitles()
+                        getResources().getStringArray(R.array.viewpager_tabs)
                 )
         );
 
@@ -35,14 +35,6 @@ public class ViewPagerActivity extends BaseActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    private String[] getTabTitles() {
-        return new String[] {
-                getResources().getString(R.string.tab1),
-                getResources().getString(R.string.tab2),
-                getResources().getString(R.string.tab3),
-                getResources().getString(R.string.tab4),
-        };
-    }
 
     private class MedicineFragmentPagerAdapter extends FragmentPagerAdapter {
         private String mTabTitles[];
@@ -62,20 +54,16 @@ public class ViewPagerActivity extends BaseActivity {
         public Fragment getItem(int position) {
 
             Fragment f = null;
-
             switch (position) {
                 case 0:
-                case 2:
-                case 4:
                     f = Fragment1.newInstance();
                     break;
                 case 1:
-                case 3:
-                case 5:
-                    f = Fragment2.newInstance();
+                    f = FrecuencyFragment.newInstance();
                     break;
+                default:
+                    f = HourFragment.newInstance("param1","param2");
             }
-
             return f;
         }
 
@@ -84,5 +72,9 @@ public class ViewPagerActivity extends BaseActivity {
             // Generate title based on item position
             return mTabTitles[position];
         }
+    }
+
+    public void onFragmentInteraction(String id) {
+
     }
 }

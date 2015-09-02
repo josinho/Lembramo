@@ -5,7 +5,7 @@
         android:id="@+id/View01"
         android:layout_width="match_parent"
         android:layout_height="2dip"
-        android:background="#2B497B"
+        android:background="@color/primary_dark"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"/>
 </merge>

@@ -31,11 +31,7 @@
     <string name="ok_db_toast">Guardado con éxito</string>
     <string name="no_medicament">No hay ningún medicamento</string>
 
-    <string name="tab1">Medicamento</string>
-    <string name="tab2">Frecuencia</string>
-    <string name="tab3">Intervalo</string>
-    <string name="tab4">Duración</string>
-
     <string name="lbl_initial_date">Fecha de inicio</string>
-    <string name="lbl_daily_frecuency">Frecuencia diaria</string>
+    <string name="lbl_frecuency">Frecuencia y duración</string>
+    <string name="lbl_initial_hour">Hora de inicio</string>
 </resources>

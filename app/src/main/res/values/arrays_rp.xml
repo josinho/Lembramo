@@ -3,7 +3,6 @@
 
     <!-- Recurrence picker: How events are to be repeated.  [CHAR LIMIT = 20] -->
     <string-array name="recurrence_freq">
-        <item>REPETIR CADA X HORAS</item>
         <item>REPETIR DIARIAMENTE</item>
         <item>REPETIR SEMANALMENTE</item>
         <item>REPETIR MENSUALMENTE</item>

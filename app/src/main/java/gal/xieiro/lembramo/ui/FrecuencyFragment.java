@@ -1,5 +1,7 @@
 package gal.xieiro.lembramo.ui;
 
+
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -11,11 +13,11 @@ import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.NumberPicker;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import gal.xieiro.lembramo.R;
@@ -25,44 +27,64 @@ import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
 import gal.xieiro.lembramo.util.Utils;
 
 
-public class Fragment1 extends Fragment
-        implements RecurrencePickerDialog.OnRecurrenceSetListener {
+public class FrecuencyFragment extends Fragment implements
+        RecurrencePickerDialog.OnRecurrenceSetListener{
 
-    private NumberPicker np;
-    private TextView mTextView;
-    private Button mButton;
     private String mRule;
     private EventRecurrence mEventRecurrence;
+    private TextView mRRule;
 
-    public static Fragment1 newInstance() {
-        return new Fragment1();
+    public static FrecuencyFragment newInstance() {
+        return new FrecuencyFragment();
     }
 
-    public Fragment1() {
+    public FrecuencyFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        RecurrencePickerDialog rpd =
-                (RecurrencePickerDialog) fm.findFragmentByTag("RecurrentPickerTAG");
-        if (rpd != null) {
-            rpd.setOnRecurrenceSetListener(this);
-        }
         mEventRecurrence = new EventRecurrence();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment1, container, false);
+        View view = inflater.inflate(R.layout.fragment_frecuency, container, false);
 
-        final TextView tv = (TextView) v.findViewById(R.id.thetime);
-        tv.setText(Utils.getCurrentTime());
+        final TextView fechaInicio = (TextView) view.findViewById(R.id.fechaInicio);
+        fechaInicio.setText(Utils.getCurrentDate());
+
+        fechaInicio.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final Calendar newCalendar = Calendar.getInstance();
+                        DatePickerDialog dpd = new DatePickerDialog(
+                                getActivity(),
+                                new DatePickerDialog.OnDateSetListener() {
+                                    public void onDateSet(DatePicker view, int year,
+                                                          int monthOfYear, int dayOfMonth) {
+                                        Calendar newDate = Calendar.getInstance();
+                                        newDate.set(year, monthOfYear, dayOfMonth);
+                                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                        fechaInicio.setText(sdf.format(newDate.getTime()));
+                                    }
+                                },
+                                newCalendar.get(Calendar.YEAR),
+                                newCalendar.get(Calendar.MONTH),
+                                newCalendar.get(Calendar.DAY_OF_MONTH)
+                        );
+                        dpd.show();
+                    }
+                }
+        );
+
+        final TextView horaInicio = (TextView) view.findViewById(R.id.horaInicio);
+        horaInicio.setText(Utils.getCurrentTime());
         final Calendar c = Calendar.getInstance();
-        tv.setOnClickListener(
+        horaInicio.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -70,7 +92,7 @@ public class Fragment1 extends Fragment
                                 getActivity(),
                                 new TimePickerDialog.OnTimeSetListener() {
                                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                        tv.setText(hourOfDay + ":" + minute);
+                                        horaInicio.setText(hourOfDay + ":" + minute);
                                     }
                                 },
                                 c.get(Calendar.HOUR_OF_DAY),
@@ -82,23 +104,9 @@ public class Fragment1 extends Fragment
                 }
         );
 
-        np = (NumberPicker) v.findViewById(R.id.numberPicker2);
-        np.setMinValue(0);
-        np.setMaxValue(9);
-        final String[] valores = {"Cero", "Uno", "Dos", "Tres", "Cuatro", "Cinco",
-                "Seis", "Siete", "Ocho", "Nueve"};
-        np.setDisplayedValues(valores);
-        np.setWrapSelectorWheel(true);
 
-        if (savedInstanceState != null)
-            np.setValue(savedInstanceState.getInt("valor"));
-
-
-        mTextView = (TextView) v.findViewById(R.id.textView);
-        mButton = (Button) v.findViewById(R.id.button);
-        mTextView.setText("Aquí se mostrará el resultado");
-
-        mButton.setOnClickListener(
+        mRRule = (TextView) view.findViewById(R.id.rrule);
+        mRRule.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -119,19 +127,13 @@ public class Fragment1 extends Fragment
                         }
                         rpd = new RecurrencePickerDialog();
                         rpd.setArguments(b);
-                        rpd.setOnRecurrenceSetListener(Fragment1.this);
+                        rpd.setOnRecurrenceSetListener(FrecuencyFragment.this);
                         rpd.show(fm, "RecurrentPickerTAG");
                     }
                 }
         );
 
-
-        return v;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("valor", np.getValue());
+        return view;
     }
 
     @Override
@@ -151,6 +153,6 @@ public class Fragment1 extends Fragment
                     getActivity(), r, mEventRecurrence, true);
         }
 
-        mTextView.setText(mRule + "\n" + repeatString);
+        mRRule.setText(mRule + "\n" + repeatString);
     }
 }

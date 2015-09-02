@@ -92,6 +92,13 @@
     <!-- Description of the selected marker for accessibility support [CHAR LIMIT = NONE]-->
     <string name="acessibility_recurrence_choose_end_date_description">cambiar la fecha final</string>
 
+    <!-- Description of the selected marker for accessibility support [CHAR LIMIT = NONE]-->
+    <string name="acessibility_recurrence_choose_initial_date_description">cambiar la fecha inicial</string>
+
+    <string name="accessibility_pick_recurrence">Veces que se repite</string>
+
+    <string name="does_not_repeat">No se repite</string>
+
     <!-- The button label for saving an event -->
     <string name="save_label">Listo</string>
 
