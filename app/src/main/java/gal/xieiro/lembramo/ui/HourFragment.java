@@ -9,26 +9,22 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.model.MedicineIntake;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
- * interface.
- */
+
 public class HourFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -41,6 +37,7 @@ public class HourFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private RecyclerView mIntakeList;
     private HourAdapter mHourAdapter;
 
     // TODO: Rename and change types of parameters
@@ -68,8 +65,6 @@ public class HourFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     @Override
@@ -77,20 +72,28 @@ public class HourFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.hour_list, container, false);
 
-        RecyclerView hourList = (RecyclerView) view.findViewById(R.id.hourList);
-        hourList.setHasFixedSize(true);
-        hourList.addItemDecoration(
+        mIntakeList = (RecyclerView) view.findViewById(R.id.hourList);
+        mIntakeList.setHasFixedSize(true);
+        mIntakeList.addItemDecoration(
                 new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST)
         );
 
-        ArrayList<String> hours = new ArrayList<>();
+        ArrayList<MedicineIntake> intakes = new ArrayList<>();
+
         for (int i = 0; i < 24; i++) {
-            hours.add(i + ":00");
-            hours.add(i + ":30");
+            Calendar hour = Calendar.getInstance();
+            hour.set(Calendar.HOUR_OF_DAY, i);
+            hour.set(Calendar.MINUTE, 0);
+            Calendar halfHour = Calendar.getInstance();
+            halfHour.set(Calendar.HOUR_OF_DAY, i);
+            halfHour.set(Calendar.MINUTE, 30);
+
+            intakes.add(new MedicineIntake(hour));
+            intakes.add(new MedicineIntake(halfHour));
         }
-        mHourAdapter = new HourAdapter(hours);
-        hourList.setAdapter(mHourAdapter);
-        hourList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mHourAdapter = new HourAdapter(intakes);
+        mIntakeList.setAdapter(mHourAdapter);
+        mIntakeList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -102,7 +105,11 @@ public class HourFragment extends Fragment {
                         getActivity(),
                         new TimePickerDialog.OnTimeSetListener() {
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                mHourAdapter.add(hourOfDay + ":" + minute);
+                                Calendar c = Calendar.getInstance();
+                                c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                c.set(Calendar.MINUTE, minute);
+                                int position = mHourAdapter.add(new MedicineIntake(c));
+                                mIntakeList.scrollToPosition(position);
                             }
                         },
                         c.get(Calendar.HOUR_OF_DAY),
@@ -133,16 +140,6 @@ public class HourFragment extends Fragment {
         mListener = null;
     }
 
-    //@Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        //super.onListItemClick(l, v, position, id);
-
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(mHourAdapter.getItemId(position));
-        }
-    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -155,8 +152,7 @@ public class HourFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(long id);
+        void onFragmentInteraction(long id);
     }
 
 
@@ -170,15 +166,14 @@ public class HourFragment extends Fragment {
                 // Stores the itemView in a public final member variable that can be used
                 // to access the context from any ViewHolder instance.
                 super(itemView);
-
                 hour = (TextView) itemView.findViewById(R.id.hour);
             }
         }
 
-        private List<String> mHours;
+        private List<MedicineIntake> mIntakes;
 
-        public HourAdapter(List<String> hours) {
-            mHours = hours;
+        public HourAdapter(List<MedicineIntake> intakes) {
+            mIntakes = intakes;
         }
 
         @Override
@@ -190,32 +185,37 @@ public class HourFragment extends Fragment {
             View itemView = inflater.inflate(R.layout.hour_item, parent, false);
 
             // Return a new holder instance
-            ViewHolder viewHolder = new ViewHolder(itemView);
-            return viewHolder;
+            return new ViewHolder(itemView);
         }
 
         // Involves populating data into the item through holder
         @Override
         public void onBindViewHolder(HourAdapter.ViewHolder viewHolder, int position) {
             // Get the data model based on position
-            String hour = mHours.get(position);
-
-            // Set item views based on the data model
-            TextView textView = viewHolder.hour;
-            textView.setText(hour);
+            MedicineIntake intake = mIntakes.get(position);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            viewHolder.hour.setText(sdf.format(intake.getHour().getTime()));
         }
 
         // Return the total count of items
         @Override
         public int getItemCount() {
-            return mHours.size();
+            return mIntakes.size();
         }
 
-        public void add(String hour) {
-            mHours.set(0, hour);
-            // Notify the adapter
-            this.notifyItemInserted(0);
-        }
+        public int add(MedicineIntake intake) {
+            int i, comparison;
 
+            //insertar en orden
+            for (i = 0; i < mIntakes.size(); i++) {
+                comparison = mIntakes.get(i).compareTo(intake);
+                if (comparison < 0) continue;
+                if (comparison == 0) return i;
+                break;
+            }
+            mIntakes.add(i, intake);
+            this.notifyItemInserted(i);
+            return i;
+        }
     }
 }

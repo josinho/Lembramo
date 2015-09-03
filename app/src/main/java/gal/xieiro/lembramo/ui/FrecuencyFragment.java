@@ -92,7 +92,11 @@ public class FrecuencyFragment extends Fragment implements
                                 getActivity(),
                                 new TimePickerDialog.OnTimeSetListener() {
                                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                        horaInicio.setText(hourOfDay + ":" + minute);
+                                        Calendar c = Calendar.getInstance();
+                                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                        c.set(Calendar.MINUTE, minute);
+                                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                        horaInicio.setText(sdf.format(c.getTime()));
                                     }
                                 },
                                 c.get(Calendar.HOUR_OF_DAY),

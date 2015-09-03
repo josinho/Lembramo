@@ -1,6 +1,6 @@
 package gal.xieiro.lembramo.model;
 
-public class Medicament {
+public class Medicine {
     public long id;
     public String name;
     public String comment;
