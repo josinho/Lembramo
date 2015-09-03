@@ -6,11 +6,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -76,14 +77,20 @@ public class HourFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.hour_list, container, false);
 
-        ListView hourList = (ListView) view.findViewById(R.id.hourList);
-        mHourAdapter = new HourAdapter(getActivity(), R.layout.hour_list,
-                new ArrayList<String>());
+        RecyclerView hourList = (RecyclerView) view.findViewById(R.id.hourList);
+        hourList.setHasFixedSize(true);
+        hourList.addItemDecoration(
+                new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST)
+        );
+
+        ArrayList<String> hours = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
-            mHourAdapter.add(i + ":00");
-            mHourAdapter.add(i + ":30");
+            hours.add(i + ":00");
+            hours.add(i + ":30");
         }
+        mHourAdapter = new HourAdapter(hours);
         hourList.setAdapter(mHourAdapter);
+        hourList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -133,7 +140,7 @@ public class HourFragment extends Fragment {
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(mHourAdapter.getItem(position));
+            mListener.onFragmentInteraction(mHourAdapter.getItemId(position));
         }
     }
 
@@ -149,31 +156,66 @@ public class HourFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onFragmentInteraction(long id);
     }
 
 
-    private class HourAdapter extends ArrayAdapter<String> {
+    private class HourAdapter extends RecyclerView.Adapter<HourAdapter.ViewHolder> {
 
-        private Context mContext;
+        // View lookup cache
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            TextView hour;
+
+            public ViewHolder(View itemView) {
+                // Stores the itemView in a public final member variable that can be used
+                // to access the context from any ViewHolder instance.
+                super(itemView);
+
+                hour = (TextView) itemView.findViewById(R.id.hour);
+            }
+        }
+
         private List<String> mHours;
 
-        public HourAdapter(Context c, int resId, List<String> hours) {
-            super(c, resId, hours);
-            mContext = c;
+        public HourAdapter(List<String> hours) {
             mHours = hours;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            String hour = getItem(position);
+        public HourAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            Context context = parent.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
 
-            if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.hour_item, parent, false);
-            }
-            TextView textView = (TextView) convertView.findViewById(R.id.hour);
-            textView.setText(hour);
-            return convertView;
+            // Inflate the custom layout
+            View itemView = inflater.inflate(R.layout.hour_item, parent, false);
+
+            // Return a new holder instance
+            ViewHolder viewHolder = new ViewHolder(itemView);
+            return viewHolder;
         }
+
+        // Involves populating data into the item through holder
+        @Override
+        public void onBindViewHolder(HourAdapter.ViewHolder viewHolder, int position) {
+            // Get the data model based on position
+            String hour = mHours.get(position);
+
+            // Set item views based on the data model
+            TextView textView = viewHolder.hour;
+            textView.setText(hour);
+        }
+
+        // Return the total count of items
+        @Override
+        public int getItemCount() {
+            return mHours.size();
+        }
+
+        public void add(String hour) {
+            mHours.set(0, hour);
+            // Notify the adapter
+            this.notifyItemInserted(0);
+        }
+
     }
 }

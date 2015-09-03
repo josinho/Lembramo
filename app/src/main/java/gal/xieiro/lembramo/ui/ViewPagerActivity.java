@@ -74,7 +74,7 @@ public class ViewPagerActivity extends BaseActivity implements
         }
     }
 
-    public void onFragmentInteraction(String id) {
+    public void onFragmentInteraction(long id) {
 
     }
 }
