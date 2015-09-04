@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:padding="16dp">
+    android:layout_height="match_parent"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/hour"/>
+        android:id="@+id/hour"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"/>
 
-    <TextView
+    <gal.xieiro.lembramo.ui.DosePicker
+        android:id="@+id/dosePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/dose"
-        android:text="-  1  +"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true" />
 </RelativeLayout>

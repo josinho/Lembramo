@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +70,7 @@ public class HourFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.hour_list, container, false);
+        View view = inflater.inflate(R.layout.intake_list, container, false);
 
         mIntakeList = (RecyclerView) view.findViewById(R.id.hourList);
         mIntakeList.setHasFixedSize(true);
@@ -160,12 +161,14 @@ public class HourFragment extends Fragment {
         // View lookup cache
         public class ViewHolder extends RecyclerView.ViewHolder {
             TextView hour;
+            DosePicker dose;
 
             public ViewHolder(View itemView) {
                 // Stores the itemView in a public final member variable that can be used
                 // to access the context from any ViewHolder instance.
                 super(itemView);
                 hour = (TextView) itemView.findViewById(R.id.hour);
+                //dose = (TextView) itemView.findViewById(R.id.dose);
             }
         }
 
@@ -181,7 +184,7 @@ public class HourFragment extends Fragment {
             LayoutInflater inflater = LayoutInflater.from(context);
 
             // Inflate the custom layout
-            View itemView = inflater.inflate(R.layout.hour_item, parent, false);
+            View itemView = inflater.inflate(R.layout.intake_item, parent, false);
 
             // Return a new holder instance
             return new ViewHolder(itemView);
