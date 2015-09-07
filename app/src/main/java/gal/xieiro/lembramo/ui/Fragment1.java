@@ -89,6 +89,7 @@ public class Fragment1 extends Fragment
                 "Seis", "Siete", "Ocho", "Nueve"};
         np.setDisplayedValues(valores);
         np.setWrapSelectorWheel(true);
+        np.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
         if (savedInstanceState != null)
             np.setValue(savedInstanceState.getInt("valor"));

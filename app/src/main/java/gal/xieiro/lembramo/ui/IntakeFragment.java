@@ -8,12 +8,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.CheckBox;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
@@ -25,7 +24,7 @@ import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
 
 
-public class HourFragment extends Fragment {
+public class IntakeFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,11 +37,11 @@ public class HourFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private RecyclerView mIntakeList;
-    private HourAdapter mHourAdapter;
+    private IntakeAdapter mIntakeAdapter;
 
     // TODO: Rename and change types of parameters
-    public static HourFragment newInstance(String param1, String param2) {
-        HourFragment fragment = new HourFragment();
+    public static IntakeFragment newInstance(String param1, String param2) {
+        IntakeFragment fragment = new IntakeFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -54,7 +53,7 @@ public class HourFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public HourFragment() {
+    public IntakeFragment() {
     }
 
     @Override
@@ -91,8 +90,8 @@ public class HourFragment extends Fragment {
             intakes.add(new MedicineIntake(hour));
             intakes.add(new MedicineIntake(halfHour));
         }
-        mHourAdapter = new HourAdapter(intakes);
-        mIntakeList.setAdapter(mHourAdapter);
+        mIntakeAdapter = new IntakeAdapter(intakes);
+        mIntakeList.setAdapter(mIntakeAdapter);
         mIntakeList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
@@ -108,7 +107,9 @@ public class HourFragment extends Fragment {
                                 Calendar c = Calendar.getInstance();
                                 c.set(Calendar.HOUR_OF_DAY, hourOfDay);
                                 c.set(Calendar.MINUTE, minute);
-                                int position = mHourAdapter.add(new MedicineIntake(c));
+                                MedicineIntake med = new MedicineIntake(c);
+                                med.setChecked(true);
+                                int position = mIntakeAdapter.add(med);
                                 mIntakeList.scrollToPosition(position);
                             }
                         },
@@ -156,30 +157,30 @@ public class HourFragment extends Fragment {
     }
 
 
-    private class HourAdapter extends RecyclerView.Adapter<HourAdapter.ViewHolder> {
+    private class IntakeAdapter extends RecyclerView.Adapter<IntakeAdapter.ViewHolder> {
 
         // View lookup cache
         public class ViewHolder extends RecyclerView.ViewHolder {
-            TextView hour;
+            CheckBox hour;
             DosePicker dose;
 
             public ViewHolder(View itemView) {
                 // Stores the itemView in a public final member variable that can be used
                 // to access the context from any ViewHolder instance.
                 super(itemView);
-                hour = (TextView) itemView.findViewById(R.id.hour);
-                //dose = (TextView) itemView.findViewById(R.id.dose);
+                hour = (CheckBox) itemView.findViewById(R.id.hour);
+                dose = (DosePicker) itemView.findViewById(R.id.dosePicker);
             }
         }
 
         private List<MedicineIntake> mIntakes;
 
-        public HourAdapter(List<MedicineIntake> intakes) {
+        public IntakeAdapter(List<MedicineIntake> intakes) {
             mIntakes = intakes;
         }
 
         @Override
-        public HourAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public IntakeAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             Context context = parent.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -192,11 +193,35 @@ public class HourFragment extends Fragment {
 
         // Involves populating data into the item through holder
         @Override
-        public void onBindViewHolder(HourAdapter.ViewHolder viewHolder, int position) {
+        public void onBindViewHolder(final IntakeAdapter.ViewHolder viewHolder, int position) {
             // Get the data model based on position
-            MedicineIntake intake = mIntakes.get(position);
+            final MedicineIntake intake = mIntakes.get(position);
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             viewHolder.hour.setText(sdf.format(intake.getHour().getTime()));
+
+            if (intake.isChecked()) {
+                viewHolder.hour.setChecked(true);
+                viewHolder.dose.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.hour.setChecked(false);
+                viewHolder.dose.setVisibility(View.INVISIBLE);
+            }
+
+            viewHolder.hour.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (((CheckBox) v).isChecked()) {
+                                intake.setChecked(true);
+                                viewHolder.dose.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                intake.setChecked(false);
+                                viewHolder.dose.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    }
+            );
         }
 
         // Return the total count of items

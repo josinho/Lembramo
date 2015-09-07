@@ -2,24 +2,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingRight="16dp"
+    android:paddingBottom="5dp"
     android:paddingLeft="16dp"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:paddingRight="16dp"
+    android:paddingTop="5dp">
 
-    <TextView
+    <CheckBox
+        android:id="@+id/hour"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/hour"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true" />
 
     <gal.xieiro.lembramo.ui.DosePicker
         android:id="@+id/dosePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true" />
+        android:visibility="invisible" />
 </RelativeLayout>

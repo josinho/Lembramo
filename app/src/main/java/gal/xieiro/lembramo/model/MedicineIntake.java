@@ -6,6 +6,7 @@ import java.util.Calendar;
 public class MedicineIntake implements Comparable<MedicineIntake> {
     private Calendar hour;
     private double dose;
+    private boolean checked;
 
     public MedicineIntake(Calendar hour) {
         this.hour = hour;
@@ -26,6 +27,14 @@ public class MedicineIntake implements Comparable<MedicineIntake> {
 
     public void setDose(double dose) {
         this.dose = dose;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     @Override

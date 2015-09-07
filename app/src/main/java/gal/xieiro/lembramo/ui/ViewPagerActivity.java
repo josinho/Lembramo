@@ -11,7 +11,7 @@ import android.support.v4.view.ViewPager;
 import gal.xieiro.lembramo.R;
 
 public class ViewPagerActivity extends BaseActivity implements
-    HourFragment.OnFragmentInteractionListener{
+    IntakeFragment.OnFragmentInteractionListener{
 
     @Override
     protected int getLayoutResource() {
@@ -62,7 +62,7 @@ public class ViewPagerActivity extends BaseActivity implements
                     f = FrecuencyFragment.newInstance();
                     break;
                 default:
-                    f = HourFragment.newInstance("param1","param2");
+                    f = IntakeFragment.newInstance("param1", "param2");
             }
             return f;
         }
