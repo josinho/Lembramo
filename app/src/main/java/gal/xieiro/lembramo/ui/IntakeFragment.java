@@ -101,8 +101,8 @@ public class IntakeFragment extends Fragment {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), mIntakeAdapter.getIntakes(), Toast.LENGTH_LONG).show();
-/*
+                //Toast.makeText(getActivity(), mIntakeAdapter.getIntakes(), Toast.LENGTH_LONG).show();
+
                 final Calendar c = Calendar.getInstance();
                 TimePickerDialog tpd = new TimePickerDialog(
                         getActivity(),
@@ -122,7 +122,6 @@ public class IntakeFragment extends Fragment {
                         DateFormat.is24HourFormat(getActivity())
                 );
                 tpd.show();
-                */
             }
         });
 
