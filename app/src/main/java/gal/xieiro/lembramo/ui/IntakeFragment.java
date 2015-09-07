@@ -9,11 +9,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -99,6 +101,8 @@ public class IntakeFragment extends Fragment {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getActivity(), mIntakeAdapter.getIntakes(), Toast.LENGTH_LONG).show();
+/*
                 final Calendar c = Calendar.getInstance();
                 TimePickerDialog tpd = new TimePickerDialog(
                         getActivity(),
@@ -118,6 +122,7 @@ public class IntakeFragment extends Fragment {
                         DateFormat.is24HourFormat(getActivity())
                 );
                 tpd.show();
+                */
             }
         });
 
@@ -201,6 +206,7 @@ public class IntakeFragment extends Fragment {
 
             if (intake.isChecked()) {
                 viewHolder.hour.setChecked(true);
+                viewHolder.dose.setValue(intake.getDose());
                 viewHolder.dose.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.hour.setChecked(false);
@@ -213,6 +219,7 @@ public class IntakeFragment extends Fragment {
                         public void onClick(View v) {
                             if (((CheckBox) v).isChecked()) {
                                 intake.setChecked(true);
+                                viewHolder.dose.setValue(intake.getDose());
                                 viewHolder.dose.setVisibility(View.VISIBLE);
                             }
                             else {
@@ -222,6 +229,14 @@ public class IntakeFragment extends Fragment {
                         }
                     }
             );
+
+
+            viewHolder.dose.setOnDoseChangeListener(new DosePicker.OnDoseChangeListener() {
+                @Override
+                public void onDoseChange(double dose) {
+                    intake.setDose(dose);
+                }
+            });
         }
 
         // Return the total count of items
@@ -243,6 +258,22 @@ public class IntakeFragment extends Fragment {
             mIntakes.add(i, intake);
             this.notifyItemInserted(i);
             return i;
+        }
+
+        public String getIntakes() {
+            StringBuilder s = new StringBuilder();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+            for(int i=0; i<mIntakes.size(); i++) {
+                MedicineIntake intake = mIntakes.get(i);
+                if(intake.isChecked()) {
+                    intake.getHour().toString();
+                    s.append(sdf.format(intake.getHour().getTime()));
+                    s.append("(" + intake.getDose() +");");
+                }
+            }
+
+            return s.toString();
         }
     }
 }

@@ -23,6 +23,9 @@ public class DosePicker extends LinearLayout {
     private ImageView mMinus, mPlus;
     private TextView mDose;
 
+
+    private OnDoseChangeListener mListener;
+
     public DosePicker(Context context) {
         this(context, null);
     }
@@ -49,9 +52,10 @@ public class DosePicker extends LinearLayout {
                     @Override
                     public void onClick(View v) {
                         double res = mValue - mDelta;
-                        if(res >= mMinValue) {
+                        if (res >= mMinValue) {
                             mValue = res;
                             mDose.setText(new DecimalFormat("0.00").format(res));
+                            notifyChange();
                         }
                     }
                 }
@@ -63,9 +67,10 @@ public class DosePicker extends LinearLayout {
                     @Override
                     public void onClick(View v) {
                         double res = mValue + mDelta;
-                        if(res <= mMaxValue) {
+                        if (res <= mMaxValue) {
                             mValue = res;
                             mDose.setText(new DecimalFormat("0.00").format(res));
+                            notifyChange();
                         }
                     }
                 }
@@ -73,6 +78,14 @@ public class DosePicker extends LinearLayout {
         );
     }
 
+    private void notifyChange() {
+        if (mListener != null)
+            mListener.onDoseChange(mValue);
+    }
+
+    public void setOnDoseChangeListener(OnDoseChangeListener listener) {
+        mListener = listener;
+    }
 
     public double getDelta() {
         return mDelta;
@@ -88,6 +101,7 @@ public class DosePicker extends LinearLayout {
 
     public void setValue(double value) {
         mValue = value;
+        mDose.setText(new DecimalFormat("0.00").format(value));
     }
 
     public double getMin() {
@@ -104,5 +118,9 @@ public class DosePicker extends LinearLayout {
 
     public void setMax(double max) {
         mMaxValue = max;
+    }
+
+    public interface OnDoseChangeListener {
+        void onDoseChange(double dose);
     }
 }
