@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- This outer linear layout protects the fixed dimensions of the dialog.
+         The dimensions are not respected if this outer layout is not present. -->
+    <LinearLayout
+        android:layout_width="@dimen/recurrence_picker_width"
+        android:layout_height="@dimen/recurrence_picker_height"
+        android:background="@color/recurrence_picker_background"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:measureAllChildren="true"
+                android:orientation="vertical"
+                android:paddingBottom="4dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="4dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="Asistente planificador horario" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RadioButton
+                        android:id="@+id/hourFreq"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cada" />
+
+                    <RadioButton
+                        android:id="@+id/timesFreq"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/hourFreq" />
+
+                    <RadioButton
+                        android:id="@+id/mealFreq"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/timesFreq"
+                        android:text="Con las comidas" />
+
+                    <EditText
+                        android:id="@+id/interval1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/hourFreq"
+                        android:layout_toEndOf="@+id/hourFreq"
+                        android:background="@drawable/edit_text_holo_light"
+                        android:ems="2"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:selectAllOnFocus="true"
+                        android:singleLine="true"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        style="@style/TextAppearance.RecurrencePickerStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/hourFreq"
+                        android:layout_toEndOf="@+id/interval1"
+                        android:text="horas" />
+
+                    <EditText
+                        android:id="@+id/interval2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/timesFreq"
+                        android:layout_toEndOf="@+id/timesFreq"
+                        android:background="@drawable/edit_text_holo_light"
+                        android:ems="2"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:selectAllOnFocus="true"
+                        android:singleLine="true"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        style="@style/TextAppearance.RecurrencePickerStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/timesFreq"
+                        android:layout_toEndOf="@+id/interval2"
+                        android:text="veces al día" />
+
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/mealGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="32dp"
+                    android:visibility="gone">
+
+                    <CheckBox
+                        android:id="@+id/breakfast"
+                        style="@style/TextAppearance.RecurrencePickerStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/lbl_breakfast" />
+
+                    <CheckBox
+                        android:id="@+id/lunch"
+                        style="@style/TextAppearance.RecurrencePickerStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/lbl_lunch" />
+
+                    <CheckBox
+                        android:id="@+id/dinner"
+                        style="@style/TextAppearance.RecurrencePickerStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/lbl_dinner" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/initialHourGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="32dp"
+                    android:paddingTop="5dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        style="@style/TextAppearance.RecurrencePickerStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:text="@string/lbl_initial_hour" />
+
+                    <TextView
+                        android:id="@+id/horaInicio"
+                        style="@style/TextAppearance.EditEvent_SpinnerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:layout_marginTop="-5dp"
+                        android:background="@drawable/spinner_background_holo_light"
+                        android:contentDescription="@string/acessibility_recurrence_choose_initial_date_description"
+                        android:gravity="center_horizontal|bottom"
+                        android:minWidth="80dp"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="16dp"
+                        android:singleLine="true"
+                        android:textColor="@color/recurrence_spinner_text_color"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            tools:ignore="PxUsage" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom">
+
+            <Button
+                android:id="@+id/cancel_button"
+                style="@style/dialog_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/key_background_dark"
+                android:text="@string/picker_cancel" />
+
+            <View
+                android:id="@+id/divider_2"
+                android:layout_width="1dip"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dip"
+                android:layout_marginTop="8dip"
+                android:background="@color/default_divider_color_dark" />
+
+            <Button
+                android:id="@+id/set_button"
+                style="@style/dialog_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/key_background_dark"
+                android:text="@string/picker_set" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

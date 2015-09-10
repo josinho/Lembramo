@@ -2,20 +2,19 @@ package gal.xieiro.lembramo.ui;
 
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,11 +27,13 @@ import gal.xieiro.lembramo.util.Utils;
 
 
 public class FrecuencyFragment extends Fragment implements
-        RecurrencePickerDialog.OnRecurrenceSetListener{
+        RecurrencePickerDialog.OnRecurrenceSetListener {
 
     private String mRule;
     private EventRecurrence mEventRecurrence;
     private TextView mRRule;
+    private ImageView mScheduleWizard;
+    private Fragment mIntakeFragment;
 
     public static FrecuencyFragment newInstance() {
         return new FrecuencyFragment();
@@ -81,34 +82,6 @@ public class FrecuencyFragment extends Fragment implements
                 }
         );
 
-        final TextView horaInicio = (TextView) view.findViewById(R.id.horaInicio);
-        horaInicio.setText(Utils.getCurrentTime());
-        final Calendar c = Calendar.getInstance();
-        horaInicio.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TimePickerDialog tpd = new TimePickerDialog(
-                                getActivity(),
-                                new TimePickerDialog.OnTimeSetListener() {
-                                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                        Calendar c = Calendar.getInstance();
-                                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                        c.set(Calendar.MINUTE, minute);
-                                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                                        horaInicio.setText(sdf.format(c.getTime()));
-                                    }
-                                },
-                                c.get(Calendar.HOUR_OF_DAY),
-                                c.get(Calendar.MINUTE),
-                                DateFormat.is24HourFormat(getActivity())
-                        );
-                        tpd.show();
-                    }
-                }
-        );
-
-
         mRRule = (TextView) view.findViewById(R.id.rrule);
         mRRule.setOnClickListener(
                 new View.OnClickListener() {
@@ -136,6 +109,32 @@ public class FrecuencyFragment extends Fragment implements
                     }
                 }
         );
+
+
+        mScheduleWizard = (ImageView) view.findViewById(R.id.schedulerWizard);
+        mScheduleWizard.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
+
+                        SchedulerDialog sd = (SchedulerDialog) fm.findFragmentByTag("SchedulerTAG");
+                        if (sd != null) {
+                            sd.dismiss();
+                        }
+                        sd = new SchedulerDialog();
+                        sd.show(fm, "SchedulerTAG");
+                    }
+                }
+        );
+
+
+        if (savedInstanceState == null) {
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            mIntakeFragment = IntakeFragment.newInstance("param1", "param2");
+            fragmentTransaction.add(R.id.intake_container, mIntakeFragment);
+            fragmentTransaction.commit();
+        }
 
         return view;
     }

@@ -9,13 +9,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -220,8 +218,7 @@ public class IntakeFragment extends Fragment {
                                 intake.setChecked(true);
                                 viewHolder.dose.setValue(intake.getDose());
                                 viewHolder.dose.setVisibility(View.VISIBLE);
-                            }
-                            else {
+                            } else {
                                 intake.setChecked(false);
                                 viewHolder.dose.setVisibility(View.INVISIBLE);
                             }
@@ -263,12 +260,12 @@ public class IntakeFragment extends Fragment {
             StringBuilder s = new StringBuilder();
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-            for(int i=0; i<mIntakes.size(); i++) {
+            for (int i = 0; i < mIntakes.size(); i++) {
                 MedicineIntake intake = mIntakes.get(i);
-                if(intake.isChecked()) {
+                if (intake.isChecked()) {
                     intake.getHour().toString();
                     s.append(sdf.format(intake.getHour().getTime()));
-                    s.append("(" + intake.getDose() +");");
+                    s.append("(" + intake.getDose() + ");");
                 }
             }
 

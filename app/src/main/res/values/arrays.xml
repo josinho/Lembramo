@@ -6,4 +6,10 @@
         <item>Tab3</item>
         <item>Tab4</item>
     </string-array>
+
+    <string-array name="scheduler_options">
+        <item>Cada x horas</item>
+        <item>x veces al día</item>
+        <item>Con las comidas</item>
+    </string-array>
 </resources>

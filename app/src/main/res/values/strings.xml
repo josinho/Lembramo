@@ -33,5 +33,12 @@
 
     <string name="lbl_initial_date">Fecha de inicio</string>
     <string name="lbl_frecuency">Frecuencia y duración</string>
+    <string name="lbl_schedule">Horario y dosis</string>
+    <string name="no_schedule">No hay planificación</string>
     <string name="lbl_initial_hour">Hora de inicio</string>
+    <string name="scheduler_wizard">Asistente para planificar el horario</string>
+    
+    <string name="lbl_breakfast">Desayuno</string>
+    <string name="lbl_lunch">Comida</string>
+    <string name="lbl_dinner">Cena</string>
 </resources>

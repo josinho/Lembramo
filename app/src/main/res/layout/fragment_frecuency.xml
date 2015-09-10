@@ -1,106 +1,97 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:text="@string/lbl_initial_date"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/fechaInicio"
+                style="@style/TextAppearance.EditEvent_SpinnerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="-5dp"
+                android:background="@drawable/spinner_background_holo_light"
+                android:contentDescription="@string/acessibility_recurrence_choose_initial_date_description"
+                android:gravity="center_horizontal|bottom"
+                android:minWidth="80dp"
+                android:paddingBottom="8dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="16dp"
+                android:singleLine="true"
+                android:textColor="@color/recurrence_spinner_text_color"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <include layout="@layout/divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_frecuency"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/rrule"
+                style="@style/TextAppearance.EditEvent_SpinnerButton"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/accessibility_pick_recurrence"
+                android:text="@string/does_not_repeat" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:text="@string/lbl_initial_date"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            <include layout="@layout/divider" />
 
-                <TextView
-                    android:id="@+id/fechaInicio"
-                    style="@style/TextAppearance.EditEvent_SpinnerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="-5dp"
-                    android:background="@drawable/spinner_background_holo_light"
-                    android:contentDescription="@string/acessibility_recurrence_choose_initial_date_description"
-                    android:gravity="center_horizontal|bottom"
-                    android:minWidth="80dp"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="16dp"
-                    android:singleLine="true"
-                    android:textColor="@color/recurrence_spinner_text_color"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_frecuency"
+                    android:text="@string/lbl_schedule"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    />
-                <TextView
-                    android:id="@+id/rrule"
-                    android:text="@string/does_not_repeat"
+                    android:id="@+id/textView2" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:contentDescription="@string/accessibility_pick_recurrence"
-                    style="@style/TextAppearance.EditEvent_SpinnerButton" />
-            </LinearLayout>
+                    android:id="@+id/schedulerWizard"
+                    android:contentDescription="@string/scheduler_wizard"
+                    android:src="@drawable/ic_alarm_black_24dp"
+                    android:layout_alignBottom="@+id/textView2"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
 
-            <include layout="@layout/divider"/>
-
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/intake_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:text="@string/lbl_initial_hour"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/horaInicio"
-                    style="@style/TextAppearance.EditEvent_SpinnerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="-5dp"
-                    android:background="@drawable/spinner_background_holo_light"
-                    android:contentDescription="@string/acessibility_recurrence_choose_initial_date_description"
-                    android:gravity="center_horizontal|bottom"
-                    android:minWidth="80dp"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="16dp"
-                    android:singleLine="true"
-                    android:textColor="@color/recurrence_spinner_text_color"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
+                android:layout_height="match_parent" />
         </LinearLayout>
-    </ScrollView>
 
-
-</FrameLayout>
+    </LinearLayout>
+</LinearLayout>
