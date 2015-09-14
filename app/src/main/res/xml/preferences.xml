@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/lbl_meal_times">
+        <gal.xieiro.lembramo.ui.TimePreference
+            android:key="breakfast_time"
+            android:title="@string/lbl_breakfast"
+            android:defaultValue="08:00"/>
+
+        <gal.xieiro.lembramo.ui.TimePreference
+            android:key="lunch_time"
+            android:title="@string/lbl_lunch"
+            android:defaultValue="14:00"/>
+
+        <gal.xieiro.lembramo.ui.TimePreference
+            android:key="dinner_time"
+            android:title="@string/lbl_dinner"
+            android:defaultValue="21:00"/>
+    </PreferenceCategory>
+</PreferenceScreen>

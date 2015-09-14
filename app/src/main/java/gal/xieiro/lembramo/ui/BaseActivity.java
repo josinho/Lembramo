@@ -1,6 +1,9 @@
 package gal.xieiro.lembramo.ui;
 
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,6 +15,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected final String TAG = this.getClass().getSimpleName();
     protected Toolbar mToolbar;
+    private static final int SHOW_PREFERENCES = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, PreferencesActivity.class);
+            startActivityForResult(intent, SHOW_PREFERENCES);
             return true;
         }
 

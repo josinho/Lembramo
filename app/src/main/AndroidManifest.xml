@@ -57,6 +57,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        <activity android:name=".ui.PreferencesActivity">
+
+        </activity>
 
         <provider
             android:name=".db.MedicamentContentProvider"
@@ -67,7 +70,7 @@
             android:name=".alarm.BootReceiver"
             android:enabled="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

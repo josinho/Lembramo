@@ -143,6 +143,17 @@ public class IntakeFragment extends Fragment {
         mListener = null;
     }
 
+    public void addIntakes(List<MedicineIntake> intakes) {
+        int pos = 0;
+        if (intakes != null) {
+            for (int i = intakes.size() - 1; i >= 0; i--) {
+                MedicineIntake intake = intakes.get(i);
+                pos = mIntakeAdapter.add(intake);
+            }
+            mIntakeList.scrollToPosition(pos);
+        }
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -235,12 +246,13 @@ public class IntakeFragment extends Fragment {
             });
         }
 
-        // Return the total count of items
+        // Returns the total count of items
         @Override
         public int getItemCount() {
             return mIntakes.size();
         }
 
+        // Returns the insertion position
         public int add(MedicineIntake intake) {
             int i, comparison;
 
@@ -248,7 +260,11 @@ public class IntakeFragment extends Fragment {
             for (i = 0; i < mIntakes.size(); i++) {
                 comparison = mIntakes.get(i).compareTo(intake);
                 if (comparison < 0) continue;
-                if (comparison == 0) return i;
+                if (comparison == 0) {
+                    mIntakes.set(i, intake);
+                    this.notifyItemChanged(i);
+                    return i;
+                }
                 break;
             }
             mIntakes.add(i, intake);

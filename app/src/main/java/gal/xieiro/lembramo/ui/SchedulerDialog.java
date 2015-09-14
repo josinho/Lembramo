@@ -4,20 +4,26 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.util.Utils;
 
 
@@ -28,31 +34,38 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
     private static final int HOUR_FREQ_DEFAULT = 8;
     private static final int TIMES_FREQ_DEFAULT = 3;
 
-    private View mView, mInitialHourGroup, mMealGroup;
-    private EditText mHourFreq, mTimesFreq;
+    private View mInitialHourGroup, mMealGroup;
     private RadioButton mHourFreqButton, mTimesFreqButton, mMealFreqButton;
+    private EditText mHourFreq, mTimesFreq;
+    private String mHoraInicio;
+    private OnPlanningSetListener mPlanningSetListener;
+    private CheckBox mBreakfast, mLunch, mDinner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        mView = inflater.inflate(R.layout.scheduler, container, true);
+        View view = inflater.inflate(R.layout.scheduler, container, true);
 
         //no funciona el radiogroup porque tenemos otros layouts en medio de los radiobuttons
+        //hay que hacer el control de selección de los RadioButton a mano
 
-        mHourFreqButton = (RadioButton) mView.findViewById(R.id.hourFreq);
+        mHourFreqButton = (RadioButton) view.findViewById(R.id.hourFreq);
         mHourFreqButton.setOnClickListener(this);
-        mTimesFreqButton = (RadioButton) mView.findViewById(R.id.timesFreq);
+        mTimesFreqButton = (RadioButton) view.findViewById(R.id.timesFreq);
         mTimesFreqButton.setOnClickListener(this);
-        mMealFreqButton = (RadioButton) mView.findViewById(R.id.mealFreq);
+        mMealFreqButton = (RadioButton) view.findViewById(R.id.mealFreq);
         mMealFreqButton.setOnClickListener(this);
 
-        mInitialHourGroup = mView.findViewById(R.id.initialHourGroup);
-        mMealGroup = mView.findViewById(R.id.mealGroup);
+        mInitialHourGroup = view.findViewById(R.id.initialHourGroup);
+        mMealGroup = view.findViewById(R.id.mealGroup);
 
+        mBreakfast = (CheckBox) view.findViewById(R.id.breakfast);
+        mLunch = (CheckBox) view.findViewById(R.id.lunch);
+        mDinner = (CheckBox) view.findViewById(R.id.dinner);
 
-        mHourFreq = (EditText) mView.findViewById(R.id.interval1);
+        mHourFreq = (EditText) view.findViewById(R.id.interval1);
         mHourFreq.addTextChangedListener(
                 new MinMaxTextWatcher(1, HOUR_FREQ_DEFAULT, INTERVAL_MAX) {
                     @Override
@@ -61,7 +74,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                     }
                 });
 
-        mTimesFreq = (EditText) mView.findViewById(R.id.interval2);
+        mTimesFreq = (EditText) view.findViewById(R.id.interval2);
         mTimesFreq.addTextChangedListener(
                 new MinMaxTextWatcher(1, TIMES_FREQ_DEFAULT, INTERVAL_MAX) {
                     @Override
@@ -70,8 +83,9 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                     }
                 });
 
-        final TextView horaInicio = (TextView) mView.findViewById(R.id.horaInicio);
-        horaInicio.setText(Utils.getCurrentTime());
+        mHoraInicio = Utils.getCurrentTime();
+        final TextView horaInicio = (TextView) view.findViewById(R.id.horaInicio);
+        horaInicio.setText(mHoraInicio);
         final Calendar c = Calendar.getInstance();
         horaInicio.setOnClickListener(
                 new View.OnClickListener() {
@@ -85,7 +99,8 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                                         c.set(Calendar.HOUR_OF_DAY, hourOfDay);
                                         c.set(Calendar.MINUTE, minute);
                                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                                        horaInicio.setText(sdf.format(c.getTime()));
+                                        mHoraInicio = sdf.format(c.getTime());
+                                        horaInicio.setText(mHoraInicio);
                                     }
                                 },
                                 c.get(Calendar.HOUR_OF_DAY),
@@ -104,10 +119,10 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
         mTimesFreq.setText("" + TIMES_FREQ_DEFAULT);
         mHourFreq.setText("" + HOUR_FREQ_DEFAULT);
 
-        mView.findViewById(R.id.set_button).setOnClickListener(this);
-        mView.findViewById(R.id.cancel_button).setOnClickListener(this);
+        view.findViewById(R.id.set_button).setOnClickListener(this);
+        view.findViewById(R.id.cancel_button).setOnClickListener(this);
 
-        return mView;
+        return view;
     }
 
 
@@ -142,11 +157,133 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 mTimesFreq.setEnabled(false);
                 break;
             case R.id.set_button:
-                Toast.makeText(getActivity(), "Aceptar", Toast.LENGTH_LONG).show();
+                if (mPlanningSetListener != null) {
+                    mPlanningSetListener.onPlanningSet(createPlanning());
+                }
+                dismiss();
                 break;
             case R.id.cancel_button:
-                Toast.makeText(getActivity(), "Cancelar", Toast.LENGTH_LONG).show();
+                if (mPlanningSetListener != null) {
+                    mPlanningSetListener.onPlanningSet(null);
+                }
+                dismiss();
                 break;
         }
     }
+
+    private List<MedicineIntake> createPlanning() {
+        List<MedicineIntake> plan = new ArrayList<>();
+        MedicineIntake intake;
+        Calendar time;
+        int hour, minute;
+
+
+        if (mHourFreqButton.isChecked()) {
+            // hora incicial y sumar x horas
+            time = parseInitialHour();
+            intake = new MedicineIntake(time);
+            intake.setChecked(true);
+            plan.add(intake);
+
+            hour = time.get(Calendar.HOUR_OF_DAY);
+            minute = time.get(Calendar.MINUTE);
+            int hours = Integer.parseInt(mHourFreq.getText().toString());
+
+            hour += hours;
+            while (hour < 24) {
+                time = Calendar.getInstance();
+                time.set(Calendar.HOUR_OF_DAY, hour);
+                time.set(Calendar.MINUTE, minute);
+                intake = new MedicineIntake(time);
+                intake.setChecked(true);
+                plan.add(intake);
+                hour += hours;
+            }
+        } else {
+            if (mTimesFreqButton.isChecked()) {
+                // hora inicial y número de veces
+                time = parseInitialHour();
+                intake = new MedicineIntake(time);
+                intake.setChecked(true);
+                plan.add(intake);
+
+                hour = time.get(Calendar.HOUR_OF_DAY);
+                minute = time.get(Calendar.MINUTE);
+
+                int freq = Integer.parseInt(mTimesFreq.getText().toString());
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+                try {
+                    Date initial = sdf.parse(hour + ":" + minute);
+                    long interval = (sdf.parse("23:59").getTime() - initial.getTime()) / freq;
+                    Date other = new Date(initial.getTime());
+
+                    for (int i = 1; i < freq; i++) {
+                        other = new Date(other.getTime() + interval);
+                        time = Calendar.getInstance();
+                        time.setTime(other);
+                        intake = new MedicineIntake(time);
+                        intake.setChecked(true);
+                        plan.add(intake);
+                    }
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error parsing difference" + e);
+                }
+            } else {
+                //mMealFreqButton.isChecked()
+                // TODO tomarlo de preferencias
+                //desayuno
+                if (mBreakfast.isChecked()) {
+                    time = Calendar.getInstance();
+                    time.set(Calendar.HOUR_OF_DAY, 8);
+                    time.set(Calendar.MINUTE, 5);
+                    intake = new MedicineIntake(time);
+                    intake.setChecked(true);
+                    plan.add(intake);
+                }
+
+                //comida
+                if (mLunch.isChecked()) {
+                    time = Calendar.getInstance();
+                    time.set(Calendar.HOUR_OF_DAY, 14);
+                    time.set(Calendar.MINUTE, 10);
+                    intake = new MedicineIntake(time);
+                    intake.setChecked(true);
+                    plan.add(intake);
+                }
+
+                //cena
+                if (mDinner.isChecked()) {
+                    time = Calendar.getInstance();
+                    time.set(Calendar.HOUR_OF_DAY, 21);
+                    time.set(Calendar.MINUTE, 15);
+                    intake = new MedicineIntake(time);
+                    intake.setChecked(true);
+                    plan.add(intake);
+                }
+            }
+        }
+        return plan;
+    }
+
+    private Calendar parseInitialHour() {
+        Calendar time = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        try {
+            time.setTime(sdf.parse(mHoraInicio));
+            return time;
+        } catch (ParseException e) {
+            Log.e(TAG, "Fallo parsing hora " + e);
+        }
+        return null;
+    }
+
+    public interface OnPlanningSetListener {
+        void onPlanningSet(List<MedicineIntake> mIntakes);
+    }
+
+    public void setOnPlanningSetListener(OnPlanningSetListener l) {
+        mPlanningSetListener = l;
+    }
+
 }

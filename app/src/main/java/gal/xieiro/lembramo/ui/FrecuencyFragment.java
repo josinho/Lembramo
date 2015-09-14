@@ -18,8 +18,10 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrence;
 import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrenceFormatter;
 import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
@@ -27,13 +29,14 @@ import gal.xieiro.lembramo.util.Utils;
 
 
 public class FrecuencyFragment extends Fragment implements
-        RecurrencePickerDialog.OnRecurrenceSetListener {
+        RecurrencePickerDialog.OnRecurrenceSetListener,
+        SchedulerDialog.OnPlanningSetListener  {
 
     private String mRule;
     private EventRecurrence mEventRecurrence;
     private TextView mRRule;
     private ImageView mScheduleWizard;
-    private Fragment mIntakeFragment;
+    private IntakeFragment mIntakeFragment;
 
     public static FrecuencyFragment newInstance() {
         return new FrecuencyFragment();
@@ -123,6 +126,7 @@ public class FrecuencyFragment extends Fragment implements
                             sd.dismiss();
                         }
                         sd = new SchedulerDialog();
+                        sd.setOnPlanningSetListener(FrecuencyFragment.this);
                         sd.show(fm, "SchedulerTAG");
                     }
                 }
@@ -157,5 +161,10 @@ public class FrecuencyFragment extends Fragment implements
         }
 
         mRRule.setText(mRule + "\n" + repeatString);
+    }
+
+    @Override
+    public void onPlanningSet(List<MedicineIntake> intakes) {
+        mIntakeFragment.addIntakes(intakes);
     }
 }
