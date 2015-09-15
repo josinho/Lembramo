@@ -57,7 +57,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
-        <activity android:name=".ui.preferences.PreferencesActivity">
+        <activity android:name=".ui.preference.PreferenceActivity">
 
         </activity>
 

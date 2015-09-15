@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import gal.xieiro.lembramo.R;
-import gal.xieiro.lembramo.ui.preferences.PreferencesActivity;
+import gal.xieiro.lembramo.ui.preference.PreferenceActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -56,7 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, PreferencesActivity.class);
+            Intent intent = new Intent(this, PreferenceActivity.class);
             startActivityForResult(intent, SHOW_PREFERENCES);
             return true;
         }

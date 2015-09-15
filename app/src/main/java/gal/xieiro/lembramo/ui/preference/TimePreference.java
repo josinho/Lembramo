@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo.ui.preferences;
+package gal.xieiro.lembramo.ui.preference;
 
 import android.app.TimePickerDialog;
 import android.content.Context;

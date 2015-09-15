@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo.ui.preferences;
+package gal.xieiro.lembramo.ui.preference;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -11,7 +11,7 @@ import android.preference.PreferenceGroup;
 import gal.xieiro.lembramo.R;
 
 
-public class PreferencesActivity extends Activity {
+public class PreferenceActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

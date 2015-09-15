@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/lbl_meal_times">
-        <gal.xieiro.lembramo.ui.preferences.TimePreference
+        <gal.xieiro.lembramo.ui.preference.TimePreference
             android:key="breakfast_time"
             android:title="@string/lbl_breakfast"
             android:defaultValue="@string/default_breakfast_time"/>
 
-        <gal.xieiro.lembramo.ui.preferences.TimePreference
+        <gal.xieiro.lembramo.ui.preference.TimePreference
             android:key="lunch_time"
             android:title="@string/lbl_lunch"
             android:defaultValue="@string/default_lunch_time"/>
 
-        <gal.xieiro.lembramo.ui.preferences.TimePreference
+        <gal.xieiro.lembramo.ui.preference.TimePreference
             android:key="dinner_time"
             android:title="@string/lbl_dinner"
             android:defaultValue="@string/default_dinner_time"/>
