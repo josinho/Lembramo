@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-    <gal.xieiro.lembramo.ui.SquareImageView
+    <gal.xieiro.lembramo.ui.component.SquareImageView
         android:id="@+id/imagenCaja"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -30,7 +30,7 @@
         android:src="@drawable/no_image"
         android:background="@drawable/image_border"/>
 
-    <gal.xieiro.lembramo.ui.SquareImageView
+    <gal.xieiro.lembramo.ui.component.SquareImageView
         android:id="@+id/imagenPastilla"
         android:layout_width="100dp"
         android:layout_height="100dp"

@@ -1,10 +1,10 @@
-package gal.xieiro.lembramo.ui;
+package gal.xieiro.lembramo.ui.component;
 
 
 import android.text.Editable;
 import android.text.TextWatcher;
 
-class MinMaxTextWatcher implements TextWatcher {
+public class MinMaxTextWatcher implements TextWatcher {
 
     private int mMin;
     private int mMax;
@@ -47,7 +47,7 @@ class MinMaxTextWatcher implements TextWatcher {
     /**
      * Override to be called after each key stroke
      */
-    void onChange(int value) {
+    protected void onChange(int value) {
     }
 
     @Override

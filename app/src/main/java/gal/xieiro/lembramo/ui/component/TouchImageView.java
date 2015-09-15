@@ -10,7 +10,7 @@
  * Extends Android ImageView to include pinch zooming, panning, fling and double tap zoom.
  */
 
-package gal.xieiro.lembramo.ui;
+package gal.xieiro.lembramo.ui.component;
 
 import android.annotation.TargetApi;
 import android.content.Context;

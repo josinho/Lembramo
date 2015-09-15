@@ -22,6 +22,8 @@ import java.util.List;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
+import gal.xieiro.lembramo.ui.component.DividerItemDecoration;
+import gal.xieiro.lembramo.ui.component.DosePicker;
 
 
 public class IntakeFragment extends Fragment {

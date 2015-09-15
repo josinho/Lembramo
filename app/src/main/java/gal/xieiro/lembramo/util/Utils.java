@@ -13,7 +13,9 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -84,6 +86,39 @@ public class Utils {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         return sdf.format(new Date());
     }
+
+
+    public static int getHour(String time) {
+        String[] pieces = time.split(":");
+
+        return (Integer.parseInt(pieces[0]));
+    }
+
+    public static int getMinute(String time) {
+        String[] pieces = time.split(":");
+
+        return (Integer.parseInt(pieces[1]));
+    }
+
+    public static Calendar parseTime(String time) {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        try {
+            c.setTime(sdf.parse(time));
+            return c;
+        } catch (ParseException e) {
+            Log.e(TAG, "Time parsing error: " + e);
+        }
+        return null;
+    }
+
+    public static Calendar getCalendarTimeFromString(String time) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, getHour(time));
+        c.set(Calendar.MINUTE, getMinute(time));
+        return c;
+    }
+
     /**
      * Indicates whether the specified action can be used as an intent. This
      * method queries the package manager for installed packages that can

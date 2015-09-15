@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo.ui;
+package gal.xieiro.lembramo.ui.preferences;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import gal.xieiro.lembramo.util.Utils;
 
 public class TimePreference extends Preference {
 
@@ -67,19 +69,7 @@ public class TimePreference extends Preference {
             time = defaultValue.toString();
         }
 
-        mTime.set(Calendar.HOUR_OF_DAY, getHour(time));
-        mTime.set(Calendar.MINUTE, getMinute(time));
-    }
-
-    private static int getHour(String time) {
-        String[] pieces = time.split(":");
-
-        return (Integer.parseInt(pieces[0]));
-    }
-
-    private static int getMinute(String time) {
-        String[] pieces = time.split(":");
-
-        return (Integer.parseInt(pieces[1]));
+        mTime.set(Calendar.HOUR_OF_DAY, Utils.getHour(time));
+        mTime.set(Calendar.MINUTE, Utils.getMinute(time));
     }
 }

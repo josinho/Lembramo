@@ -14,7 +14,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true" />
 
-    <gal.xieiro.lembramo.ui.DosePicker
+    <gal.xieiro.lembramo.ui.component.DosePicker
         android:id="@+id/dosePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

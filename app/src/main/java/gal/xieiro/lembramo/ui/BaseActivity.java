@@ -1,15 +1,14 @@
 package gal.xieiro.lembramo.ui;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.ui.preferences.PreferencesActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

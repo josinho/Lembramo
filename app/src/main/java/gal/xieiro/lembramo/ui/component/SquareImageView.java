@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo.ui;
+package gal.xieiro.lembramo.ui.component;
 
 
 import android.content.Context;

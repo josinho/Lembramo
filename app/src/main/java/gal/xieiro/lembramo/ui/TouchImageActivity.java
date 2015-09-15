@@ -10,6 +10,7 @@ import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 import java.io.File;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.ui.component.TouchImageView;
 
 public class TouchImageActivity extends BaseActivity {
     TouchImageView mTouchImageView;

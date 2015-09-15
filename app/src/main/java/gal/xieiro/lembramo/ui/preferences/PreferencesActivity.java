@@ -1,4 +1,4 @@
-package gal.xieiro.lembramo.ui;
+package gal.xieiro.lembramo.ui.preferences;
 
 import android.app.Activity;
 import android.content.SharedPreferences;

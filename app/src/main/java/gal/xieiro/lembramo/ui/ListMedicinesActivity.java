@@ -27,6 +27,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.MedicamentContentProvider;
+import gal.xieiro.lembramo.ui.component.SquareImageView;
 
 
 public class ListMedicinesActivity extends BaseActivity implements

@@ -42,4 +42,7 @@
     <string name="lbl_breakfast">Desayuno</string>
     <string name="lbl_lunch">Comida</string>
     <string name="lbl_dinner">Cena</string>
+    <string name="default_breakfast_time">08:00</string>
+    <string name="default_lunch_time">14:00</string>
+    <string name="default_dinner_time">21:00</string>
 </resources>
