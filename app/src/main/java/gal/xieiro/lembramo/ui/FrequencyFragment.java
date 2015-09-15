@@ -28,21 +28,20 @@ import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
 import gal.xieiro.lembramo.util.Utils;
 
 
-public class FrecuencyFragment extends Fragment implements
+public class FrequencyFragment extends Fragment implements
         RecurrencePickerDialog.OnRecurrenceSetListener,
         SchedulerDialog.OnPlanningSetListener  {
 
     private String mRule;
     private EventRecurrence mEventRecurrence;
     private TextView mRRule;
-    private ImageView mScheduleWizard;
     private IntakeFragment mIntakeFragment;
 
-    public static FrecuencyFragment newInstance() {
-        return new FrecuencyFragment();
+    public static FrequencyFragment newInstance() {
+        return new FrequencyFragment();
     }
 
-    public FrecuencyFragment() {
+    public FrequencyFragment() {
         // Required empty public constructor
     }
 
@@ -107,15 +106,15 @@ public class FrecuencyFragment extends Fragment implements
                         }
                         rpd = new RecurrencePickerDialog();
                         rpd.setArguments(b);
-                        rpd.setOnRecurrenceSetListener(FrecuencyFragment.this);
+                        rpd.setOnRecurrenceSetListener(FrequencyFragment.this);
                         rpd.show(fm, "RecurrentPickerTAG");
                     }
                 }
         );
 
 
-        mScheduleWizard = (ImageView) view.findViewById(R.id.schedulerWizard);
-        mScheduleWizard.setOnClickListener(
+        ImageView scheduleWizard = (ImageView) view.findViewById(R.id.schedulerWizard);
+        scheduleWizard.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -126,7 +125,7 @@ public class FrecuencyFragment extends Fragment implements
                             sd.dismiss();
                         }
                         sd = new SchedulerDialog();
-                        sd.setOnPlanningSetListener(FrecuencyFragment.this);
+                        sd.setOnPlanningSetListener(FrequencyFragment.this);
                         sd.show(fm, "SchedulerTAG");
                     }
                 }
@@ -148,8 +147,11 @@ public class FrecuencyFragment extends Fragment implements
         mRule = rrule;
         if (mRule != null) {
             mEventRecurrence.parse(mRule);
+            populateRepeats();
+        } else {
+            mRRule.setText(R.string.does_not_repeat);
         }
-        populateRepeats();
+
     }
 
     private void populateRepeats() {

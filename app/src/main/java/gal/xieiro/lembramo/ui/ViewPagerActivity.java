@@ -59,7 +59,7 @@ public class ViewPagerActivity extends BaseActivity implements
                     f = Fragment1.newInstance();
                     break;
                 case 1:
-                    f = FrecuencyFragment.newInstance();
+                    f = FrequencyFragment.newInstance();
                     break;
                 default:
                     f = IntakeFragment.newInstance("param1", "param2");
