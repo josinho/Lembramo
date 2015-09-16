@@ -49,6 +49,4 @@ public final class DBContract {
 
         public static final String DELETE_TABLE = DBType.DROP_TABLE_IF_EXISTS + TABLE_NAME;
     }
-
-
 }

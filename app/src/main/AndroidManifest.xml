@@ -41,7 +41,7 @@
         </activity>
         <activity
             android:name=".ui.DetailMedicineActivity"
-            android:label="@string/title_activity_new_medicamento"
+            android:label="@string/title_new_medicine"
             android:parentActivityName=".ui.ListMedicinesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -281,9 +281,8 @@ public class IntakeFragment extends Fragment {
             for (int i = 0; i < mIntakes.size(); i++) {
                 MedicineIntake intake = mIntakes.get(i);
                 if (intake.isChecked()) {
-                    intake.getHour().toString();
-                    s.append(sdf.format(intake.getHour().getTime()));
-                    s.append("(" + intake.getDose() + ");");
+                    s.append(sdf.format(intake.getHour().getTime())).
+                            append("(").append(intake.getDose()).append(");");
                 }
             }
 

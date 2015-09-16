@@ -121,15 +121,35 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 }
         );
 
+        TextView labelHours = (TextView) view.findViewById(R.id.lblHours);
+        labelHours.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mHourFreqButton.performClick();
+                    }
+                }
+        );
+
+        TextView labelTimes = (TextView) view.findViewById(R.id.lblTimes);
+        labelTimes.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mTimesFreqButton.performClick();
+                    }
+                }
+        );
+
+        view.findViewById(R.id.set_button).setOnClickListener(this);
+        view.findViewById(R.id.cancel_button).setOnClickListener(this);
+
         //marcar el primero TODO excepto que vengamos de savedInstanceState
         //valores iniciales
         mHourFreqButton.setChecked(true);
         mTimesFreq.setEnabled(false);
         mTimesFreq.setText("" + TIMES_FREQ_DEFAULT);
         mHourFreq.setText("" + HOUR_FREQ_DEFAULT);
-
-        view.findViewById(R.id.set_button).setOnClickListener(this);
-        view.findViewById(R.id.cancel_button).setOnClickListener(this);
 
         return view;
     }

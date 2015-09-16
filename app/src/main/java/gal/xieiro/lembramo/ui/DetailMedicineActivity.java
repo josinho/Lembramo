@@ -1,7 +1,7 @@
 package gal.xieiro.lembramo.ui;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -40,7 +40,7 @@ public class DetailMedicineActivity extends BaseActivity implements
         id = intent.getLongExtra("id", NO_ID);
         if (id != NO_ID) {
             //modo editar
-            setToolbarTitle(R.string.title_activity_edit_medicamento);
+            setToolbarTitle(R.string.title_edit_medicine);
         }
 
         if (savedInstanceState != null) {
@@ -58,7 +58,7 @@ public class DetailMedicineActivity extends BaseActivity implements
         }
 
         //colocar los fragments con las imágenes por defecto
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         mCaja = ImageSelectorFragment.newInstance(R.drawable.caja, mCajaUri);
         mPastilla = ImageSelectorFragment.newInstance(R.drawable.pastilla, mPastillaUri);
@@ -100,7 +100,7 @@ public class DetailMedicineActivity extends BaseActivity implements
     }
 
     protected void saveMedicineBD() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         //TODO: validar datos
 
         ContentValues cv = new ContentValues();

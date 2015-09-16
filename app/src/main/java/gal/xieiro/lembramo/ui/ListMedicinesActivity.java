@@ -28,12 +28,12 @@ import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.MedicamentContentProvider;
 import gal.xieiro.lembramo.ui.component.SquareImageView;
+import gal.xieiro.lembramo.util.Utils;
 
 
 public class ListMedicinesActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final long NO_ID = -1;
     private static final int LOADER_ID = 1;
 
     private Context mContext;
@@ -77,7 +77,7 @@ public class ListMedicinesActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
                 //cargar la activity para crear un medicamento
-                startDetailActivity(NO_ID);
+                startDetailActivity(Utils.NO_ID);
             }
         });
 
@@ -115,8 +115,9 @@ public class ListMedicinesActivity extends BaseActivity implements
     }
 
     private void startDetailActivity(long id) {
-        Intent intent = new Intent(ListMedicinesActivity.this, DetailMedicineActivity.class);
-        if (id != NO_ID) {
+        //Intent intent = new Intent(ListMedicinesActivity.this, DetailMedicineActivity.class);
+        Intent intent = new Intent(ListMedicinesActivity.this, ViewPagerActivity.class);
+        if (id != Utils.NO_ID) {
             intent.putExtra("id", id);
         }
         startActivityForResult(intent, 1);

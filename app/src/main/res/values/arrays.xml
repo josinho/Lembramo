@@ -3,7 +3,7 @@
     <string-array name="viewpager_tabs">
         <item>Medicamento</item>
         <item>Frecuencia</item>
-        <item>Tab3</item>
+        <item>Comentario</item>
         <item>Tab4</item>
     </string-array>
 

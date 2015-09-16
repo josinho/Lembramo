@@ -15,8 +15,8 @@
     <string name="hint_comentario">Escribe un comentario...</string>
     <string name="content_description">Imagen</string>
 
-    <string name="title_activity_new_medicamento">Nuevo medicamento</string>
-    <string name="title_activity_edit_medicamento">Editar medicamento</string>
+    <string name="title_new_medicine">Nuevo medicamento</string>
+    <string name="title_edit_medicine">Editar medicamento</string>
     <string name="title_activity_image_zoom">Ampliación de imagen</string>
 
     <string name="action_save">Guardar</string>
@@ -42,6 +42,10 @@
     <string name="lbl_breakfast">Desayuno</string>
     <string name="lbl_lunch">Comida</string>
     <string name="lbl_dinner">Cena</string>
+    <string name="lbl_times_a_day">veces al día</string>
+    <string name="lbl_hours">horas</string>
+    <string name="lbl_each">Cada</string>
+    <string name="lbl_with_meals">Con las comidas</string>
     <string name="default_breakfast_time">08:00</string>
     <string name="default_lunch_time">14:00</string>
     <string name="default_dinner_time">21:00</string>

@@ -1,6 +1,7 @@
 package gal.xieiro.lembramo.ui;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,9 +10,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.util.Utils;
 
 public class ViewPagerActivity extends BaseActivity implements
-    IntakeFragment.OnFragmentInteractionListener{
+        IntakeFragment.OnFragmentInteractionListener {
+
+    private long mId = Utils.NO_ID;
 
     @Override
     protected int getLayoutResource() {
@@ -21,6 +25,13 @@ public class ViewPagerActivity extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        mId = intent.getLongExtra("id", Utils.NO_ID);
+        if (mId != Utils.NO_ID) {
+            //modo editar
+            setToolbarTitle(R.string.title_edit_medicine);
+        }
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(
@@ -56,13 +67,16 @@ public class ViewPagerActivity extends BaseActivity implements
             Fragment f = null;
             switch (position) {
                 case 0:
-                    f = Fragment1.newInstance();
+                    f = MedicineFragment.newInstance(mId);
                     break;
                 case 1:
                     f = FrequencyFragment.newInstance();
                     break;
+                case 2:
+                    f = CommentFragment.newInstance();
+                    break;
                 default:
-                    f = IntakeFragment.newInstance("param1", "param2");
+                    f = Fragment1.newInstance();
             }
             return f;
         }

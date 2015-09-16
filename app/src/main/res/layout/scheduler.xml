@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:text="Asistente planificador horario" />
+                    android:text="@string/scheduler_wizard" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -58,7 +58,7 @@
                         android:id="@+id/hourFreq"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cada" />
+                        android:text="@string/lbl_each" />
 
                     <RadioButton
                         android:id="@+id/timesFreq"
@@ -71,7 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/timesFreq"
-                        android:text="Con las comidas" />
+                        android:text="@string/lbl_with_meals" />
 
                     <EditText
                         android:id="@+id/interval1"
@@ -91,13 +91,13 @@
                         android:textSize="15sp" />
 
                     <TextView
-                        android:id="@+id/textView3"
+                        android:id="@+id/lblHours"
                         style="@style/TextAppearance.RecurrencePickerStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignBaseline="@+id/hourFreq"
                         android:layout_toEndOf="@+id/interval1"
-                        android:text="horas" />
+                        android:text="@string/lbl_hours" />
 
                     <EditText
                         android:id="@+id/interval2"
@@ -117,12 +117,13 @@
                         android:textSize="15sp" />
 
                     <TextView
+                        android:id="@+id/lblTimes"
                         style="@style/TextAppearance.RecurrencePickerStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignBaseline="@+id/timesFreq"
                         android:layout_toEndOf="@+id/interval2"
-                        android:text="veces al día" />
+                        android:text="@string/lbl_times_a_day" />
 
                 </RelativeLayout>
 
@@ -133,6 +134,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingLeft="32dp"
+                    android:paddingTop="15dp"
                     android:visibility="gone">
 
                     <CheckBox
@@ -166,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="32dp"
-                    android:paddingTop="5dp"
+                    android:paddingTop="15dp"
                     android:visibility="visible">
 
                     <TextView
