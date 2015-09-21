@@ -27,9 +27,4 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(this, ListMedicinesActivity.class);
         startActivity(intent);
     }
-
-    public void startViewPager(View view) {
-        Intent intent = new Intent(this, ViewPagerActivity.class);
-        startActivity(intent);
-    }
 }

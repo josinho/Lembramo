@@ -1,38 +1,38 @@
 package gal.xieiro.lembramo.ui;
 
 
-import android.database.Cursor;
-import android.net.Uri;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import gal.xieiro.lembramo.R;
-import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.MedicamentContentProvider;
-import gal.xieiro.lembramo.util.Utils;
+import gal.xieiro.lembramo.model.Medicine;
 
-public class MedicineFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class MedicineFragment extends Fragment {
 
-    private static final int LOADER_ID = 1;
-    private static final String ID_PARAM = "ID";
-    private long mId;
+    private static final String TAG = "MedicineFragment";
+    private static final String MEDICINE_PARAM = "Medicine";
+    private Medicine mMedicine;
 
-    private View mView;
     private ImageSelectorFragment mBoxFragment, mPillFragment;
-    private String mCajaUri, mPastillaUri;
+    private OnMedicineFragmentListener mListener;
 
-    public static MedicineFragment newInstance(long id) {
+    public static MedicineFragment newInstance(Medicine medicine) {
         MedicineFragment fragment = new MedicineFragment();
         Bundle args = new Bundle();
-        args.putLong(ID_PARAM, id);
+        args.putParcelable(MEDICINE_PARAM, medicine);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,22 +44,13 @@ public class MedicineFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mId = getArguments().getLong(ID_PARAM);
-        }
-
         if (savedInstanceState != null) {
             //venimos de una restauración
-            mCajaUri = savedInstanceState.getString("BoxImagePath");
-            mPastillaUri = savedInstanceState.getString("PillImagePath");
+            mMedicine = savedInstanceState.getParcelable(MEDICINE_PARAM);
         } else {
-            mCajaUri = mPastillaUri = null;
-            if (mId != Utils.NO_ID) {
-                //modo editar y no venimos de una restauración
-                Bundle bundle = new Bundle();
-                bundle.putLong(DBContract.Medicamentos._ID, mId);
-                getLoaderManager().initLoader(LOADER_ID, bundle, this);
+            if (getArguments() != null) {
+                // venimos de newInstance()
+                mMedicine = getArguments().getParcelable(MEDICINE_PARAM);
             }
         }
     }
@@ -67,48 +58,82 @@ public class MedicineFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.fragment_medicine, container, false);
+        View view = inflater.inflate(R.layout.fragment_medicine, container, false);
+
+        final EditText name = (EditText) view.findViewById(R.id.medicineName);
+        name.setText(mMedicine.getName());
+        name.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        mMedicine.setName(s.toString());
+                    }
+                }
+        );
 
         //colocar los fragments con las imágenes por defecto
-        mBoxFragment = ImageSelectorFragment.newInstance(R.drawable.caja, mCajaUri);
-        mPillFragment = ImageSelectorFragment.newInstance(R.drawable.pastilla, mPastillaUri);
+        mBoxFragment = ImageSelectorFragment.newInstance(R.drawable.caja, mMedicine.getPillboxImage());
+        mPillFragment = ImageSelectorFragment.newInstance(R.drawable.pastilla, mMedicine.getPillImage());
         getFragmentManager()
                 .beginTransaction()
                 .add(R.id.boxContainer, mBoxFragment)
                 .add(R.id.pillContainer, mPillFragment)
                 .commit();
 
-        return mView;
+
+        // a ViewPagerActivity no le da tiempo de consultar la base de datos a tiempo
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        mMedicine = intent.getParcelableExtra("medicine");
+                        name.setText(mMedicine.getName());
+                        mBoxFragment.setImage(mMedicine.getPillboxImage());
+                        mPillFragment.setImage(mMedicine.getPillImage());
+                    }
+                },
+                new IntentFilter("MedicineLoaded")
+        );
+
+        return view;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("BoxImagePath", mBoxFragment.getImagePath());
-        outState.putString("PillImagePath", mPillFragment.getImagePath());
+        outState.putParcelable(MEDICINE_PARAM, mMedicine);
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        long key = args.getLong(DBContract.Medicamentos._ID);
-        String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + key;
-        return new CursorLoader(getActivity(), Uri.parse(uri), null, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
-        if (c != null) {
-            c.moveToFirst();
-            ((EditText) mView.findViewById(R.id.medicineName)).setText(
-                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_NAME)));
-            mBoxFragment.setImage(
-                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO)));
-            mPillFragment.setImage(
-                    c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO)));
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnMedicineFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnMedicineFragmentListener");
         }
+        Log.v(TAG, "onAttach()");
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onDetach() {
+        super.onDetach();
+        mListener.onMedicineChange(mMedicine);
+        Log.v(TAG, "onDetach()");
+    }
+
+    public interface OnMedicineFragmentListener {
+        void onMedicineChange(Medicine medicine);
     }
 }

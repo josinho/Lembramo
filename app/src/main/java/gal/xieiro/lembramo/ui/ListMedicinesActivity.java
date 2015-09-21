@@ -306,6 +306,7 @@ public class ListMedicinesActivity extends BaseActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this,
+                //TODO: create projection to improve performance
                 MedicamentContentProvider.CONTENT_URI, null, null, null, null);
     }
 

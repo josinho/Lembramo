@@ -38,6 +38,9 @@ public final class DBContract {
         public static final String COLUMN_NAME_COMMENT = "comentario";
         public static final String COLUMN_NAME_BOXPHOTO = "fotocaja";
         public static final String COLUMN_NAME_MEDPHOTO = "fotomedicamento";
+        public static final String COLUMN_NAME_STARTDATE = "startdate";
+        public static final String COLUMN_NAME_RECURRENCE = "recurrence";
+        public static final String COLUMN_NAME_SCHEDULE = "shedule";
 
         public static final String CREATE_TABLE =
                 DBType.CREATE_TABLE + TABLE_NAME + DBType.PARENTHESIS_OPEN +
@@ -45,7 +48,10 @@ public final class DBContract {
                         COLUMN_NAME_NAME + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_COMMENT + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_BOXPHOTO + DBType.TEXT + DBType.COMMA +
-                        COLUMN_NAME_MEDPHOTO + DBType.TEXT + DBType.PARENTHESIS_CLOSE;
+                        COLUMN_NAME_MEDPHOTO + DBType.TEXT + DBType.COMMA +
+                        COLUMN_NAME_STARTDATE + DBType.TEXT + DBType.COMMA +
+                        COLUMN_NAME_RECURRENCE + DBType.TEXT + DBType.COMMA +
+                        COLUMN_NAME_SCHEDULE + DBType.TEXT + DBType.PARENTHESIS_CLOSE;
 
         public static final String DELETE_TABLE = DBType.DROP_TABLE_IF_EXISTS + TABLE_NAME;
     }
