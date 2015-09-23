@@ -114,9 +114,10 @@ public class CommentFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        Log.v(TAG, "onDetach()");
         super.onDetach();
         mListener.onCommentChange(mMedicine);
-        Log.v(TAG, "onDetach()");
+        mListener = null;
     }
 
     public interface OnCommentFragmentListener {

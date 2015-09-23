@@ -1,6 +1,5 @@
 package gal.xieiro.lembramo.ui;
 
-import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,29 +24,26 @@ import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.ui.component.DividerItemDecoration;
 import gal.xieiro.lembramo.ui.component.DosePicker;
+import gal.xieiro.lembramo.util.Utils;
 
 
 public class IntakeFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String SCHEDULE = "schedule";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mSchedule;
 
-    private OnFragmentInteractionListener mListener;
     private RecyclerView mIntakeList;
     private IntakeAdapter mIntakeAdapter;
 
     // TODO: Rename and change types of parameters
-    public static IntakeFragment newInstance(String param1, String param2) {
+    public static IntakeFragment newInstance(String schedule) {
         IntakeFragment fragment = new IntakeFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(SCHEDULE, schedule);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,8 +60,7 @@ public class IntakeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mSchedule = getArguments().getString(SCHEDULE);
         }
     }
 
@@ -79,22 +75,10 @@ public class IntakeFragment extends Fragment {
                 new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST)
         );
 
-        ArrayList<MedicineIntake> intakes = new ArrayList<>();
-
-        for (int i = 0; i < 24; i++) {
-            Calendar hour = Calendar.getInstance();
-            hour.set(Calendar.HOUR_OF_DAY, i);
-            hour.set(Calendar.MINUTE, 0);
-            Calendar halfHour = Calendar.getInstance();
-            halfHour.set(Calendar.HOUR_OF_DAY, i);
-            halfHour.set(Calendar.MINUTE, 30);
-
-            intakes.add(new MedicineIntake(hour));
-            intakes.add(new MedicineIntake(halfHour));
-        }
-        mIntakeAdapter = new IntakeAdapter(intakes);
+        mIntakeAdapter = new IntakeAdapter(setInitialIntakes());
         mIntakeList.setAdapter(mIntakeAdapter);
         mIntakeList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        addIntakes(mSchedule);
 
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -128,21 +112,35 @@ public class IntakeFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+    private ArrayList<MedicineIntake> setInitialIntakes() {
+        ArrayList<MedicineIntake> intakes = new ArrayList<>();
+
+        for (int i = 0; i < 24; i++) {
+            Calendar hour = Calendar.getInstance();
+            hour.set(Calendar.HOUR_OF_DAY, i);
+            hour.set(Calendar.MINUTE, 0);
+            Calendar halfHour = Calendar.getInstance();
+            halfHour.set(Calendar.HOUR_OF_DAY, i);
+            halfHour.set(Calendar.MINUTE, 30);
+
+            intakes.add(new MedicineIntake(hour));
+            intakes.add(new MedicineIntake(halfHour));
         }
+        return intakes;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void addIntakes(String schedule) {
+        if (!TextUtils.isEmpty(schedule)) {
+            String[] intakeStrings = schedule.split(";");
+            for (String intakeString : intakeStrings) {
+                String[] intake = intakeString.split(",");
+                Calendar hour = Utils.parseTime(intake[0]);
+                MedicineIntake medicineIntake = new MedicineIntake(hour);
+                medicineIntake.setDose(Double.valueOf(intake[1]));
+                medicineIntake.setChecked(true);
+                mIntakeAdapter.add(medicineIntake);
+            }
+        }
     }
 
     public void addIntakes(List<MedicineIntake> intakes) {
@@ -156,21 +154,20 @@ public class IntakeFragment extends Fragment {
         }
     }
 
+    public String getIntakes() {
+        List<MedicineIntake> intakes = mIntakeAdapter.getIntakes();
+        StringBuilder s = new StringBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(long id);
+        for (int i = 0; i < intakes.size(); i++) {
+            MedicineIntake intake = intakes.get(i);
+            if (intake.isChecked()) {
+                s.append(sdf.format(intake.getHour().getTime())).
+                        append(",").append(intake.getDose()).append(";");
+            }
+        }
+        return s.toString().replaceAll(";$", "");
     }
-
 
     private class IntakeAdapter extends RecyclerView.Adapter<IntakeAdapter.ViewHolder> {
 
@@ -274,19 +271,8 @@ public class IntakeFragment extends Fragment {
             return i;
         }
 
-        public String getIntakes() {
-            StringBuilder s = new StringBuilder();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-            for (int i = 0; i < mIntakes.size(); i++) {
-                MedicineIntake intake = mIntakes.get(i);
-                if (intake.isChecked()) {
-                    s.append(sdf.format(intake.getHour().getTime())).
-                            append("(").append(intake.getDose()).append(");");
-                }
-            }
-
-            return s.toString();
+        public List<MedicineIntake> getIntakes() {
+            return mIntakes;
         }
     }
 }

@@ -52,10 +52,11 @@
             android:label="@string/title_activity_image_zoom" />
         <activity
             android:name=".ui.ViewPagerActivity"
-            android:label="@string/title_activity_medicamentos">
+            android:label="@string/title_activity_medicamentos"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value=".ui.ListMedicinesActivity" />
         </activity>
         <activity android:name=".ui.preference.PreferenceActivity">
 

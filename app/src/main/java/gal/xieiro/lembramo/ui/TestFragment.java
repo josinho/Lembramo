@@ -25,7 +25,7 @@ import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
 import gal.xieiro.lembramo.util.Utils;
 
 
-public class Fragment1 extends Fragment
+public class TestFragment extends Fragment
         implements RecurrencePickerDialog.OnRecurrenceSetListener {
 
     private NumberPicker np;
@@ -34,11 +34,11 @@ public class Fragment1 extends Fragment
     private String mRule;
     private EventRecurrence mEventRecurrence;
 
-    public static Fragment1 newInstance() {
-        return new Fragment1();
+    public static TestFragment newInstance() {
+        return new TestFragment();
     }
 
-    public Fragment1() {
+    public TestFragment() {
         // Required empty public constructor
     }
 
@@ -120,7 +120,7 @@ public class Fragment1 extends Fragment
                         }
                         rpd = new RecurrencePickerDialog();
                         rpd.setArguments(b);
-                        rpd.setOnRecurrenceSetListener(Fragment1.this);
+                        rpd.setOnRecurrenceSetListener(TestFragment.this);
                         rpd.show(fm, "RecurrentPickerTAG");
                     }
                 }

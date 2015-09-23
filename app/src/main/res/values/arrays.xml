@@ -4,7 +4,6 @@
         <item>Medicamento</item>
         <item>Frecuencia</item>
         <item>Comentario</item>
-        <item>Tab4</item>
     </string-array>
 
     <string-array name="scheduler_options">

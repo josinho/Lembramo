@@ -128,9 +128,10 @@ public class MedicineFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        Log.v(TAG, "onDetach()");
         super.onDetach();
         mListener.onMedicineChange(mMedicine);
-        Log.v(TAG, "onDetach()");
+        mListener = null;
     }
 
     public interface OnMedicineFragmentListener {

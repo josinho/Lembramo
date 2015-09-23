@@ -38,14 +38,13 @@ import gal.xieiro.lembramo.util.Utils;
 
 public class FrequencyFragment extends Fragment implements
         RecurrencePickerDialog.OnRecurrenceSetListener,
-        SchedulerDialog.OnPlanningSetListener  {
+        SchedulerDialog.OnPlanningSetListener {
 
 
     private final static String TAG = "FrequencyFragment";
     private static final String MEDICINE_PARAM = "Medicine";
-
+    private Resources mResources;
     private Medicine mMedicine;
-    //private String mRule;
     private EventRecurrence mEventRecurrence;
     private TextView mRRule;
     private IntakeFragment mIntakeFragment;
@@ -69,6 +68,7 @@ public class FrequencyFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         mEventRecurrence = new EventRecurrence();
 
+        mResources = getResources();
         if (savedInstanceState != null) {
             //venimos de una restauración
             mMedicine = savedInstanceState.getParcelable(MEDICINE_PARAM);
@@ -121,6 +121,7 @@ public class FrequencyFragment extends Fragment implements
                     public void onClick(View v) {
                         Time t = new Time();
                         t.setToNow();
+                        //TODO setStartDate from mMedicice.getStartDate()
                         mEventRecurrence.setStartDate(t);
                         Bundle b = new Bundle();
                         b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS,
@@ -128,7 +129,7 @@ public class FrequencyFragment extends Fragment implements
                         b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE,
                                 t.timezone);
                         b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mMedicine.getRecurrenceRule());
-                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        FragmentManager fm = getFragmentManager();
                         RecurrencePickerDialog rpd =
                                 (RecurrencePickerDialog) fm.findFragmentByTag("RecurrentPickerTAG");
                         if (rpd != null) {
@@ -148,7 +149,7 @@ public class FrequencyFragment extends Fragment implements
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        FragmentManager fm = getFragmentManager();
 
                         SchedulerDialog sd = (SchedulerDialog) fm.findFragmentByTag("SchedulerTAG");
                         if (sd != null) {
@@ -161,6 +162,12 @@ public class FrequencyFragment extends Fragment implements
                 }
         );
 
+        if (savedInstanceState == null) {
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            mIntakeFragment = IntakeFragment.newInstance(mMedicine.getSchedule());
+            fragmentTransaction.add(R.id.intake_container, mIntakeFragment);
+            fragmentTransaction.commit();
+        }
 
         // a ViewPagerActivity no le da tiempo de consultar la base de datos a tiempo
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
@@ -170,18 +177,11 @@ public class FrequencyFragment extends Fragment implements
                         mMedicine = intent.getParcelableExtra("medicine");
                         fechaInicio.setText(mMedicine.getStartDate());
                         populateRepeats(mMedicine.getRecurrenceRule());
-                        //TODO schedule
+                        mIntakeFragment.addIntakes(mMedicine.getSchedule());
                     }
                 },
                 new IntentFilter("MedicineLoaded")
         );
-
-        if (savedInstanceState == null) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            mIntakeFragment = IntakeFragment.newInstance("param1", "param2");
-            fragmentTransaction.add(R.id.intake_container, mIntakeFragment);
-            fragmentTransaction.commit();
-        }
 
         return view;
     }
@@ -197,7 +197,7 @@ public class FrequencyFragment extends Fragment implements
             mEventRecurrence.parse(recurrenceRule);
             mRRule.setText(EventRecurrenceFormatter.getRepeatString(
                     getActivity(),
-                    getResources(),
+                    mResources,
                     mEventRecurrence,
                     true
             ));
@@ -227,14 +227,15 @@ public class FrequencyFragment extends Fragment implements
             throw new ClassCastException(activity.toString()
                     + " must implement OnFrequencyFragmentListener");
         }
-        Log.v(TAG, "onAttach()");
     }
 
     @Override
     public void onDetach() {
-        super.onDetach();
-        mListener.onFrequencyChange(mMedicine);
         Log.v(TAG, "onDetach()");
+        super.onDetach();
+        mMedicine.setSchedule(mIntakeFragment.getIntakes());
+        mListener.onFrequencyChange(mMedicine);
+        mListener = null;
     }
 
     public interface OnFrequencyFragmentListener {

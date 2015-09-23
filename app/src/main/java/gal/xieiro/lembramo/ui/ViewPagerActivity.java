@@ -28,8 +28,7 @@ public class ViewPagerActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         MedicineFragment.OnMedicineFragmentListener,
         CommentFragment.OnCommentFragmentListener,
-        FrequencyFragment.OnFrequencyFragmentListener,
-        IntakeFragment.OnFragmentInteractionListener {
+        FrequencyFragment.OnFrequencyFragmentListener {
 
     private static final int LOADER_ID = 1;
     private Medicine mMedicine;
@@ -90,7 +89,6 @@ public class ViewPagerActivity extends BaseActivity implements
     }
 
     protected void saveMedicineBD() {
-        FragmentManager fm = getSupportFragmentManager();
         //TODO: validar datos
 
         ContentValues cv = new ContentValues();
@@ -98,6 +96,10 @@ public class ViewPagerActivity extends BaseActivity implements
         cv.put(DBContract.Medicamentos.COLUMN_NAME_COMMENT, mMedicine.getComment());
         cv.put(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO, mMedicine.getPillboxImage());
         cv.put(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO, mMedicine.getPillImage());
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_STARTDATE, mMedicine.getStartDate());
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_RECURRENCE, mMedicine.getRecurrenceRule());
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_SCHEDULE, mMedicine.getSchedule());
+
 
         if (mMedicine.getId() == Utils.NO_ID) {
             //create
@@ -138,7 +140,7 @@ public class ViewPagerActivity extends BaseActivity implements
                     f = CommentFragment.newInstance(mMedicine);
                     break;
                 default:
-                    f = Fragment1.newInstance();
+                    f = TestFragment.newInstance();
             }
             return f;
         }
@@ -150,10 +152,6 @@ public class ViewPagerActivity extends BaseActivity implements
         }
     }
 
-    @Override
-    public void onFragmentInteraction(long id) {
-//TODO borrar
-    }
 
     @Override
     public void onMedicineChange(Medicine medicine) {
@@ -171,6 +169,7 @@ public class ViewPagerActivity extends BaseActivity implements
     public void onFrequencyChange(Medicine medicine) {
         mMedicine.setStartDate(medicine.getStartDate());
         mMedicine.setRecurrenceRule(medicine.getRecurrenceRule());
+        mMedicine.setSchedule(medicine.getSchedule());
     }
 
     @Override
@@ -189,9 +188,9 @@ public class ViewPagerActivity extends BaseActivity implements
             mMedicine.setComment(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_COMMENT)));
             mMedicine.setPillboxImage(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO)));
             mMedicine.setPillImage(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO)));
-            // TODO pendiente crear los campos en la BD
-            //mMedicine.setRecurrenceModel(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_RECURRENCE)));
-            //mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_SCHEDULE)));
+            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_STARTDATE)));
+            mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_RECURRENCE)));
+            mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_SCHEDULE)));
 
             Intent intent = new Intent("MedicineLoaded");
             intent.putExtra("medicine", mMedicine);
