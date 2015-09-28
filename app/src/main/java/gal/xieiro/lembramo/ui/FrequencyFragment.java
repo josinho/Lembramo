@@ -1,7 +1,6 @@
 package gal.xieiro.lembramo.ui;
 
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +82,8 @@ public class FrequencyFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_frecuency, container, false);
 
         final TextView fechaInicio = (TextView) view.findViewById(R.id.fechaInicio);
-        fechaInicio.setText(Utils.getCurrentDate());
+        mMedicine.setStartDate(Utils.getCurrentDate());
+        fechaInicio.setText(mMedicine.getStartDate());
 
         fechaInicio.setOnClickListener(
                 new View.OnClickListener() {

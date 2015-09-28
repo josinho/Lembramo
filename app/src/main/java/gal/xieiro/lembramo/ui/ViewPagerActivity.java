@@ -80,6 +80,7 @@ public class ViewPagerActivity extends BaseActivity implements
         switch (item.getItemId()) {
             case R.id.action_save:
                 //TODO get data from fragments validating it
+                mAdapter.getMedicineDataFromFragments();
                 saveMedicineBD();
                 setResult(RESULT_OK);
                 finish();
@@ -91,10 +92,6 @@ public class ViewPagerActivity extends BaseActivity implements
 
 
     protected void saveMedicineBD() {
-        //TODO: validar datos
-        //
-        mAdapter.getMedicineDataFromFragments();
-
         ContentValues cv = new ContentValues();
         cv.put(DBContract.Medicamentos.COLUMN_NAME_NAME, mMedicine.getName());
         cv.put(DBContract.Medicamentos.COLUMN_NAME_COMMENT, mMedicine.getComment());
@@ -181,6 +178,7 @@ public class ViewPagerActivity extends BaseActivity implements
         }
 
         public void getMedicineDataFromFragments() {
+            //TODO check if fragments != null
             Medicine med;
             med = mMedicineFragment.getMedicine();
             mMedicine.setName(med.getName());
@@ -194,8 +192,6 @@ public class ViewPagerActivity extends BaseActivity implements
 
             med = mCommentFragment.getMedicine();
             mMedicine.setComment(med.getComment());
-
-            med = null;
         }
 
     }
