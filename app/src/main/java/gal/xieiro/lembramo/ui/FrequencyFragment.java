@@ -49,8 +49,6 @@ public class FrequencyFragment extends Fragment implements
     private TextView mRRule;
     private IntakeFragment mIntakeFragment;
 
-    private OnFrequencyFragmentListener mListener;
-
     public static FrequencyFragment newInstance(Medicine medicine) {
         FrequencyFragment fragment = new FrequencyFragment();
         Bundle args = new Bundle();
@@ -218,27 +216,8 @@ public class FrequencyFragment extends Fragment implements
         outState.putParcelable(MEDICINE_PARAM, mMedicine);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFrequencyFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFrequencyFragmentListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        Log.v(TAG, "onDetach()");
-        super.onDetach();
+    public Medicine getMedicine() {
         mMedicine.setSchedule(mIntakeFragment.getIntakes());
-        mListener.onFrequencyChange(mMedicine);
-        mListener = null;
-    }
-
-    public interface OnFrequencyFragmentListener {
-        void onFrequencyChange(Medicine medicine);
+        return mMedicine;
     }
 }

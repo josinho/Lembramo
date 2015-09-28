@@ -17,6 +17,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
@@ -25,13 +26,11 @@ import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.util.Utils;
 
 public class ViewPagerActivity extends BaseActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>,
-        MedicineFragment.OnMedicineFragmentListener,
-        CommentFragment.OnCommentFragmentListener,
-        FrequencyFragment.OnFrequencyFragmentListener {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID = 1;
     private Medicine mMedicine;
+    private MedicineFragmentPagerAdapter mAdapter;
 
     @Override
     protected int getLayoutResource() {
@@ -55,10 +54,11 @@ public class ViewPagerActivity extends BaseActivity implements
         }
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MedicineFragmentPagerAdapter(
+        mAdapter = new MedicineFragmentPagerAdapter(
                 getSupportFragmentManager(),
                 getResources().getStringArray(R.array.viewpager_tabs)
-        ));
+        );
+        viewPager.setAdapter(mAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -79,6 +79,7 @@ public class ViewPagerActivity extends BaseActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_save:
+                //TODO get data from fragments validating it
                 saveMedicineBD();
                 setResult(RESULT_OK);
                 finish();
@@ -88,8 +89,11 @@ public class ViewPagerActivity extends BaseActivity implements
         }
     }
 
+
     protected void saveMedicineBD() {
         //TODO: validar datos
+        //
+        mAdapter.getMedicineDataFromFragments();
 
         ContentValues cv = new ContentValues();
         cv.put(DBContract.Medicamentos.COLUMN_NAME_NAME, mMedicine.getName());
@@ -115,9 +119,20 @@ public class ViewPagerActivity extends BaseActivity implements
     private class MedicineFragmentPagerAdapter extends FragmentPagerAdapter {
         private String mTabTitles[];
 
+        private MedicineFragment mMedicineFragment;
+        private FrequencyFragment mFrequencyFragment;
+        private CommentFragment mCommentFragment;
+
+
         public MedicineFragmentPagerAdapter(FragmentManager fm, String[] tabTitles) {
             super(fm);
             mTabTitles = tabTitles;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            // Generate title based on item position
+            return mTabTitles[position];
         }
 
         @Override
@@ -131,45 +146,58 @@ public class ViewPagerActivity extends BaseActivity implements
             Fragment f;
             switch (position) {
                 case 0:
-                    f = MedicineFragment.newInstance(mMedicine);
+                    f = MedicineFragment.newInstance(new Medicine(mMedicine));
                     break;
                 case 1:
-                    f = FrequencyFragment.newInstance(mMedicine);
+                    f = FrequencyFragment.newInstance(new Medicine(mMedicine));
                     break;
                 case 2:
-                    f = CommentFragment.newInstance(mMedicine);
+                    f = CommentFragment.newInstance(new Medicine(mMedicine));
                     break;
                 default:
-                    f = TestFragment.newInstance();
+                    //no debería pasar
+                    return null;
             }
             return f;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            // Generate title based on item position
-            return mTabTitles[position];
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+
+            // guardar una referencia a los fragments creados de forma segura
+            switch (position) {
+                case 0:
+                    mMedicineFragment = (MedicineFragment) fragment;
+                    break;
+                case 1:
+                    mFrequencyFragment = (FrequencyFragment) fragment;
+                    break;
+                case 2:
+                    mCommentFragment = (CommentFragment) fragment;
+                    break;
+            }
+            return fragment;
         }
-    }
 
+        public void getMedicineDataFromFragments() {
+            Medicine med;
+            med = mMedicineFragment.getMedicine();
+            mMedicine.setName(med.getName());
+            mMedicine.setPillboxImage(med.getPillboxImage());
+            mMedicine.setPillImage(med.getPillImage());
 
-    @Override
-    public void onMedicineChange(Medicine medicine) {
-        mMedicine.setName(medicine.getName());
-        mMedicine.setPillboxImage(medicine.getPillboxImage());
-        mMedicine.setPillImage(medicine.getPillImage());
-    }
+            med = mFrequencyFragment.getMedicine();
+            mMedicine.setStartDate(med.getStartDate());
+            mMedicine.setRecurrenceRule(med.getRecurrenceRule());
+            mMedicine.setSchedule(med.getSchedule());
 
-    @Override
-    public void onCommentChange(Medicine medicine) {
-        mMedicine.setComment(medicine.getComment());
-    }
+            med = mCommentFragment.getMedicine();
+            mMedicine.setComment(med.getComment());
 
-    @Override
-    public void onFrequencyChange(Medicine medicine) {
-        mMedicine.setStartDate(medicine.getStartDate());
-        mMedicine.setRecurrenceRule(medicine.getRecurrenceRule());
-        mMedicine.setSchedule(medicine.getSchedule());
+            med = null;
+        }
+
     }
 
     @Override

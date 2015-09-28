@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.Medicine;
@@ -26,7 +27,6 @@ public class CommentFragment extends Fragment {
     private static final String MEDICINE_PARAM = "Medicine";
 
     private Medicine mMedicine;
-    private OnCommentFragmentListener mListener;
 
 
     public static CommentFragment newInstance(Medicine medicine) {
@@ -100,27 +100,7 @@ public class CommentFragment extends Fragment {
         outState.putParcelable(MEDICINE_PARAM, mMedicine);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnCommentFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnCommentFragmentListener");
-        }
-        Log.v(TAG, "onAttach()");
-    }
-
-    @Override
-    public void onDetach() {
-        Log.v(TAG, "onDetach()");
-        super.onDetach();
-        mListener.onCommentChange(mMedicine);
-        mListener = null;
-    }
-
-    public interface OnCommentFragmentListener {
-        void onCommentChange(Medicine medicine);
+    public Medicine getMedicine() {
+        return mMedicine;
     }
 }

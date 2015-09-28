@@ -81,6 +81,17 @@ public class Medicine implements Parcelable {
         this.schedule = schedule;
     }
 
+    public Medicine(Medicine medicine) {
+        id = medicine.getId();
+        name = medicine.getName();
+        comment = medicine.getComment();
+        pillboxImage = medicine.getPillboxImage();
+        pillImage = medicine.getPillImage();
+        startDate = medicine.getStartDate();
+        recurrenceRule = medicine.getRecurrenceRule();
+        schedule = medicine.getSchedule();
+    }
+
     private Medicine(Parcel in) {
         id = in.readLong();
         name = in.readString();

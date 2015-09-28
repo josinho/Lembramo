@@ -27,7 +27,6 @@ public class MedicineFragment extends Fragment {
     private Medicine mMedicine;
 
     private ImageSelectorFragment mBoxFragment, mPillFragment;
-    private OnMedicineFragmentListener mListener;
 
     public static MedicineFragment newInstance(Medicine medicine) {
         MedicineFragment fragment = new MedicineFragment();
@@ -114,27 +113,9 @@ public class MedicineFragment extends Fragment {
         outState.putParcelable(MEDICINE_PARAM, mMedicine);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnMedicineFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnMedicineFragmentListener");
-        }
-        Log.v(TAG, "onAttach()");
-    }
 
-    @Override
-    public void onDetach() {
-        Log.v(TAG, "onDetach()");
-        super.onDetach();
-        mListener.onMedicineChange(mMedicine);
-        mListener = null;
-    }
 
-    public interface OnMedicineFragmentListener {
-        void onMedicineChange(Medicine medicine);
+    public Medicine getMedicine() {
+        return mMedicine;
     }
 }
