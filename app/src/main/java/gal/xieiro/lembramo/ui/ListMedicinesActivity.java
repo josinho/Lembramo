@@ -1,12 +1,14 @@
 package gal.xieiro.lembramo.ui;
 
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
@@ -85,9 +88,6 @@ public class ListMedicinesActivity extends BaseActivity implements
         mListaMedicamentos.setAdapter(mAdapter);
         mListaMedicamentos.setEmptyView(findViewById(R.id.empty));
 
-        //obtener el cursor con los medicamentos en segundo plano
-        //mDBAdapter = new DBAdapter(this);
-        //new GetAllMedAsync().execute();
         getLoaderManager().initLoader(LOADER_ID, null, this);
 
         if (savedInstanceState != null) {
@@ -115,7 +115,6 @@ public class ListMedicinesActivity extends BaseActivity implements
     }
 
     private void startDetailActivity(long id) {
-        //Intent intent = new Intent(ListMedicinesActivity.this, DetailMedicineActivity.class);
         Intent intent = new Intent(ListMedicinesActivity.this, ViewPagerActivity.class);
         if (id != Utils.NO_ID) {
             intent.putExtra("id", id);
@@ -185,19 +184,45 @@ public class ListMedicinesActivity extends BaseActivity implements
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
+        public void bindView(View view, final Context context, Cursor cursor) {
             String path;
             int columnIndex;
             ImageLoader imageLoader;
 
             if (cursor != null) {
-                //long id = cursor.getLong(cursor.getColumnIndex("_id"));
-                imageLoader = ImageLoader.getInstance();
+                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos._ID);
+                final long id = cursor.getLong(columnIndex);
+
+                final ImageView alarm = (ImageView) view.findViewById(R.id.alarm);
+                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_ALARM);
+                final int alarmStatus = cursor.getInt(columnIndex);
+                if (alarmStatus == 0) {
+                    alarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
+                } else {
+                    alarm.setImageResource(R.drawable.ic_alarm_on_black_24dp);
+                }
+
+                alarm.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (alarmStatus == 0) {
+                                    updateAlarmStatus(id, 1);
+                                    alarm.setImageResource(R.drawable.ic_alarm_on_black_24dp);
+                                } else {
+                                    updateAlarmStatus(id, 0);
+                                    alarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
+                                }
+                            }
+                        }
+                );
 
                 // tratar el nombre del medicamento
                 TextView nombre = (TextView) view.findViewById(R.id.nombre);
                 columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_NAME);
                 nombre.setText(cursor.getString(columnIndex));
+
+                imageLoader = ImageLoader.getInstance();
 
                 // tratar la imagen de la caja
                 SquareImageView caja = (SquareImageView) view.findViewById(R.id.imagenCaja);
@@ -307,6 +332,7 @@ public class ListMedicinesActivity extends BaseActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = {
                 DBContract.Medicamentos._ID,
+                DBContract.Medicamentos.COLUMN_NAME_ALARM,
                 DBContract.Medicamentos.COLUMN_NAME_NAME,
                 DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO,
                 DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO
@@ -326,5 +352,15 @@ public class ListMedicinesActivity extends BaseActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.changeCursor(null);
+    }
+
+
+    private void updateAlarmStatus(long id, int alarmStatus) {
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Medicamentos.COLUMN_NAME_ALARM, alarmStatus);
+
+        String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + id;
+        getContentResolver().update(Uri.parse(uri), cv, null, null);
+        restartLoader();
     }
 }

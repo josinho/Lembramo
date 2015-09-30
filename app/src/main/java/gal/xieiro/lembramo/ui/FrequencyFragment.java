@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -89,7 +90,8 @@ public class FrequencyFragment extends Fragment implements
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Calendar newCalendar = Calendar.getInstance();
+                        final Calendar newCalendar =
+                                Utils.getCalendarDateFromString(mMedicine.getStartDate());
                         DatePickerDialog dpd = new DatePickerDialog(
                                 getActivity(),
                                 new DatePickerDialog.OnDateSetListener() {
@@ -100,6 +102,7 @@ public class FrequencyFragment extends Fragment implements
                                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                                         mMedicine.setStartDate(sdf.format(newDate.getTime()));
                                         fechaInicio.setText(mMedicine.getStartDate());
+                                        mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
                                     }
                                 },
                                 newCalendar.get(Calendar.YEAR),
@@ -116,10 +119,7 @@ public class FrequencyFragment extends Fragment implements
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Time t = new Time();
-                        t.setToNow();
-                        //TODO setStartDate from mMedicice.getStartDate()
-                        mEventRecurrence.setStartDate(t);
+                        Time t = mEventRecurrence.startDate;
                         Bundle b = new Bundle();
                         b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS,
                                 t.toMillis(false));
@@ -190,6 +190,7 @@ public class FrequencyFragment extends Fragment implements
     }
 
     private void populateRepeats(String recurrenceRule) {
+        mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
         if (!TextUtils.isEmpty(recurrenceRule)) {
             mEventRecurrence.parse(recurrenceRule);
             mRRule.setText(EventRecurrenceFormatter.getRepeatString(
@@ -213,6 +214,19 @@ public class FrequencyFragment extends Fragment implements
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(MEDICINE_PARAM, mMedicine);
+    }
+
+    public boolean validate() {
+        String schedule = mIntakeFragment.getIntakes();
+        if (TextUtils.isEmpty(schedule)) {
+            Toast.makeText(
+                    getActivity(),
+                    getResources().getString(R.string.schedule_required),
+                    Toast.LENGTH_LONG
+            ).show();
+            return false;
+        }
+        return true;
     }
 
     public Medicine getMedicine() {

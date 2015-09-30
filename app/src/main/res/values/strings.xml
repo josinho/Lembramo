@@ -18,6 +18,7 @@
     <string name="title_new_medicine">Nuevo medicamento</string>
     <string name="title_edit_medicine">Editar medicamento</string>
     <string name="title_activity_image_zoom">Ampliación de imagen</string>
+    <string name="alarm_description">Encender/apagar alarma</string>
 
     <string name="action_save">Guardar</string>
     <string name="action_delete">Borrar</string>
@@ -49,4 +50,8 @@
     <string name="default_breakfast_time">08:00</string>
     <string name="default_lunch_time">14:00</string>
     <string name="default_dinner_time">21:00</string>
+
+    <string name="required">Campo requerido</string>
+    <string name="more_fields_required">Faltan datos por completar</string>
+    <string name="schedule_required">Debe establecer la planificación horaria</string>
 </resources>

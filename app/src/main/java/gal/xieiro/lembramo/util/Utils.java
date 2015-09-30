@@ -9,6 +9,7 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
+import android.text.format.Time;
 import android.util.Log;
 
 import java.io.File;
@@ -118,6 +119,30 @@ public class Utils {
         c.set(Calendar.HOUR_OF_DAY, getHour(time));
         c.set(Calendar.MINUTE, getMinute(time));
         return c;
+    }
+
+    public static Calendar getCalendarDateFromString(String date) {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            c.setTime(sdf.parse(date));
+            return c;
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static Time getTimeDateFromString(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Time t = new Time();
+            t.set(sdf.parse(date).getTime());
+            return t;
+        } catch(ParseException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     /**

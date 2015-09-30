@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ public class MedicineFragment extends Fragment {
     private static final String TAG = "MedicineFragment";
     private static final String MEDICINE_PARAM = "Medicine";
     private Medicine mMedicine;
-
+    private EditText mName;
     private ImageSelectorFragment mBoxFragment, mPillFragment;
 
     public static MedicineFragment newInstance(Medicine medicine) {
@@ -59,9 +60,9 @@ public class MedicineFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_medicine, container, false);
 
-        final EditText name = (EditText) view.findViewById(R.id.medicineName);
-        name.setText(mMedicine.getName());
-        name.addTextChangedListener(
+        mName = (EditText) view.findViewById(R.id.medicineName);
+        mName.setText(mMedicine.getName());
+        mName.addTextChangedListener(
                 new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -96,7 +97,7 @@ public class MedicineFragment extends Fragment {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         mMedicine = intent.getParcelableExtra("medicine");
-                        name.setText(mMedicine.getName());
+                        mName.setText(mMedicine.getName());
                         mBoxFragment.setImage(mMedicine.getPillboxImage());
                         mPillFragment.setImage(mMedicine.getPillImage());
                     }
@@ -113,7 +114,13 @@ public class MedicineFragment extends Fragment {
         outState.putParcelable(MEDICINE_PARAM, mMedicine);
     }
 
-
+    public boolean validate() {
+        if (TextUtils.isEmpty(mMedicine.getName())) {
+            mName.setError(getResources().getString(R.string.required));
+            return false;
+        }
+        return true;
+    }
 
     public Medicine getMedicine() {
         return mMedicine;

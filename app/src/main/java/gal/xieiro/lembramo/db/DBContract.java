@@ -34,6 +34,7 @@ public final class DBContract {
     public static abstract class Medicamentos implements BaseColumns {
         public static final String TABLE_NAME = "medicamentos";
         //al implementar BaseColumns tenemos un campo _ID
+        public static final String COLUMN_NAME_ALARM = "alarma";
         public static final String COLUMN_NAME_NAME = "nombre";
         public static final String COLUMN_NAME_COMMENT = "comentario";
         public static final String COLUMN_NAME_BOXPHOTO = "fotocaja";
@@ -45,6 +46,7 @@ public final class DBContract {
         public static final String CREATE_TABLE =
                 DBType.CREATE_TABLE + TABLE_NAME + DBType.PARENTHESIS_OPEN +
                         _ID + DBType.INTEGER_PRIMARY_KEY + DBType.COMMA +
+                        COLUMN_NAME_ALARM + DBType.INTEGER + DBType.COMMA +
                         COLUMN_NAME_NAME + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_COMMENT + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_BOXPHOTO + DBType.TEXT + DBType.COMMA +

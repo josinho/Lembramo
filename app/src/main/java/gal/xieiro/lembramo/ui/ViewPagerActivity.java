@@ -18,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
@@ -80,10 +81,17 @@ public class ViewPagerActivity extends BaseActivity implements
         switch (item.getItemId()) {
             case R.id.action_save:
                 //TODO get data from fragments validating it
-                mAdapter.getMedicineDataFromFragments();
-                saveMedicineBD();
-                setResult(RESULT_OK);
-                finish();
+                if (!mAdapter.getMedicineDataFromFragments()) {
+                    Toast.makeText(
+                            this,
+                            getResources().getString(R.string.more_fields_required),
+                            Toast.LENGTH_LONG
+                    ).show();
+                } else {
+                    saveMedicineBD();
+                    setResult(RESULT_OK);
+                    finish();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -177,21 +185,36 @@ public class ViewPagerActivity extends BaseActivity implements
             return fragment;
         }
 
-        public void getMedicineDataFromFragments() {
-            //TODO check if fragments != null
+        public boolean getMedicineDataFromFragments() {
             Medicine med;
-            med = mMedicineFragment.getMedicine();
-            mMedicine.setName(med.getName());
-            mMedicine.setPillboxImage(med.getPillboxImage());
-            mMedicine.setPillImage(med.getPillImage());
+            if (mMedicineFragment != null) {
+                if (!mMedicineFragment.validate()) return false;
+                med = mMedicineFragment.getMedicine();
+                mMedicine.setName(med.getName());
+                mMedicine.setPillboxImage(med.getPillboxImage());
+                mMedicine.setPillImage(med.getPillImage());
+            } else {
+                return false;
+            }
 
-            med = mFrequencyFragment.getMedicine();
-            mMedicine.setStartDate(med.getStartDate());
-            mMedicine.setRecurrenceRule(med.getRecurrenceRule());
-            mMedicine.setSchedule(med.getSchedule());
+            if (mFrequencyFragment != null) {
+                if (!mFrequencyFragment.validate()) return false;
+                med = mFrequencyFragment.getMedicine();
+                mMedicine.setStartDate(med.getStartDate());
+                mMedicine.setRecurrenceRule(med.getRecurrenceRule());
+                mMedicine.setSchedule(med.getSchedule());
+            } else {
+                return false;
+            }
 
-            med = mCommentFragment.getMedicine();
-            mMedicine.setComment(med.getComment());
+            if (mCommentFragment != null) {
+                med = mCommentFragment.getMedicine();
+                mMedicine.setComment(med.getComment());
+            } else {
+                return false;
+            }
+
+            return true;
         }
 
     }
