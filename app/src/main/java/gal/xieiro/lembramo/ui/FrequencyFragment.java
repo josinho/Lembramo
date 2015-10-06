@@ -85,6 +85,7 @@ public class FrequencyFragment extends Fragment implements
         final TextView fechaInicio = (TextView) view.findViewById(R.id.fechaInicio);
         mMedicine.setStartDate(Utils.getCurrentDate());
         fechaInicio.setText(mMedicine.getStartDate());
+        mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
 
         fechaInicio.setOnClickListener(
                 new View.OnClickListener() {

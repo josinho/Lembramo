@@ -123,6 +123,8 @@ public class MedicineFragment extends Fragment {
     }
 
     public Medicine getMedicine() {
+        mMedicine.setPillboxImage(mBoxFragment.getImagePath());
+        mMedicine.setPillImage(mPillFragment.getImagePath());
         return mMedicine;
     }
 }

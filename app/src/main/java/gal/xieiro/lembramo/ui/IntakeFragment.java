@@ -29,17 +29,12 @@ import gal.xieiro.lembramo.util.Utils;
 
 public class IntakeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String SCHEDULE = "schedule";
 
-    // TODO: Rename and change types of parameters
     private String mSchedule;
-
     private RecyclerView mIntakeList;
     private IntakeAdapter mIntakeAdapter;
 
-    // TODO: Rename and change types of parameters
     public static IntakeFragment newInstance(String schedule) {
         IntakeFragment fragment = new IntakeFragment();
         Bundle args = new Bundle();

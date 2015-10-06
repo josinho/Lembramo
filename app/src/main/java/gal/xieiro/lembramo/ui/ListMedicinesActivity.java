@@ -37,6 +37,8 @@ import gal.xieiro.lembramo.util.Utils;
 public class ListMedicinesActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    //TODO comprobar por qué ImageLoader carga imágenes que no corresponden con la medicina
+
     private static final int LOADER_ID = 1;
 
     private Context mContext;
