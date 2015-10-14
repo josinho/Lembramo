@@ -126,6 +126,8 @@ public class Utils {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
             c.setTime(sdf.parse(date));
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
             return c;
         } catch (ParseException e) {
             System.out.println(e.getMessage());

@@ -157,7 +157,7 @@ public class IntakeFragment extends Fragment {
         for (int i = 0; i < intakes.size(); i++) {
             MedicineIntake intake = intakes.get(i);
             if (intake.isChecked()) {
-                s.append(sdf.format(intake.getHour().getTime())).
+                s.append(sdf.format(intake.getDate().getTime())).
                         append(",").append(intake.getDose()).append(";");
             }
         }
@@ -204,7 +204,7 @@ public class IntakeFragment extends Fragment {
             // Get the data model based on position
             final MedicineIntake intake = mIntakes.get(position);
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            viewHolder.hour.setText(sdf.format(intake.getHour().getTime()));
+            viewHolder.hour.setText(sdf.format(intake.getDate().getTime()));
 
             if (intake.isChecked()) {
                 viewHolder.hour.setChecked(true);

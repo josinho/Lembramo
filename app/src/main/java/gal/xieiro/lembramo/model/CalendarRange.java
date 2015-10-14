@@ -23,6 +23,5 @@ public class CalendarRange {
     public boolean isBeforeRange(Calendar c) {
         return c.before(start);
     }
-
 }
 
