@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.MedicamentContentProvider;
+import gal.xieiro.lembramo.db.MedicineContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.util.Utils;
 
@@ -50,7 +50,7 @@ public class ViewPagerActivity extends BaseActivity implements
             //modo editar
             setToolbarTitle(R.string.title_edit_medicine);
             Bundle bundle = new Bundle();
-            bundle.putLong(DBContract.Medicamentos._ID, id);
+            bundle.putLong(DBContract.Medicines._ID, id);
             getSupportLoaderManager().initLoader(LOADER_ID, bundle, this);
         }
 
@@ -101,21 +101,21 @@ public class ViewPagerActivity extends BaseActivity implements
 
     protected void saveMedicineBD() {
         ContentValues cv = new ContentValues();
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_NAME, mMedicine.getName());
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_COMMENT, mMedicine.getComment());
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO, mMedicine.getPillboxImage());
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO, mMedicine.getPillImage());
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_STARTDATE, mMedicine.getStartDate());
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_RECURRENCE, mMedicine.getRecurrenceRule());
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_SCHEDULE, mMedicine.getSchedule());
+        cv.put(DBContract.Medicines.COLUMN_NAME_NAME, mMedicine.getName());
+        cv.put(DBContract.Medicines.COLUMN_NAME_COMMENT, mMedicine.getComment());
+        cv.put(DBContract.Medicines.COLUMN_NAME_BOXPHOTO, mMedicine.getPillboxImage());
+        cv.put(DBContract.Medicines.COLUMN_NAME_MEDPHOTO, mMedicine.getPillImage());
+        cv.put(DBContract.Medicines.COLUMN_NAME_STARTDATE, mMedicine.getStartDate());
+        cv.put(DBContract.Medicines.COLUMN_NAME_RECURRENCE, mMedicine.getRecurrenceRule());
+        cv.put(DBContract.Medicines.COLUMN_NAME_SCHEDULE, mMedicine.getSchedule());
 
 
         if (mMedicine.getId() == Utils.NO_ID) {
             //create
-            getContentResolver().insert(MedicamentContentProvider.CONTENT_URI, cv);
+            getContentResolver().insert(MedicineContentProvider.CONTENT_URI, cv);
         } else {
             //update
-            String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + mMedicine.getId();
+            String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + mMedicine.getId();
             getContentResolver().update(Uri.parse(uri), cv, null, null);
         }
     }
@@ -221,8 +221,8 @@ public class ViewPagerActivity extends BaseActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        long key = args.getLong(DBContract.Medicamentos._ID);
-        String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + key;
+        long key = args.getLong(DBContract.Medicines._ID);
+        String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + key;
         return new CursorLoader(this, Uri.parse(uri), null, null, null, null);
     }
 
@@ -230,14 +230,14 @@ public class ViewPagerActivity extends BaseActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c != null) {
             c.moveToFirst();
-            mMedicine.setId(c.getLong(c.getColumnIndex(DBContract.Medicamentos._ID)));
-            mMedicine.setName(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_NAME)));
-            mMedicine.setComment(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_COMMENT)));
-            mMedicine.setPillboxImage(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO)));
-            mMedicine.setPillImage(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO)));
-            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_STARTDATE)));
-            mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_RECURRENCE)));
-            mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_SCHEDULE)));
+            mMedicine.setId(c.getLong(c.getColumnIndex(DBContract.Medicines._ID)));
+            mMedicine.setName(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_NAME)));
+            mMedicine.setComment(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_COMMENT)));
+            mMedicine.setPillboxImage(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_BOXPHOTO)));
+            mMedicine.setPillImage(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_MEDPHOTO)));
+            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE)));
+            mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE)));
 
             Intent intent = new Intent("MedicineLoaded");
             intent.putExtra("medicine", mMedicine);

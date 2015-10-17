@@ -10,10 +10,10 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-public class MedicamentContentProvider extends ContentProvider {
+public class IntakeContentProvider extends ContentProvider {
 
     public static final Uri CONTENT_URI =
-            Uri.parse("content://gal.xieiro.lembramo.provider/medicamentos");
+            Uri.parse("content://gal.xieiro.lembramo.provider/intakes");
     private static final int ALLROWS = 1;
     private static final int SINGLE_ROW = 2;
 
@@ -22,8 +22,8 @@ public class MedicamentContentProvider extends ContentProvider {
 
     static {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        mUriMatcher.addURI("gal.xieiro.lembramo.provider", "medicamentos", ALLROWS);
-        mUriMatcher.addURI("gal.xieiro.lembramo.provider", "medicamentos/#", SINGLE_ROW);
+        mUriMatcher.addURI("gal.xieiro.lembramo.provider", "intakes", ALLROWS);
+        mUriMatcher.addURI("gal.xieiro.lembramo.provider", "intakes/#", SINGLE_ROW);
     }
 
     @Override
@@ -36,9 +36,9 @@ public class MedicamentContentProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (mUriMatcher.match(uri)) {
             case ALLROWS:
-                return "vnd.android.cursor.dir/vnd.xieiro.medicament";
+                return "vnd.android.cursor.dir/vnd.xieiro.intake";
             case SINGLE_ROW:
-                return "vnd.android.cursor.item/vnd.xieiro.medicament";
+                return "vnd.android.cursor.item/vnd.xieiro.intake";
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -55,13 +55,13 @@ public class MedicamentContentProvider extends ContentProvider {
         String having = null;
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(DBContract.Medicamentos.TABLE_NAME);
+        queryBuilder.setTables(DBContract.Intakes.TABLE_NAME);
 
         // If this is a row query, limit the result set to the passed in row.
         switch (mUriMatcher.match(uri)) {
             case SINGLE_ROW:
                 String rowID = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(DBContract.Medicamentos._ID + "=" + rowID);
+                queryBuilder.appendWhere(DBContract.Intakes._ID + "=" + rowID);
             default:
                 break;
         }
@@ -81,7 +81,7 @@ public class MedicamentContentProvider extends ContentProvider {
         switch (mUriMatcher.match(uri)) {
             case SINGLE_ROW:
                 String rowID = uri.getPathSegments().get(1);
-                selection = DBContract.Medicamentos._ID + "=" + rowID
+                selection = DBContract.Intakes._ID + "=" + rowID
                         + (!TextUtils.isEmpty(selection) ?
                         " AND (" + selection + ')' : "");
             default:
@@ -94,7 +94,7 @@ public class MedicamentContentProvider extends ContentProvider {
             selection = "1";
 
         // Execute the deletion.
-        int deleteCount = db.delete(DBContract.Medicamentos.TABLE_NAME, selection, selectionArgs);
+        int deleteCount = db.delete(DBContract.Intakes.TABLE_NAME, selection, selectionArgs);
 
         // Notify any observers of the change in the data set.
         getContext().getContentResolver().notifyChange(uri, null);
@@ -113,8 +113,7 @@ public class MedicamentContentProvider extends ContentProvider {
         String nullColumnHack = null;
 
         // Insert the values into the table
-        long id = db.insert(DBContract.Medicamentos.TABLE_NAME,
-                nullColumnHack, values);
+        long id = db.insert(DBContract.Intakes.TABLE_NAME, nullColumnHack, values);
 
         if (id > -1) {
             // Construct and return the URI of the newly inserted row.
@@ -138,7 +137,7 @@ public class MedicamentContentProvider extends ContentProvider {
         switch (mUriMatcher.match(uri)) {
             case SINGLE_ROW:
                 String rowID = uri.getPathSegments().get(1);
-                selection = DBContract.Medicamentos._ID + "=" + rowID
+                selection = DBContract.Intakes._ID + "=" + rowID
                         + (!TextUtils.isEmpty(selection) ?
                         " AND (" + selection + ')' : "");
             default:
@@ -146,7 +145,7 @@ public class MedicamentContentProvider extends ContentProvider {
         }
 
         // Perform the update.
-        int updateCount = db.update(DBContract.Medicamentos.TABLE_NAME,
+        int updateCount = db.update(DBContract.Intakes.TABLE_NAME,
                 values, selection, selectionArgs);
 
         // Notify any observers of the change in the data set.

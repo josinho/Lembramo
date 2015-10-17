@@ -63,7 +63,7 @@
         </activity>
 
         <provider
-            android:name=".db.MedicamentContentProvider"
+            android:name=".db.MedicineContentProvider"
             android:authorities="gal.xieiro.lembramo.provider"
             android:exported="false" />
 

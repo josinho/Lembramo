@@ -29,7 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.MedicamentContentProvider;
+import gal.xieiro.lembramo.db.MedicineContentProvider;
 import gal.xieiro.lembramo.ui.component.SquareImageView;
 import gal.xieiro.lembramo.util.Utils;
 
@@ -192,11 +192,11 @@ public class ListMedicinesActivity extends BaseActivity implements
             ImageLoader imageLoader;
 
             if (cursor != null) {
-                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos._ID);
+                columnIndex = cursor.getColumnIndex(DBContract.Medicines._ID);
                 final long id = cursor.getLong(columnIndex);
 
                 final ImageView alarm = (ImageView) view.findViewById(R.id.alarm);
-                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_ALARM);
+                columnIndex = cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ALARM);
                 final int alarmStatus = cursor.getInt(columnIndex);
                 if (alarmStatus == 0) {
                     alarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
@@ -221,14 +221,14 @@ public class ListMedicinesActivity extends BaseActivity implements
 
                 // tratar el nombre del medicamento
                 TextView nombre = (TextView) view.findViewById(R.id.nombre);
-                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_NAME);
+                columnIndex = cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_NAME);
                 nombre.setText(cursor.getString(columnIndex));
 
                 imageLoader = ImageLoader.getInstance();
 
                 // tratar la imagen de la caja
                 SquareImageView caja = (SquareImageView) view.findViewById(R.id.imagenCaja);
-                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO);
+                columnIndex = cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_BOXPHOTO);
                 path = cursor.getString(columnIndex);
                 if (path == null)
                     caja.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.caja));
@@ -237,7 +237,7 @@ public class ListMedicinesActivity extends BaseActivity implements
 
                 //tratar la imagen de la pastilla
                 SquareImageView pastilla = (SquareImageView) view.findViewById(R.id.imagenPastilla);
-                columnIndex = cursor.getColumnIndex(DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO);
+                columnIndex = cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_MEDPHOTO);
                 path = cursor.getString(columnIndex);
                 if (path == null)
                     pastilla.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pastilla));
@@ -313,7 +313,7 @@ public class ListMedicinesActivity extends BaseActivity implements
         }
 
         private void deleteMed() {
-            String where = DBContract.Medicamentos._ID + " IN(";
+            String where = DBContract.Medicines._ID + " IN(";
             SparseBooleanArray checked = mAdapter.getSelectedPositions();
             for (int i = (checked.size() - 1); i >= 0; i--) {
                 if (checked.valueAt(i)) {
@@ -321,7 +321,7 @@ public class ListMedicinesActivity extends BaseActivity implements
                 }
             }
             where = where.substring(0, where.length() - 1) + ")";
-            int result = getContentResolver().delete(MedicamentContentProvider.CONTENT_URI, where, null);
+            int result = getContentResolver().delete(MedicineContentProvider.CONTENT_URI, where, null);
             Toast.makeText(mContext,
                     getResources().getQuantityString(R.plurals.deleted, result, result),
                     Toast.LENGTH_LONG).show();
@@ -333,13 +333,13 @@ public class ListMedicinesActivity extends BaseActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = {
-                DBContract.Medicamentos._ID,
-                DBContract.Medicamentos.COLUMN_NAME_ALARM,
-                DBContract.Medicamentos.COLUMN_NAME_NAME,
-                DBContract.Medicamentos.COLUMN_NAME_BOXPHOTO,
-                DBContract.Medicamentos.COLUMN_NAME_MEDPHOTO
+                DBContract.Medicines._ID,
+                DBContract.Medicines.COLUMN_NAME_ALARM,
+                DBContract.Medicines.COLUMN_NAME_NAME,
+                DBContract.Medicines.COLUMN_NAME_BOXPHOTO,
+                DBContract.Medicines.COLUMN_NAME_MEDPHOTO
         };
-        return new CursorLoader(this, MedicamentContentProvider.CONTENT_URI, projection, null, null, null);
+        return new CursorLoader(this, MedicineContentProvider.CONTENT_URI, projection, null, null, null);
     }
 
     @Override
@@ -359,9 +359,9 @@ public class ListMedicinesActivity extends BaseActivity implements
 
     private void updateAlarmStatus(long id, int alarmStatus) {
         ContentValues cv = new ContentValues();
-        cv.put(DBContract.Medicamentos.COLUMN_NAME_ALARM, alarmStatus);
+        cv.put(DBContract.Medicines.COLUMN_NAME_ALARM, alarmStatus);
 
-        String uri = MedicamentContentProvider.CONTENT_URI.toString() + "/" + id;
+        String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + id;
         getContentResolver().update(Uri.parse(uri), cv, null, null);
         restartLoader();
     }

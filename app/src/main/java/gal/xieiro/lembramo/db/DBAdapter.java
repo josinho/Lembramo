@@ -1,8 +1,6 @@
 package gal.xieiro.lembramo.db;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -26,7 +24,8 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
             try {
-                db.execSQL(DBContract.Medicamentos.CREATE_TABLE);
+                db.execSQL(DBContract.Medicines.CREATE_TABLE);
+                db.execSQL(DBContract.Intakes.CREATE_TABLE);
                 Log.v(TAG, "Base de datos creada con éxito");
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -38,7 +37,8 @@ public class DBAdapter {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Actualizando Base de datos desde version " + oldVersion + " a "
                     + newVersion + ", lo que destruirá todos los datos");
-            db.execSQL(DBContract.Medicamentos.DELETE_TABLE);
+            db.execSQL(DBContract.Medicines.DELETE_TABLE);
+            db.execSQL(DBContract.Intakes.DELETE_TABLE);
             onCreate(db);
         }
     }
