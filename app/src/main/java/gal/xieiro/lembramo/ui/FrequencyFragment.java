@@ -91,8 +91,9 @@ public class FrequencyFragment extends Fragment implements
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Calendar newCalendar =
-                                Utils.getCalendarDateFromString(mMedicine.getStartDate());
+                        final Calendar now = Calendar.getInstance();
+                        final Calendar startDate = Utils.getCalendarDateFromString(mMedicine.getStartDate());
+                        final Calendar minDate = now.before(startDate) ? now : startDate;
                         DatePickerDialog dpd = new DatePickerDialog(
                                 getActivity(),
                                 new DatePickerDialog.OnDateSetListener() {
@@ -100,16 +101,20 @@ public class FrequencyFragment extends Fragment implements
                                                           int monthOfYear, int dayOfMonth) {
                                         Calendar newDate = Calendar.getInstance();
                                         newDate.set(year, monthOfYear, dayOfMonth);
+                                        if(newDate.before(minDate)) newDate = minDate;
+
                                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                                         mMedicine.setStartDate(sdf.format(newDate.getTime()));
                                         fechaInicio.setText(mMedicine.getStartDate());
                                         mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
                                     }
                                 },
-                                newCalendar.get(Calendar.YEAR),
-                                newCalendar.get(Calendar.MONTH),
-                                newCalendar.get(Calendar.DAY_OF_MONTH)
+                                startDate.get(Calendar.YEAR),
+                                startDate.get(Calendar.MONTH),
+                                startDate.get(Calendar.DAY_OF_MONTH)
                         );
+                        //no permitir fechas anteriores a la ya fijada salvo si es posterior a hoy
+                        dpd.getDatePicker().setMinDate(minDate.getTime().getTime());
                         dpd.show();
                     }
                 }

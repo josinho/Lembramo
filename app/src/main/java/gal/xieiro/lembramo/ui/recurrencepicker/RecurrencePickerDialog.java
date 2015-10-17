@@ -73,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
+
 public class RecurrencePickerDialog extends DialogFragment implements OnItemSelectedListener,
         OnCheckedChangeListener, OnClickListener,
         android.widget.RadioGroup.OnCheckedChangeListener, DatePickerDialog.OnDateSetListener {
@@ -1217,6 +1218,9 @@ public class RecurrencePickerDialog extends DialogFragment implements OnItemSele
             //mDatePickerDialog.setFirstDayOfWeek(Utils.getFirstDayOfWeekAsCalendar(getActivity()));
             //mDatePickerDialog.setYearRange(Utils.YEAR_MIN, Utils.YEAR_MAX);
             //mDatePickerDialog.show(getFragmentManager(), FRAG_TAG_DATE_PICKER);
+
+            //no permitir una fecha anterior a ahora
+            mDatePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTime().getTime());
             mDatePickerDialog.show();
         } else if (mDone == v) {
             String rrule;
