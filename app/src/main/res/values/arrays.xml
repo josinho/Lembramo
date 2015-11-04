@@ -4,6 +4,7 @@
         <item>Medicamento</item>
         <item>Frecuencia</item>
         <item>Comentario</item>
+        <item>Shapes Test</item>
     </string-array>
 
     <string-array name="scheduler_options">
@@ -11,4 +12,23 @@
         <item>x veces al día</item>
         <item>Con las comidas</item>
     </string-array>
+
+    <array name="drawables_list">
+        <item>@drawable/ic_drug_ampoules2_black</item>
+        <item>@drawable/ic_drug_bandaid2_black</item>
+        <item>@drawable/ic_drug_bottle2_black</item>
+        <item>@drawable/ic_drug_capsule_black</item>
+        <item>@drawable/ic_drug_glass_black</item>
+        <item>@drawable/ic_drug_infusion2_black</item>
+        <item>@drawable/ic_drug_inhaler_black</item>
+        <item>@drawable/ic_drug_paste2_black</item>
+        <item>@drawable/ic_drug_pill2_black</item>
+        <item>@drawable/ic_drug_pipette_black</item>
+        <item>@drawable/ic_drug_ring_black</item>
+        <item>@drawable/ic_drug_spray2_black</item>
+        <item>@drawable/ic_drug_syringe_black</item>
+        <item>@drawable/ic_drug_syrup2_black</item>
+        <item>@drawable/ic_drug_tablet_black</item>
+        <item>@drawable/ic_drug_tube_black</item>
+    </array>
 </resources>

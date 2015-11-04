@@ -7,11 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 import android.text.format.Time;
 import android.view.LayoutInflater;
@@ -148,6 +151,14 @@ public class FrequencyFragment extends Fragment implements
 
 
         ImageView scheduleWizard = (ImageView) view.findViewById(R.id.schedulerWizard);
+
+
+        Drawable normalDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_alarm_black_24dp);
+        Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
+        DrawableCompat.setTint(wrapDrawable, getResources().getColor(R.color.bpRed));
+        scheduleWizard.setImageDrawable(wrapDrawable);
+
+
         scheduleWizard.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
