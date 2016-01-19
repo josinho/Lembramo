@@ -39,6 +39,8 @@ public final class DBContract {
         public static final String COLUMN_NAME_COMMENT = "comment";
         public static final String COLUMN_NAME_BOXPHOTO = "boxphoto";
         public static final String COLUMN_NAME_MEDPHOTO = "medphoto";
+
+        //información del tratamiento
         public static final String COLUMN_NAME_STARTDATE = "startdate";
         public static final String COLUMN_NAME_RECURRENCE = "recurrence";
         public static final String COLUMN_NAME_SCHEDULE = "shedule";
