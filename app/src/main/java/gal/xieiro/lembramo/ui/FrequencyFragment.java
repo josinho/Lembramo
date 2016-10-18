@@ -32,7 +32,7 @@ import java.util.List;
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.model.MedicineIntake;
-import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrence;
+import gal.xieiro.lembramo.recurrence.EventRecurrence;
 import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrenceFormatter;
 import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
 import gal.xieiro.lembramo.util.Utils;
@@ -106,7 +106,7 @@ public class FrequencyFragment extends Fragment implements
                                         newDate.set(year, monthOfYear, dayOfMonth);
                                         if(newDate.before(minDate)) newDate = minDate;
 
-                                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                        SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT);
                                         mMedicine.setStartDate(sdf.format(newDate.getTime()));
                                         fechaInicio.setText(mMedicine.getStartDate());
                                         mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));

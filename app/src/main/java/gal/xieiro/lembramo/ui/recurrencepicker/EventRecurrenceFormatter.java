@@ -25,6 +25,7 @@ import android.util.TimeFormatException;
 import java.util.Calendar;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.recurrence.EventRecurrence;
 
 public class EventRecurrenceFormatter {
 

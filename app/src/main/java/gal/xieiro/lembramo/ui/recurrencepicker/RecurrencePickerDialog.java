@@ -65,6 +65,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.recurrence.EventRecurrence;
+
 import android.app.DatePickerDialog;
 
 

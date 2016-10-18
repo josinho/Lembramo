@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gal.xieiro.lembramo.ui.recurrencepicker;
+package gal.xieiro.lembramo.recurrence;
 
 import android.text.TextUtils;
 import android.text.format.Time;
@@ -27,6 +27,7 @@ import java.util.HashMap;
 /**
  * Event recurrence utility functions.
  */
+@SuppressWarnings("deprecation")
 public class EventRecurrence {
 
     private static String TAG = "EventRecur";

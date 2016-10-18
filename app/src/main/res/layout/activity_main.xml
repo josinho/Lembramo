@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"/>
@@ -17,5 +17,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="editMedicamentos"/>
+
+    <Button
+        android:text="Test expansión"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="testExpansion"
+        android:id="@+id/button2" />
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="100"
+        android:id="@+id/resultados"/>
+</ScrollView>
+
 
 </LinearLayout>

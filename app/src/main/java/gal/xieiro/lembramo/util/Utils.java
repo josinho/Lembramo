@@ -30,6 +30,9 @@ public class Utils {
     }
 
     public static final long NO_ID = -1;
+    public static final String DATE_FORMAT = "dd/MM/yyyy";
+    public static final String HOUR_FORMAT = "HH:mm";
+
     private static final String TAG = "ImageUtils";
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
@@ -80,12 +83,12 @@ public class Utils {
     }
 
     public static String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         return sdf.format(new Date());
     }
 
     public static String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat(HOUR_FORMAT);
         return sdf.format(new Date());
     }
 
@@ -104,7 +107,7 @@ public class Utils {
 
     public static Calendar parseTime(String time) {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat(HOUR_FORMAT);
         try {
             c.setTime(sdf.parse(time));
             return c;
@@ -123,7 +126,7 @@ public class Utils {
 
     public static Calendar getCalendarDateFromString(String date) {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         try {
             c.setTime(sdf.parse(date));
             c.set(Calendar.HOUR_OF_DAY, 0);
@@ -136,7 +139,7 @@ public class Utils {
     }
 
     public static Time getTimeDateFromString(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         try {
             Time t = new Time();
             t.set(sdf.parse(date).getTime());

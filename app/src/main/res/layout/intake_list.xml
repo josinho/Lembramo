@@ -28,3 +28,4 @@
         app:layout_behavior="gal.xieiro.lembramo.ui.component.ScrollAwareFABBehavior"
         app:pressedTranslationZ="12dp" />
 </android.support.design.widget.CoordinatorLayout>
+

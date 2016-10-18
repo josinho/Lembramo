@@ -4,7 +4,7 @@
 
     <uses-sdk
         android:minSdkVersion="13"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="24" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -38,14 +38,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.DetailMedicineActivity"
-            android:label="@string/title_new_medicine"
-            android:parentActivityName=".ui.ListMedicinesActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ListMedicinesActivity" />
         </activity>
         <activity
             android:name=".ui.TouchImageActivity"

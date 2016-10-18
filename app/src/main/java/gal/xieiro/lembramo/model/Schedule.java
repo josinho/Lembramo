@@ -12,8 +12,7 @@ import java.util.List;
 
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.IntakeContentProvider;
-import gal.xieiro.lembramo.db.MedicineContentProvider;
-import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrence;
+import gal.xieiro.lembramo.recurrence.EventRecurrence;
 import gal.xieiro.lembramo.util.Utils;
 
 public class Schedule {

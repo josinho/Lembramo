@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.ui.component.DividerItemDecoration;
 
 public class ShapeFragment extends Fragment {
 
@@ -54,6 +55,11 @@ public class ShapeFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
         mShapeList = (RecyclerView) view.findViewById(R.id.shapeList);
+        /*
+        mShapeList.addItemDecoration(
+                new DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST)
+        );
+        */
         mShapeList.setLayoutManager(linearLayoutManager);
         mShapeList.setAdapter(mShapeAdapter);
 
