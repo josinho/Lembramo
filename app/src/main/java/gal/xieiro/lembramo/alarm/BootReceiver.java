@@ -1,5 +1,7 @@
 package gal.xieiro.lembramo.alarm;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,10 +17,26 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED"))
-        {
-            //alarm.setAlarm(context);
-            //aquí se restaurarían las alarmas después de inciar el terminal
+        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+            initScheduleAlarm(context);
         }
+    }
+
+    public static void initScheduleAlarm(Context context) {
+
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                ScheduleReceiver.REQUEST_CODE,
+                new Intent(context, ScheduleReceiver.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setInexactRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                System.currentTimeMillis(),
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+        );
     }
 }

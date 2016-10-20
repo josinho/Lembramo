@@ -1,6 +1,10 @@
 package gal.xieiro.lembramo;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -8,6 +12,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
+import gal.xieiro.lembramo.alarm.BootReceiver;
+import gal.xieiro.lembramo.alarm.ScheduleReceiver;
 import gal.xieiro.lembramo.util.Utils;
 
 public class LembramoApp extends Application {
@@ -16,6 +22,7 @@ public class LembramoApp extends Application {
     public void onCreate() {
         super.onCreate();
         initUniversalImageLoader();
+        BootReceiver.initScheduleAlarm(this);
     }
 
     private void initUniversalImageLoader() {

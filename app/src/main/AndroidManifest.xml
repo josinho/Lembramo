@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -50,9 +51,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ListMedicinesActivity" />
         </activity>
-        <activity android:name=".ui.preference.PreferenceActivity">
-
-        </activity>
+        <activity android:name=".ui.preference.PreferenceActivity" />
 
         <provider
             android:name=".db.MedicineContentProvider"
@@ -60,13 +59,21 @@
             android:exported="false" />
 
         <receiver
-            android:name=".alarm.BootReceiver"
-            android:enabled="false">
+            android:name=".alarm.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".alarm.ScheduleService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".alarm.ScheduleReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":remote" />
     </application>
 
 </manifest>
