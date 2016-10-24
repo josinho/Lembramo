@@ -9,6 +9,7 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -92,6 +93,10 @@ public class Utils {
         return sdf.format(new Date());
     }
 
+    public static String getStringDate(long millis) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        return sdf.format(new Date(millis));
+    }
 
     public static int getHour(String time) {
         String[] pieces = time.split(":");
@@ -138,6 +143,12 @@ public class Utils {
         return null;
     }
 
+    public static Calendar getCalendarDateFromMillis(long millis) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(millis);
+        return c;
+    }
+
     public static Time getTimeDateFromString(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         try {
@@ -148,6 +159,12 @@ public class Utils {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public static Time getTimeDateFromMillis(long millis) {
+        Time t = new Time();
+        t.set(millis);
+        return t;
     }
 
     /**

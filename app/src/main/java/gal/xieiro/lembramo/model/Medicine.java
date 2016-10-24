@@ -9,7 +9,8 @@ public class Medicine implements Parcelable {
     private String comment;
     private String pillboxImage;
     private String pillImage;
-    private String startDate;
+    private long startDate;
+    private long endDate;
     private String recurrenceRule;
     private String schedule;
 
@@ -37,8 +38,12 @@ public class Medicine implements Parcelable {
         return pillImage;
     }
 
-    public String getStartDate() {
+    public long getStartDate() {
         return startDate;
+    }
+
+    public long getEndDate() {
+        return endDate;
     }
 
     public String getRecurrenceRule() {
@@ -69,8 +74,12 @@ public class Medicine implements Parcelable {
         this.pillImage = pillImage;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(long startDate) {
         this.startDate = startDate;
+    }
+
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
     }
 
     public void setRecurrenceRule(String recurrenceRule) {
@@ -98,7 +107,8 @@ public class Medicine implements Parcelable {
         comment = in.readString();
         pillboxImage = in.readString();
         pillImage = in.readString();
-        startDate = in.readString();
+        startDate = in.readLong();
+        endDate = in.readLong();
         recurrenceRule = in.readString();
         schedule = in.readString();
     }
@@ -109,7 +119,8 @@ public class Medicine implements Parcelable {
         out.writeString(comment);
         out.writeString(pillboxImage);
         out.writeString(pillImage);
-        out.writeString(startDate);
+        out.writeLong(startDate);
+        out.writeLong(endDate);
         out.writeString(recurrenceRule);
         out.writeString(schedule);
     }

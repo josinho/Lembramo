@@ -65,6 +65,7 @@ public class MainActivity extends BaseActivity implements
                 DBContract.Medicines._ID,
                 DBContract.Medicines.COLUMN_NAME_NAME,
                 DBContract.Medicines.COLUMN_NAME_STARTDATE,
+                DBContract.Medicines.COLUMN_NAME_ENDDATE,
                 DBContract.Medicines.COLUMN_NAME_RECURRENCE,
                 DBContract.Medicines.COLUMN_NAME_SCHEDULE
         };
@@ -77,21 +78,23 @@ public class MainActivity extends BaseActivity implements
             c.moveToFirst();
             mMedicine.setId(c.getLong(c.getColumnIndex(DBContract.Medicines._ID)));
             mMedicine.setName(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_NAME)));
-            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            mMedicine.setStartDate(c.getLong(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            mMedicine.setEndDate(c.getLong(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ENDDATE)));
             mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE)));
             mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE)));
         }
 
         String resultado = "ID = " + mMedicine.getId() + "\n" +
                 "Name = " + mMedicine.getName() + "\n" +
-                "StartDate = " + mMedicine.getStartDate() + "\n" +
+                "StartDate = " + Utils.getStringDate(mMedicine.getStartDate()) + "\n" +
+                "EndDate = " + Utils.getStringDate(mMedicine.getEndDate()) + "\n" +
                 "Recurrence = " + mMedicine.getRecurrenceRule() + "\n" +
                 "Schedule = " + mMedicine.getSchedule() + "\n\n";
 
-        Time dtStart = Utils.getTimeDateFromString(mMedicine.getStartDate());
+        Time dtStart = Utils.getTimeDateFromMillis(mMedicine.getStartDate());
         RecurrenceSet recurrenceSet = new RecurrenceSet(mMedicine.getRecurrenceRule(), null, null, null);
-        long rangeStartMillis = Utils.getTimeDateFromString("01/12/2016").toMillis(false);
-        long rangeEndMilllis = Utils.getTimeDateFromString("01/03/2017").toMillis(false);
+        long rangeStartMillis = dtStart.toMillis(false); //Utils.getTimeDateFromString("01/12/2016").toMillis(false);
+        long rangeEndMilllis = -1; //Utils.getTimeDateFromString("01/03/2017").toMillis(false);
 
         try {
             RecurrenceProcessor rp = new RecurrenceProcessor();
@@ -100,6 +103,8 @@ public class MainActivity extends BaseActivity implements
             for (long l : dates) {
                 resultado = resultado + sdf.format(l) + "\n";
             }
+
+            resultado = resultado + "Last ocurrence: " + sdf.format(rp.getLastOccurence(dtStart,recurrenceSet));
         } catch (DateException de) {
             Log.i("MainActivity", "DateException al hacer expand");
         }

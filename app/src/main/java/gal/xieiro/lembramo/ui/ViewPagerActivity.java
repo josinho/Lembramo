@@ -15,12 +15,15 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.alarm.ScheduleHelper;
+import gal.xieiro.lembramo.alarm.ScheduleService;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.MedicineContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
@@ -109,6 +112,9 @@ public class ViewPagerActivity extends BaseActivity implements
         cv.put(DBContract.Medicines.COLUMN_NAME_RECURRENCE, mMedicine.getRecurrenceRule());
         cv.put(DBContract.Medicines.COLUMN_NAME_SCHEDULE, mMedicine.getSchedule());
 
+        //calcular posible fecha final del tratamiento
+        ScheduleHelper.getLastIntake(mMedicine);
+        cv.put(DBContract.Medicines.COLUMN_NAME_ENDDATE, mMedicine.getEndDate());
 
         if (mMedicine.getId() == Utils.NO_ID) {
             //create
@@ -242,7 +248,7 @@ public class ViewPagerActivity extends BaseActivity implements
             mMedicine.setComment(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_COMMENT)));
             mMedicine.setPillboxImage(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_BOXPHOTO)));
             mMedicine.setPillImage(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_MEDPHOTO)));
-            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            mMedicine.setStartDate(c.getLong(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
             mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE)));
             mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE)));
 

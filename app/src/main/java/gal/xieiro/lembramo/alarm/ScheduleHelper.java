@@ -1,9 +1,10 @@
-package gal.xieiro.lembramo.model;
+package gal.xieiro.lembramo.alarm;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.text.format.Time;
+import android.util.Log;
 import android.util.TimeFormatException;
 
 import java.util.ArrayList;
@@ -12,13 +13,24 @@ import java.util.List;
 
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.IntakeContentProvider;
+import gal.xieiro.lembramo.db.MedicineContentProvider;
+import gal.xieiro.lembramo.model.CalendarRange;
+import gal.xieiro.lembramo.model.Medicine;
+import gal.xieiro.lembramo.model.MedicineIntake;
+import gal.xieiro.lembramo.recurrence.DateException;
 import gal.xieiro.lembramo.recurrence.EventRecurrence;
+import gal.xieiro.lembramo.recurrence.RecurrenceProcessor;
+import gal.xieiro.lembramo.recurrence.RecurrenceSet;
 import gal.xieiro.lembramo.util.Utils;
 
-public class Schedule {
+public class ScheduleHelper {
+    private static final String TAG = "ScheduleHelper";
+
     private final int BY_DATE = 1;
     private final int BY_INTAKES = 2;
     private final int FOREVER = 3;
+
+    private static final int LOADER_ID = 1;
 
     private Context context;
     private Calendar startSchedule;
@@ -27,7 +39,7 @@ public class Schedule {
     private ArrayList<MedicineIntake> schedule;
 
 
-    public Schedule(Context context, String startDate, String recurrenceRule, String intakesRule) {
+    public ScheduleHelper(Context context, String startDate, String recurrenceRule, String intakesRule) {
         this.context = context;
         schedule = new ArrayList<>();
 
@@ -173,14 +185,72 @@ public class Schedule {
                 null  //sortOrder
         );
 
-        if(cursor != null) {
+        if (cursor != null) {
             cursor.moveToFirst();
-            int result =  cursor.getInt(0);
+            int result = cursor.getInt(0);
             cursor.close();
-            if(result < max) {
+            if (result < max) {
                 return false;
             }
         }
         return true;
+    }
+
+    public static void getLastIntake(Medicine medicine) {
+        RecurrenceSet recurrenceSet = new RecurrenceSet(medicine.getRecurrenceRule(), null, null, null);
+        RecurrenceProcessor rp = new RecurrenceProcessor();
+        try {
+            medicine.setEndDate(rp.getLastOccurence(
+                    Utils.getTimeDateFromMillis(medicine.getStartDate()),
+                    recurrenceSet
+            ));
+        } catch (DateException de) {
+            medicine.setEndDate(0);
+            Log.i(TAG, de.getMessage());
+        }
+    }
+
+    private void hazElTrabajoDuro() {
+        String[] projection = {
+                DBContract.Medicines._ID,
+                DBContract.Medicines.COLUMN_NAME_ALARM,
+                DBContract.Medicines.COLUMN_NAME_STARTDATE,
+                DBContract.Medicines.COLUMN_NAME_RECURRENCE,
+                DBContract.Medicines.COLUMN_NAME_SCHEDULE
+        };
+
+        Cursor cursor = context.getContentResolver().query(
+                MedicineContentProvider.CONTENT_URI,
+                projection,
+                null, null, null
+        );
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                //medicina en vigor?
+                String startDate = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE));
+                Time dtStart = Utils.getTimeDateFromString(startDate);
+                String recurrenceRule = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
+
+                RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
+                RecurrenceProcessor rp = new RecurrenceProcessor();
+                long lastOcurrence;
+                try {
+                    lastOcurrence = rp.getLastOccurence(dtStart, recurrenceSet);
+                } catch (DateException de) {
+                    lastOcurrence = 0;
+                    Log.i(TAG, de.getMessage());
+                }
+
+                if (lastOcurrence == 0) {
+                    //no hay una fecha
+                } else if (lastOcurrence == -1) {
+                    //tratamiento es par siempre
+                } else {
+                    //fecha concreta
+
+                }
+            }
+        }
     }
 }

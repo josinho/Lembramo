@@ -86,16 +86,16 @@ public class FrequencyFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_frecuency, container, false);
 
         final TextView fechaInicio = (TextView) view.findViewById(R.id.fechaInicio);
-        mMedicine.setStartDate(Utils.getCurrentDate());
-        fechaInicio.setText(mMedicine.getStartDate());
-        mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
+        mMedicine.setStartDate(System.currentTimeMillis());
+        fechaInicio.setText(Utils.getStringDate(mMedicine.getStartDate()));
+        mEventRecurrence.setStartDate(Utils.getTimeDateFromMillis(mMedicine.getStartDate()));
 
         fechaInicio.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final Calendar now = Calendar.getInstance();
-                        final Calendar startDate = Utils.getCalendarDateFromString(mMedicine.getStartDate());
+                        final Calendar startDate = Utils.getCalendarDateFromMillis(mMedicine.getStartDate());
                         final Calendar minDate = now.before(startDate) ? now : startDate;
                         DatePickerDialog dpd = new DatePickerDialog(
                                 getActivity(),
@@ -106,10 +106,9 @@ public class FrequencyFragment extends Fragment implements
                                         newDate.set(year, monthOfYear, dayOfMonth);
                                         if(newDate.before(minDate)) newDate = minDate;
 
-                                        SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT);
-                                        mMedicine.setStartDate(sdf.format(newDate.getTime()));
-                                        fechaInicio.setText(mMedicine.getStartDate());
-                                        mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
+                                        mMedicine.setStartDate(newDate.getTimeInMillis());
+                                        fechaInicio.setText(Utils.getStringDate(mMedicine.getStartDate()));
+                                        mEventRecurrence.setStartDate(Utils.getTimeDateFromMillis(mMedicine.getStartDate()));
                                     }
                                 },
                                 startDate.get(Calendar.YEAR),
@@ -189,7 +188,7 @@ public class FrequencyFragment extends Fragment implements
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         mMedicine = intent.getParcelableExtra("medicine");
-                        fechaInicio.setText(mMedicine.getStartDate());
+                        fechaInicio.setText(Utils.getStringDate(mMedicine.getStartDate()));
                         populateRepeats(mMedicine.getRecurrenceRule());
                         mIntakeFragment.addIntakes(mMedicine.getSchedule());
                     }
@@ -207,7 +206,7 @@ public class FrequencyFragment extends Fragment implements
     }
 
     private void populateRepeats(String recurrenceRule) {
-        mEventRecurrence.setStartDate(Utils.getTimeDateFromString(mMedicine.getStartDate()));
+        mEventRecurrence.setStartDate(Utils.getTimeDateFromMillis(mMedicine.getStartDate()));
         if (!TextUtils.isEmpty(recurrenceRule)) {
             mEventRecurrence.parse(recurrenceRule);
             mRRule.setText(EventRecurrenceFormatter.getRepeatString(
