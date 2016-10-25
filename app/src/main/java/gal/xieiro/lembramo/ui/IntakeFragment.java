@@ -24,7 +24,7 @@ import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.ui.component.DividerItemDecoration;
 import gal.xieiro.lembramo.ui.component.DosePicker;
-import gal.xieiro.lembramo.util.Utils;
+import gal.xieiro.lembramo.util.TimeUtils;
 
 
 public class IntakeFragment extends Fragment {
@@ -129,7 +129,7 @@ public class IntakeFragment extends Fragment {
             String[] intakeStrings = schedule.split(";");
             for (String intakeString : intakeStrings) {
                 String[] intake = intakeString.split(",");
-                Calendar hour = Utils.parseTime(intake[0]);
+                Calendar hour = TimeUtils.parseTime(intake[0]);
                 MedicineIntake medicineIntake = new MedicineIntake(hour);
                 medicineIntake.setDose(Double.valueOf(intake[1]));
                 medicineIntake.setChecked(true);

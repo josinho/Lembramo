@@ -23,7 +23,6 @@ import gal.xieiro.lembramo.recurrence.RecurrenceProcessor;
 import gal.xieiro.lembramo.recurrence.RecurrenceSet;
 import gal.xieiro.lembramo.util.IntakeUtils;
 import gal.xieiro.lembramo.util.TimeUtils;
-import gal.xieiro.lembramo.util.Utils;
 
 public class ScheduleHelper {
     private static final String TAG = "ScheduleHelper";
@@ -43,10 +42,10 @@ public class ScheduleHelper {
     public ScheduleHelper(String startDate, String recurrenceRule, String intakesRule) {
         schedule = new ArrayList<>();
 
-        startSchedule = Utils.getCalendarDateFromString(startDate);
+        startSchedule = TimeUtils.getCalendarDateFromString(startDate);
 
         recurrence = new EventRecurrence();
-        recurrence.setStartDate(Utils.getTimeDateFromString(startDate));
+        recurrence.setStartDate(TimeUtils.getTimeDateFromString(startDate));
         if (recurrenceRule != null) {
             recurrence.parse(recurrenceRule);
         }
@@ -68,26 +67,53 @@ public class ScheduleHelper {
             recurrence.setStartDate(dtStart);
             recurrence.parse(recurrenceRule);
 
+            long[] dates;
+            int length;
             switch (getDurationType(recurrence)) {
                 case BY_DATE:
+                    dates = expand(dtStart, recurrenceRule);
+                    length = dates.length;
+                    if (length > 0) {
+                        medicine.setEndDate(dates[length - 1]);
+                    } else {
+                        medicine.setEndDate(0);
+                    }
                     break;
+
                 case BY_INTAKES:
+                    dates = expand(dtStart, recurrenceRule);
+                    length = dates.length;
+                    if (length > 0) {
+                        List<MedicineIntake> intakes = IntakeUtils.parseDailyIntakes(intakesRule);
+                        int dailyIntakes = intakes.size();
+                        if (length % dailyIntakes == 0) {
+                            medicine.setEndDate(dates[(length / dailyIntakes) - 1]);
+                        } else {
+                            medicine.setEndDate(dates[length / dailyIntakes]);
+                        }
+                    } else {
+                        medicine.setEndDate(0);
+                    }
                     break;
+
                 default: //forever
+                    medicine.setEndDate(-1);
                     break;
             }
-
-            RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
-            RecurrenceProcessor rp = new RecurrenceProcessor();
-            try {
-                rp.getLastOccurence(dtStart,recurrenceSet);
-            } catch (DateException de) {
-                medicine.setEndDate(0);
-                Log.e(TAG, de.getMessage());
-            }
-
-            medicine.setEndDate(0);
         }
+    }
+
+
+    private static long[] expand(Time dtStart, String recurrenceRule) {
+        RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
+        RecurrenceProcessor rp = new RecurrenceProcessor();
+        try {
+            return rp.expand(dtStart, recurrenceSet, dtStart.toMillis(false), -1);
+
+        } catch (DateException de) {
+            Log.e(TAG, de.getMessage());
+        }
+        return new long[0];
     }
 
     private static int getDurationType(EventRecurrence recurrence) {
@@ -230,7 +256,7 @@ public class ScheduleHelper {
             while (cursor.moveToNext()) {
                 //medicina en vigor?
                 String startDate = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE));
-                Time dtStart = Utils.getTimeDateFromString(startDate);
+                Time dtStart = TimeUtils.getTimeDateFromString(startDate);
                 String recurrenceRule = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
 
                 RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);

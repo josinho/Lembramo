@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -35,7 +34,7 @@ import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.recurrence.EventRecurrence;
 import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrenceFormatter;
 import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
-import gal.xieiro.lembramo.util.Utils;
+import gal.xieiro.lembramo.util.TimeUtils;
 
 
 public class FrequencyFragment extends Fragment implements
@@ -87,15 +86,15 @@ public class FrequencyFragment extends Fragment implements
 
         final TextView fechaInicio = (TextView) view.findViewById(R.id.fechaInicio);
         mMedicine.setStartDate(System.currentTimeMillis());
-        fechaInicio.setText(Utils.getStringDate(mMedicine.getStartDate()));
-        mEventRecurrence.setStartDate(Utils.getTimeDateFromMillis(mMedicine.getStartDate()));
+        fechaInicio.setText(TimeUtils.getStringDate(mMedicine.getStartDate()));
+        mEventRecurrence.setStartDate(TimeUtils.getTimeDateFromMillis(mMedicine.getStartDate()));
 
         fechaInicio.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final Calendar now = Calendar.getInstance();
-                        final Calendar startDate = Utils.getCalendarDateFromMillis(mMedicine.getStartDate());
+                        final Calendar startDate = TimeUtils.getCalendarDateFromMillis(mMedicine.getStartDate());
                         final Calendar minDate = now.before(startDate) ? now : startDate;
                         DatePickerDialog dpd = new DatePickerDialog(
                                 getActivity(),
@@ -104,11 +103,11 @@ public class FrequencyFragment extends Fragment implements
                                                           int monthOfYear, int dayOfMonth) {
                                         Calendar newDate = Calendar.getInstance();
                                         newDate.set(year, monthOfYear, dayOfMonth);
-                                        if(newDate.before(minDate)) newDate = minDate;
+                                        if (newDate.before(minDate)) newDate = minDate;
 
                                         mMedicine.setStartDate(newDate.getTimeInMillis());
-                                        fechaInicio.setText(Utils.getStringDate(mMedicine.getStartDate()));
-                                        mEventRecurrence.setStartDate(Utils.getTimeDateFromMillis(mMedicine.getStartDate()));
+                                        fechaInicio.setText(TimeUtils.getStringDate(mMedicine.getStartDate()));
+                                        mEventRecurrence.setStartDate(TimeUtils.getTimeDateFromMillis(mMedicine.getStartDate()));
                                     }
                                 },
                                 startDate.get(Calendar.YEAR),
@@ -188,7 +187,7 @@ public class FrequencyFragment extends Fragment implements
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         mMedicine = intent.getParcelableExtra("medicine");
-                        fechaInicio.setText(Utils.getStringDate(mMedicine.getStartDate()));
+                        fechaInicio.setText(TimeUtils.getStringDate(mMedicine.getStartDate()));
                         populateRepeats(mMedicine.getRecurrenceRule());
                         mIntakeFragment.addIntakes(mMedicine.getSchedule());
                     }
@@ -206,7 +205,7 @@ public class FrequencyFragment extends Fragment implements
     }
 
     private void populateRepeats(String recurrenceRule) {
-        mEventRecurrence.setStartDate(Utils.getTimeDateFromMillis(mMedicine.getStartDate()));
+        mEventRecurrence.setStartDate(TimeUtils.getTimeDateFromMillis(mMedicine.getStartDate()));
         if (!TextUtils.isEmpty(recurrenceRule)) {
             mEventRecurrence.parse(recurrenceRule);
             mRRule.setText(EventRecurrenceFormatter.getRepeatString(

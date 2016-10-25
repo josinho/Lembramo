@@ -27,6 +27,7 @@ import java.util.List;
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.ui.component.MinMaxTextWatcher;
+import gal.xieiro.lembramo.util.TimeUtils;
 import gal.xieiro.lembramo.util.Utils;
 
 
@@ -92,7 +93,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                     }
                 });
 
-        mHoraInicio = Utils.getCurrentTime();
+        mHoraInicio = TimeUtils.getCurrentTime();
         final TextView horaInicio = (TextView) view.findViewById(R.id.horaInicio);
         horaInicio.setText(mHoraInicio);
         final Calendar c = Calendar.getInstance();
@@ -209,7 +210,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
 
         if (mHourFreqButton.isChecked()) {
             // hora incicial y sumar x horas
-            time = Utils.getCalendarTimeFromString(mHoraInicio);
+            time = TimeUtils.getCalendarTimeFromString(mHoraInicio);
             intake = new MedicineIntake(time);
             intake.setChecked(true);
             plan.add(intake);
@@ -231,7 +232,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
         } else {
             if (mTimesFreqButton.isChecked()) {
                 // hora inicial y número de veces
-                time = Utils.getCalendarTimeFromString(mHoraInicio);
+                time = TimeUtils.getCalendarTimeFromString(mHoraInicio);
                 intake = new MedicineIntake(time);
                 intake.setChecked(true);
                 plan.add(intake);
@@ -265,7 +266,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 //desayuno
                 if (mBreakfast.isChecked()) {
                     setting = getSetting("breakfast_time", R.string.default_breakfast_time);
-                    intake = new MedicineIntake(Utils.getCalendarTimeFromString(setting));
+                    intake = new MedicineIntake(TimeUtils.getCalendarTimeFromString(setting));
                     intake.setChecked(true);
                     plan.add(intake);
                 }
@@ -273,7 +274,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 //comida
                 if (mLunch.isChecked()) {
                     setting = getSetting("lunch_time", R.string.default_lunch_time);
-                    intake = new MedicineIntake(Utils.getCalendarTimeFromString(setting));
+                    intake = new MedicineIntake(TimeUtils.getCalendarTimeFromString(setting));
                     intake.setChecked(true);
                     plan.add(intake);
                 }
@@ -281,7 +282,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 //cena
                 if (mDinner.isChecked()) {
                     setting = getSetting("dinner_time", R.string.default_dinner_time);
-                    intake = new MedicineIntake(Utils.getCalendarTimeFromString(setting));
+                    intake = new MedicineIntake(TimeUtils.getCalendarTimeFromString(setting));
                     intake.setChecked(true);
                     plan.add(intake);
                 }

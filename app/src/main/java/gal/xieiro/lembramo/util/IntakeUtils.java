@@ -33,17 +33,18 @@ public class IntakeUtils {
         return intakes;
     }
 
-    public static List<MedicineIntake> parseDailyIntakes(String schedule) {
+    public static List<MedicineIntake> parseDailyIntakes(String intakesRule) {
         ArrayList<MedicineIntake> intakes = new ArrayList<>();
 
-        if (!TextUtils.isEmpty(schedule)) {
-            String[] intakeStrings = schedule.split(";");
+        if (!TextUtils.isEmpty(intakesRule)) {
+            String[] intakeStrings = intakesRule.split(";");
             for (String intakeString : intakeStrings) {
                 String[] intake = intakeString.split(",");
                 Calendar hour = TimeUtils.parseTime(intake[0]);
                 MedicineIntake medicineIntake = new MedicineIntake(hour);
                 medicineIntake.setDose(Double.valueOf(intake[1]));
                 medicineIntake.setChecked(true);
+                intakes.add(medicineIntake);
             }
         }
         return intakes;

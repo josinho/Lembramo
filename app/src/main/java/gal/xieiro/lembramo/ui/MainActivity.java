@@ -21,6 +21,7 @@ import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.recurrence.DateException;
 import gal.xieiro.lembramo.recurrence.RecurrenceProcessor;
 import gal.xieiro.lembramo.recurrence.RecurrenceSet;
+import gal.xieiro.lembramo.util.TimeUtils;
 import gal.xieiro.lembramo.util.Utils;
 
 
@@ -86,12 +87,12 @@ public class MainActivity extends BaseActivity implements
 
         String resultado = "ID = " + mMedicine.getId() + "\n" +
                 "Name = " + mMedicine.getName() + "\n" +
-                "StartDate = " + Utils.getStringDate(mMedicine.getStartDate()) + "\n" +
-                "EndDate = " + Utils.getStringDate(mMedicine.getEndDate()) + "\n" +
+                "StartDate = " + TimeUtils.getStringDate(mMedicine.getStartDate()) + "\n" +
+                "EndDate = " + TimeUtils.getStringDate(mMedicine.getEndDate()) + "\n" +
                 "Recurrence = " + mMedicine.getRecurrenceRule() + "\n" +
                 "Schedule = " + mMedicine.getSchedule() + "\n\n";
 
-        Time dtStart = Utils.getTimeDateFromMillis(mMedicine.getStartDate());
+        Time dtStart = TimeUtils.getTimeDateFromMillis(mMedicine.getStartDate());
         RecurrenceSet recurrenceSet = new RecurrenceSet(mMedicine.getRecurrenceRule(), null, null, null);
         long rangeStartMillis = dtStart.toMillis(false); //Utils.getTimeDateFromString("01/12/2016").toMillis(false);
         long rangeEndMilllis = -1; //Utils.getTimeDateFromString("01/03/2017").toMillis(false);
