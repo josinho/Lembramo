@@ -26,8 +26,6 @@ public class Utils {
     private Utils() {
     }
 
-    public static final long NO_ID = -1;
-
     private static final String TAG = "Utils";
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";

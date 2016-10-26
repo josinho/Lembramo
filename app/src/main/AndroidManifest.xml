@@ -54,7 +54,7 @@
         <activity android:name=".ui.preference.PreferenceActivity" />
 
         <provider
-            android:name=".db.MedicineContentProvider"
+            android:name=".db.LembramoContentProvider"
             android:authorities="gal.xieiro.lembramo.provider"
             android:exported="false" />
 

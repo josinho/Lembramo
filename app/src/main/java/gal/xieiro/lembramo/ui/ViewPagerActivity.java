@@ -15,7 +15,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -23,9 +22,8 @@ import android.widget.Toast;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.alarm.ScheduleHelper;
-import gal.xieiro.lembramo.alarm.ScheduleService;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.MedicineContentProvider;
+import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.util.Utils;
 
@@ -45,11 +43,11 @@ public class ViewPagerActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mMedicine = new Medicine(Utils.NO_ID);
+        mMedicine = new Medicine(LembramoContentProvider.NO_ID);
 
         Intent intent = getIntent();
-        long id = intent.getLongExtra("id", Utils.NO_ID);
-        if (id != Utils.NO_ID) {
+        long id = intent.getLongExtra("id", LembramoContentProvider.NO_ID);
+        if (id != LembramoContentProvider.NO_ID) {
             //modo editar
             setToolbarTitle(R.string.title_edit_medicine);
             Bundle bundle = new Bundle();
@@ -116,12 +114,12 @@ public class ViewPagerActivity extends BaseActivity implements
         ScheduleHelper.getLastIntake(mMedicine);
         cv.put(DBContract.Medicines.COLUMN_NAME_ENDDATE, mMedicine.getEndDate());
 
-        if (mMedicine.getId() == Utils.NO_ID) {
+        if (mMedicine.getId() == LembramoContentProvider.NO_ID) {
             //create
-            getContentResolver().insert(MedicineContentProvider.CONTENT_URI, cv);
+            getContentResolver().insert(LembramoContentProvider.CONTENT_URI_MEDICINES, cv);
         } else {
             //update
-            String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + mMedicine.getId();
+            String uri = LembramoContentProvider.CONTENT_URI_MEDICINES.toString() + "/" + mMedicine.getId();
             getContentResolver().update(Uri.parse(uri), cv, null, null);
         }
     }
@@ -235,7 +233,7 @@ public class ViewPagerActivity extends BaseActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         long key = args.getLong(DBContract.Medicines._ID);
-        String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + key;
+        String uri = LembramoContentProvider.CONTENT_URI_MEDICINES.toString() + "/" + key;
         return new CursorLoader(this, Uri.parse(uri), null, null, null, null);
     }
 

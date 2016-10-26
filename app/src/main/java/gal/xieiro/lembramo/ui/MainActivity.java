@@ -16,13 +16,12 @@ import java.text.SimpleDateFormat;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.MedicineContentProvider;
+import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.recurrence.DateException;
 import gal.xieiro.lembramo.recurrence.RecurrenceProcessor;
 import gal.xieiro.lembramo.recurrence.RecurrenceSet;
 import gal.xieiro.lembramo.util.TimeUtils;
-import gal.xieiro.lembramo.util.Utils;
 
 
 public class MainActivity extends BaseActivity implements
@@ -51,7 +50,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void testExpansion(View view) {
-        mMedicine = new Medicine(Utils.NO_ID);
+        mMedicine = new Medicine(LembramoContentProvider.NO_ID);
         long id = 1;
         Bundle bundle = new Bundle();
         bundle.putLong(DBContract.Medicines._ID, id);
@@ -61,7 +60,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         long key = args.getLong(DBContract.Medicines._ID);
-        String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + key;
+        String uri = LembramoContentProvider.CONTENT_URI_MEDICINES.toString() + "/" + key;
         String[] projection = {
                 DBContract.Medicines._ID,
                 DBContract.Medicines.COLUMN_NAME_NAME,
@@ -105,7 +104,7 @@ public class MainActivity extends BaseActivity implements
                 resultado = resultado + sdf.format(l) + "\n";
             }
 
-            resultado = resultado + "Last ocurrence: " + sdf.format(rp.getLastOccurence(dtStart,recurrenceSet));
+            resultado = resultado + "Last ocurrence: " + sdf.format(rp.getLastOccurence(dtStart, recurrenceSet));
         } catch (DateException de) {
             Log.i("MainActivity", "DateException al hacer expand");
         }

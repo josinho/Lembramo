@@ -10,7 +10,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-public class MedicineContentProvider extends ContentProvider {
+public class LembramoContentProvider extends ContentProvider {
+    public static final long NO_ID = -1;
 
     private static final String AUTHORITY = "gal.xieiro.lembramo.provider";
     private static final String PATH_MEDICINES = "medicines";
@@ -33,9 +34,9 @@ public class MedicineContentProvider extends ContentProvider {
     static {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         mUriMatcher.addURI(AUTHORITY, PATH_MEDICINES, MEDICINES);
-        mUriMatcher.addURI("gal.xieiro.lembramo.provider", PATH_MEDICINES + "/#", MEDICINES_ID);
+        mUriMatcher.addURI(AUTHORITY, PATH_MEDICINES + "/#", MEDICINES_ID);
         mUriMatcher.addURI(AUTHORITY, PATH_INTAKES, INTAKES);
-        mUriMatcher.addURI("gal.xieiro.lembramo.provider", PATH_INTAKES + "/#", INTAKES_ID);
+        mUriMatcher.addURI(AUTHORITY, PATH_INTAKES + "/#", INTAKES_ID);
     }
 
     @Override

@@ -12,8 +12,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.IntakeContentProvider;
-import gal.xieiro.lembramo.db.MedicineContentProvider;
+import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.CalendarRange;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.model.MedicineIntake;
@@ -30,8 +29,6 @@ public class ScheduleHelper {
     private static final int BY_DATE = 1;
     private static final int BY_INTAKES = 2;
     private static final int FOREVER = 3;
-
-    private static final int LOADER_ID = 1;
 
     private Calendar startSchedule;
     private EventRecurrence recurrence;
@@ -123,6 +120,49 @@ public class ScheduleHelper {
         return FOREVER;
     }
 
+    private void hazElTrabajoDuro(Context context) {
+        String[] projection = {
+                DBContract.Medicines._ID,
+                DBContract.Medicines.COLUMN_NAME_ALARM,
+                DBContract.Medicines.COLUMN_NAME_STARTDATE,
+                DBContract.Medicines.COLUMN_NAME_RECURRENCE,
+                DBContract.Medicines.COLUMN_NAME_SCHEDULE
+        };
+
+        Cursor cursor = context.getContentResolver().query(
+                LembramoContentProvider.CONTENT_URI_MEDICINES,
+                projection,
+                null, null, null
+        );
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                //medicina en vigor?
+                String startDate = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE));
+                Time dtStart = TimeUtils.getTimeDateFromString(startDate);
+                String recurrenceRule = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
+
+                RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
+                RecurrenceProcessor rp = new RecurrenceProcessor();
+                long lastOcurrence;
+                try {
+                    lastOcurrence = rp.getLastOccurence(dtStart, recurrenceSet);
+                } catch (DateException de) {
+                    lastOcurrence = 0;
+                    Log.i(TAG, de.getMessage());
+                }
+
+                if (lastOcurrence == 0) {
+                    //no hay una fecha
+                } else if (lastOcurrence == -1) {
+                    //tratamiento es par siempre
+                } else {
+                    //fecha concreta
+
+                }
+            }
+        }
+    }
 
     public int getDailyIntakesCount() {
         return dailyIntakes.size();
@@ -219,7 +259,7 @@ public class ScheduleHelper {
         String selection = DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + " = " + idMedicine;
 
         Cursor cursor = context.getContentResolver().query(
-                IntakeContentProvider.CONTENT_URI,
+                LembramoContentProvider.CONTENT_URI_INTAKES,
                 projection,
                 selection,
                 null, //selectionArgs
@@ -235,49 +275,5 @@ public class ScheduleHelper {
             }
         }
         return true;
-    }
-
-    private void hazElTrabajoDuro(Context context) {
-        String[] projection = {
-                DBContract.Medicines._ID,
-                DBContract.Medicines.COLUMN_NAME_ALARM,
-                DBContract.Medicines.COLUMN_NAME_STARTDATE,
-                DBContract.Medicines.COLUMN_NAME_RECURRENCE,
-                DBContract.Medicines.COLUMN_NAME_SCHEDULE
-        };
-
-        Cursor cursor = context.getContentResolver().query(
-                MedicineContentProvider.CONTENT_URI,
-                projection,
-                null, null, null
-        );
-
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                //medicina en vigor?
-                String startDate = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE));
-                Time dtStart = TimeUtils.getTimeDateFromString(startDate);
-                String recurrenceRule = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
-
-                RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
-                RecurrenceProcessor rp = new RecurrenceProcessor();
-                long lastOcurrence;
-                try {
-                    lastOcurrence = rp.getLastOccurence(dtStart, recurrenceSet);
-                } catch (DateException de) {
-                    lastOcurrence = 0;
-                    Log.i(TAG, de.getMessage());
-                }
-
-                if (lastOcurrence == 0) {
-                    //no hay una fecha
-                } else if (lastOcurrence == -1) {
-                    //tratamiento es par siempre
-                } else {
-                    //fecha concreta
-
-                }
-            }
-        }
     }
 }

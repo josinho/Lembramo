@@ -29,7 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
-import gal.xieiro.lembramo.db.MedicineContentProvider;
+import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.ui.component.SquareImageView;
 import gal.xieiro.lembramo.util.Utils;
 
@@ -82,7 +82,7 @@ public class ListMedicinesActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
                 //cargar la activity para crear un medicamento
-                startDetailActivity(Utils.NO_ID);
+                startDetailActivity(LembramoContentProvider.NO_ID);
             }
         });
 
@@ -118,7 +118,7 @@ public class ListMedicinesActivity extends BaseActivity implements
 
     private void startDetailActivity(long id) {
         Intent intent = new Intent(ListMedicinesActivity.this, ViewPagerActivity.class);
-        if (id != Utils.NO_ID) {
+        if (id != LembramoContentProvider.NO_ID) {
             intent.putExtra("id", id);
         }
         startActivityForResult(intent, 1);
@@ -321,7 +321,7 @@ public class ListMedicinesActivity extends BaseActivity implements
                 }
             }
             where = where.substring(0, where.length() - 1) + ")";
-            int result = getContentResolver().delete(MedicineContentProvider.CONTENT_URI, where, null);
+            int result = getContentResolver().delete(LembramoContentProvider.CONTENT_URI_MEDICINES, where, null);
             Toast.makeText(mContext,
                     getResources().getQuantityString(R.plurals.deleted, result, result),
                     Toast.LENGTH_LONG).show();
@@ -339,7 +339,7 @@ public class ListMedicinesActivity extends BaseActivity implements
                 DBContract.Medicines.COLUMN_NAME_BOXPHOTO,
                 DBContract.Medicines.COLUMN_NAME_MEDPHOTO
         };
-        return new CursorLoader(this, MedicineContentProvider.CONTENT_URI, projection, null, null, null);
+        return new CursorLoader(this, LembramoContentProvider.CONTENT_URI_MEDICINES, projection, null, null, null);
     }
 
     @Override
@@ -361,7 +361,7 @@ public class ListMedicinesActivity extends BaseActivity implements
         ContentValues cv = new ContentValues();
         cv.put(DBContract.Medicines.COLUMN_NAME_ALARM, alarmStatus);
 
-        String uri = MedicineContentProvider.CONTENT_URI.toString() + "/" + id;
+        String uri = LembramoContentProvider.CONTENT_URI_MEDICINES.toString() + "/" + id;
         getContentResolver().update(Uri.parse(uri), cv, null, null);
         restartLoader();
     }
