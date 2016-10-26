@@ -12,18 +12,30 @@ import android.text.TextUtils;
 
 public class MedicineContentProvider extends ContentProvider {
 
-    public static final Uri CONTENT_URI =
-            Uri.parse("content://gal.xieiro.lembramo.provider/medicines");
-    private static final int ALLROWS = 1;
-    private static final int SINGLE_ROW = 2;
+    private static final String AUTHORITY = "gal.xieiro.lembramo.provider";
+    private static final String PATH_MEDICINES = "medicines";
+    private static final String PATH_INTAKES = "intakes";
+
+    public static final Uri CONTENT_URI_MEDICINES =
+            Uri.parse("content://" + AUTHORITY + "/" + PATH_MEDICINES);
+    public static final Uri CONTENT_URI_INTAKES =
+            Uri.parse("content://" + AUTHORITY + "/" + PATH_INTAKES);
+
+
+    private static final int MEDICINES = 10;
+    private static final int MEDICINES_ID = 20;
+    private static final int INTAKES = 30;
+    private static final int INTAKES_ID = 40;
 
     private DBAdapter mDBAdapter;
     private static final UriMatcher mUriMatcher;
 
     static {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        mUriMatcher.addURI("gal.xieiro.lembramo.provider", "medicines", ALLROWS);
-        mUriMatcher.addURI("gal.xieiro.lembramo.provider", "medicines/#", SINGLE_ROW);
+        mUriMatcher.addURI(AUTHORITY, PATH_MEDICINES, MEDICINES);
+        mUriMatcher.addURI("gal.xieiro.lembramo.provider", PATH_MEDICINES + "/#", MEDICINES_ID);
+        mUriMatcher.addURI(AUTHORITY, PATH_INTAKES, INTAKES);
+        mUriMatcher.addURI("gal.xieiro.lembramo.provider", PATH_INTAKES + "/#", INTAKES_ID);
     }
 
     @Override
@@ -35,10 +47,14 @@ public class MedicineContentProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         switch (mUriMatcher.match(uri)) {
-            case ALLROWS:
+            case MEDICINES:
                 return "vnd.android.cursor.dir/vnd.xieiro.medicine";
-            case SINGLE_ROW:
+            case MEDICINES_ID:
                 return "vnd.android.cursor.item/vnd.xieiro.medicine";
+            case INTAKES:
+                return "vnd.android.cursor.dir/vnd.xieiro.intake";
+            case INTAKES_ID:
+                return "vnd.android.cursor.item/vnd.xieiro.intake";
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -55,15 +71,23 @@ public class MedicineContentProvider extends ContentProvider {
         String having = null;
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(DBContract.Medicines.TABLE_NAME);
 
         // If this is a row query, limit the result set to the passed in row.
         switch (mUriMatcher.match(uri)) {
-            case SINGLE_ROW:
-                String rowID = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(DBContract.Medicines._ID + "=" + rowID);
-            default:
+            case MEDICINES_ID:
+                queryBuilder.appendWhere(DBContract.Medicines._ID + "="
+                        + uri.getLastPathSegment());
+            case MEDICINES:
+                queryBuilder.setTables(DBContract.Medicines.TABLE_NAME);
                 break;
+            case INTAKES_ID:
+                queryBuilder.appendWhere(DBContract.Intakes._ID + "="
+                        + uri.getLastPathSegment());
+            case INTAKES:
+                queryBuilder.setTables(DBContract.Intakes.TABLE_NAME);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
         Cursor cursor = queryBuilder.query(db, projection, selection,
@@ -76,14 +100,20 @@ public class MedicineContentProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         // Open a read / write database to support the transaction.
         SQLiteDatabase db = mDBAdapter.getWritableDatabase();
+        String rowID = uri.getLastPathSegment();
+        int action = mUriMatcher.match(uri);
+        int deleteCount;
 
         // If this is a row URI, limit the deletion to the specified row.
-        switch (mUriMatcher.match(uri)) {
-            case SINGLE_ROW:
-                String rowID = uri.getPathSegments().get(1);
+        switch (action) {
+            case MEDICINES_ID:
                 selection = DBContract.Medicines._ID + "=" + rowID
-                        + (!TextUtils.isEmpty(selection) ?
-                        " AND (" + selection + ')' : "");
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : "");
+                break;
+            case INTAKES_ID:
+                selection = DBContract.Intakes._ID + "=" + rowID
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : "");
+                break;
             default:
                 break;
         }
@@ -93,8 +123,18 @@ public class MedicineContentProvider extends ContentProvider {
         if (selection == null)
             selection = "1";
 
-        // Execute the deletion.
-        int deleteCount = db.delete(DBContract.Medicines.TABLE_NAME, selection, selectionArgs);
+        switch (action) {
+            case MEDICINES:
+            case MEDICINES_ID:
+                deleteCount = db.delete(DBContract.Medicines.TABLE_NAME, selection, selectionArgs);
+                break;
+            case INTAKES:
+            case INTAKES_ID:
+                deleteCount = db.delete(DBContract.Intakes.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
 
         // Notify any observers of the change in the data set.
         getContext().getContentResolver().notifyChange(uri, null);
@@ -111,17 +151,31 @@ public class MedicineContentProvider extends ContentProvider {
         // object, you must use the null column hack parameter to specify the name of
         // the column that can be set to null.
         String nullColumnHack = null;
+        long id;
+        Uri insertedId;
 
-        // Insert the values into the table
-        long id = db.insert(DBContract.Medicines.TABLE_NAME, nullColumnHack, values);
+        switch (mUriMatcher.match(uri)) {
+            case MEDICINES_ID:
+            case MEDICINES:
+                // Insert the values into the table
+                id = db.insert(DBContract.Medicines.TABLE_NAME, nullColumnHack, values);
+                // Construct and return the URI of the newly inserted row.
+                insertedId = ContentUris.withAppendedId(CONTENT_URI_MEDICINES, id);
+                break;
+            case INTAKES_ID:
+            case INTAKES:
+                // Insert the values into the table
+                id = db.insert(DBContract.Intakes.TABLE_NAME, nullColumnHack, values);
+                // Construct and return the URI of the newly inserted row.
+                insertedId = ContentUris.withAppendedId(CONTENT_URI_INTAKES, id);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
 
         if (id > -1) {
-            // Construct and return the URI of the newly inserted row.
-            Uri insertedId = ContentUris.withAppendedId(CONTENT_URI, id);
-
             // Notify any observers of the change in the data set.
             getContext().getContentResolver().notifyChange(insertedId, null);
-
             return insertedId;
         } else
             return null;
@@ -132,21 +186,26 @@ public class MedicineContentProvider extends ContentProvider {
                       String[] selectionArgs) {
         // Open a read / write database to support the transaction.
         SQLiteDatabase db = mDBAdapter.getWritableDatabase();
+        String rowID = uri.getLastPathSegment();
+        int updateCount = 0;
 
         // If this is a row URI, limit the deletion to the specified row.
         switch (mUriMatcher.match(uri)) {
-            case SINGLE_ROW:
-                String rowID = uri.getPathSegments().get(1);
+            case MEDICINES_ID:
                 selection = DBContract.Medicines._ID + "=" + rowID
-                        + (!TextUtils.isEmpty(selection) ?
-                        " AND (" + selection + ')' : "");
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : "");
+                updateCount = db.update(DBContract.Medicines.TABLE_NAME,
+                        values, selection, selectionArgs);
+                break;
+            case INTAKES_ID:
+                selection = DBContract.Intakes._ID + "=" + rowID
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : "");
+                updateCount = db.update(DBContract.Intakes.TABLE_NAME,
+                        values, selection, selectionArgs);
+                break;
             default:
                 break;
         }
-
-        // Perform the update.
-        int updateCount = db.update(DBContract.Medicines.TABLE_NAME,
-                values, selection, selectionArgs);
 
         // Notify any observers of the change in the data set.
         getContext().getContentResolver().notifyChange(uri, null);
