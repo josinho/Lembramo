@@ -91,15 +91,21 @@ public class MainActivity extends BaseActivity implements
                 "Recurrence = " + mMedicine.getRecurrenceRule() + "\n" +
                 "Schedule = " + mMedicine.getSchedule() + "\n\n";
 
+
+        //String myIntakeRule = "FREQ=HOURLY;INTERVAL=8;COUNT=3\n";
+
         Time dtStart = TimeUtils.getTimeDateFromMillis(mMedicine.getStartDate());
-        RecurrenceSet recurrenceSet = new RecurrenceSet(mMedicine.getRecurrenceRule(), null, null, null);
+        RecurrenceSet recurrenceSet = new RecurrenceSet(
+                mMedicine.getRecurrenceRule(),
+                null, null, null
+        );
         long rangeStartMillis = dtStart.toMillis(false); //Utils.getTimeDateFromString("01/12/2016").toMillis(false);
-        long rangeEndMilllis = -1; //Utils.getTimeDateFromString("01/03/2017").toMillis(false);
+        long rangeEndMilllis = -1; //TimeUtils.getTimeDateFromString("01/12/2016").toMillis(false);
 
         try {
             RecurrenceProcessor rp = new RecurrenceProcessor();
             long[] dates = rp.expand(dtStart, recurrenceSet, rangeStartMillis, rangeEndMilllis);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DATE_HOUR_FORMAT);
             for (long l : dates) {
                 resultado = resultado + sdf.format(l) + "\n";
             }

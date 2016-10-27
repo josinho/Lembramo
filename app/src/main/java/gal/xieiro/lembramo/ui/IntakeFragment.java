@@ -152,7 +152,7 @@ public class IntakeFragment extends Fragment {
     public String getIntakes() {
         List<MedicineIntake> intakes = mIntakeAdapter.getIntakes();
         StringBuilder s = new StringBuilder();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
 
         for (int i = 0; i < intakes.size(); i++) {
             MedicineIntake intake = intakes.get(i);
@@ -203,7 +203,7 @@ public class IntakeFragment extends Fragment {
         public void onBindViewHolder(final IntakeAdapter.ViewHolder viewHolder, int position) {
             // Get the data model based on position
             final MedicineIntake intake = mIntakes.get(position);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
             viewHolder.hour.setText(sdf.format(intake.getDate().getTime()));
 
             if (intake.isChecked()) {

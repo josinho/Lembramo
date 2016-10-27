@@ -8,6 +8,7 @@ import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.widget.TimePicker;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -21,7 +22,7 @@ public class TimePreference extends Preference {
     public TimePreference(Context ctxt, AttributeSet attrs) {
         super(ctxt, attrs);
         mTime = Calendar.getInstance();
-        mSdf = new SimpleDateFormat("HH:mm");
+        mSdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
     }
 
     public String getTime() {

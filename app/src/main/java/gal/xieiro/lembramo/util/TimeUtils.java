@@ -7,12 +7,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import org.threeten.bp.LocalDate;
 
 
 public class TimeUtils {
     private static final String TAG = "TimeUtils";
     public static final String DATE_FORMAT = "dd/MM/yyyy";
     public static final String HOUR_FORMAT = "HH:mm";
+    public static final String DATE_HOUR_FORMAT = "dd/MM/yyyy HH:mm";
 
 
     public TimeUtils() {
@@ -29,7 +31,7 @@ public class TimeUtils {
     }
 
     public static String getStringDate(long millis) {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_HOUR_FORMAT);
         return sdf.format(new Date(millis));
     }
 

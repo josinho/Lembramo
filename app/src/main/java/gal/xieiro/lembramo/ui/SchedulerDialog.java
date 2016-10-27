@@ -108,7 +108,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                                         Calendar c = Calendar.getInstance();
                                         c.set(Calendar.HOUR_OF_DAY, hourOfDay);
                                         c.set(Calendar.MINUTE, minute);
-                                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                        SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
                                         mHoraInicio = sdf.format(c.getTime());
                                         horaInicio.setText(mHoraInicio);
                                     }
@@ -241,7 +241,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 minute = time.get(Calendar.MINUTE);
 
                 int freq = Integer.parseInt(mTimesFreq.getText().toString());
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
 
                 try {
                     Date initial = sdf.parse(hour + ":" + minute);

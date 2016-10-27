@@ -120,7 +120,7 @@ public class ScheduleHelper {
         return FOREVER;
     }
 
-    private void hazElTrabajoDuro(Context context) {
+    private void scheduleAll (Context context) {
         String[] projection = {
                 DBContract.Medicines._ID,
                 DBContract.Medicines.COLUMN_NAME_ALARM,
@@ -128,6 +128,8 @@ public class ScheduleHelper {
                 DBContract.Medicines.COLUMN_NAME_RECURRENCE,
                 DBContract.Medicines.COLUMN_NAME_SCHEDULE
         };
+
+        //quizas haya que poner selection: endDate != 0
 
         Cursor cursor = context.getContentResolver().query(
                 LembramoContentProvider.CONTENT_URI_MEDICINES,
@@ -149,15 +151,16 @@ public class ScheduleHelper {
                     lastOcurrence = rp.getLastOccurence(dtStart, recurrenceSet);
                 } catch (DateException de) {
                     lastOcurrence = 0;
-                    Log.i(TAG, de.getMessage());
+                    Log.e(TAG, de.getMessage());
                 }
 
                 if (lastOcurrence == 0) {
                     //no hay una fecha
                 } else if (lastOcurrence == -1) {
-                    //tratamiento es par siempre
+                    //tratamiento es para siempre
                 } else {
                     //fecha concreta
+
 
                 }
             }
