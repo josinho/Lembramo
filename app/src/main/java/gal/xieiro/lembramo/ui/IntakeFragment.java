@@ -15,9 +15,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TimePicker;
 
-import java.text.SimpleDateFormat;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import gal.xieiro.lembramo.R;
@@ -82,22 +83,19 @@ public class IntakeFragment extends Fragment {
             public void onClick(View v) {
                 //Toast.makeText(getActivity(), mIntakeAdapter.getIntakes(), Toast.LENGTH_LONG).show();
 
-                final Calendar c = Calendar.getInstance();
+                final LocalTime now = LocalTime.now();
                 TimePickerDialog tpd = new TimePickerDialog(
                         getActivity(),
                         new TimePickerDialog.OnTimeSetListener() {
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                Calendar c = Calendar.getInstance();
-                                c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                c.set(Calendar.MINUTE, minute);
-                                MedicineIntake med = new MedicineIntake(c);
+                                MedicineIntake med = new MedicineIntake(LocalTime.of(hourOfDay, minute));
                                 med.setChecked(true);
                                 int position = mIntakeAdapter.add(med);
                                 mIntakeList.scrollToPosition(position);
                             }
                         },
-                        c.get(Calendar.HOUR_OF_DAY),
-                        c.get(Calendar.MINUTE),
+                        now.getHour(),
+                        now.getMinute(),
                         DateFormat.is24HourFormat(getActivity())
                 );
                 tpd.show();
@@ -110,16 +108,9 @@ public class IntakeFragment extends Fragment {
     private ArrayList<MedicineIntake> setInitialIntakes() {
         ArrayList<MedicineIntake> intakes = new ArrayList<>();
 
-        for (int i = 0; i < 24; i++) {
-            Calendar hour = Calendar.getInstance();
-            hour.set(Calendar.HOUR_OF_DAY, i);
-            hour.set(Calendar.MINUTE, 0);
-            Calendar halfHour = Calendar.getInstance();
-            halfHour.set(Calendar.HOUR_OF_DAY, i);
-            halfHour.set(Calendar.MINUTE, 30);
-
-            intakes.add(new MedicineIntake(hour));
-            intakes.add(new MedicineIntake(halfHour));
+        for (int hour = 0; hour < 24; hour++) {
+            intakes.add(new MedicineIntake(LocalTime.of(hour, 0)));
+            intakes.add(new MedicineIntake(LocalTime.of(hour, 30)));
         }
         return intakes;
     }
@@ -129,8 +120,7 @@ public class IntakeFragment extends Fragment {
             String[] intakeStrings = schedule.split(";");
             for (String intakeString : intakeStrings) {
                 String[] intake = intakeString.split(",");
-                Calendar hour = TimeUtils.parseTime(intake[0]);
-                MedicineIntake medicineIntake = new MedicineIntake(hour);
+                MedicineIntake medicineIntake = new MedicineIntake(TimeUtils.parseTime(intake[0]));
                 medicineIntake.setDose(Double.valueOf(intake[1]));
                 medicineIntake.setChecked(true);
                 mIntakeAdapter.add(medicineIntake);
@@ -152,13 +142,13 @@ public class IntakeFragment extends Fragment {
     public String getIntakes() {
         List<MedicineIntake> intakes = mIntakeAdapter.getIntakes();
         StringBuilder s = new StringBuilder();
-        SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TimeUtils.HOUR_FORMAT);
 
         for (int i = 0; i < intakes.size(); i++) {
             MedicineIntake intake = intakes.get(i);
             if (intake.isChecked()) {
-                s.append(sdf.format(intake.getDate().getTime())).
-                        append(",").append(intake.getDose()).append(";");
+                s.append(dtf.format(intake.getTime()))
+                        .append(",").append(intake.getDose()).append(";");
             }
         }
         return s.toString().replaceAll(";$", "");
@@ -203,8 +193,8 @@ public class IntakeFragment extends Fragment {
         public void onBindViewHolder(final IntakeAdapter.ViewHolder viewHolder, int position) {
             // Get the data model based on position
             final MedicineIntake intake = mIntakes.get(position);
-            SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
-            viewHolder.hour.setText(sdf.format(intake.getDate().getTime()));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TimeUtils.HOUR_FORMAT);
+            viewHolder.hour.setText(dtf.format(intake.getTime()));
 
             if (intake.isChecked()) {
                 viewHolder.hour.setChecked(true);

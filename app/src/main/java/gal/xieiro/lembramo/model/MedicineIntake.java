@@ -1,36 +1,37 @@
 package gal.xieiro.lembramo.model;
 
-import java.util.Calendar;
-
+import org.threeten.bp.LocalTime;
 
 public class MedicineIntake implements Comparable<MedicineIntake> {
-    private Calendar date;
+    private LocalTime time;
     private double dose;
     private boolean checked;
 
-    public MedicineIntake(Calendar date) {
-        this.date = date;
+    public MedicineIntake(LocalTime time) {
+        this.time = time;
         this.dose = 1;
     }
 
     public MedicineIntake(MedicineIntake m) {
-        date = m.getDate();
+        time = m.getTime();
         dose = m.getDose();
         checked = m.isChecked();
     }
 
-    public Calendar getDate() {
-        return date;
+    public LocalTime getTime() {
+        return time;
     }
 
-    public void setDate(Calendar date) {
-        this.date = date;
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
 
+    /*
     public void setDate(int year, int month, int day) {
         //ojo que los meses van de 0 a 11
         date.set(year, month, day);
     }
+    */
 
     public double getDose() {
         return dose;
@@ -48,6 +49,12 @@ public class MedicineIntake implements Comparable<MedicineIntake> {
         this.checked = checked;
     }
 
+    @Override
+    public int compareTo(MedicineIntake other) {
+        return time.compareTo(other.getTime());
+    }
+
+    /*
     @Override
     public int compareTo(MedicineIntake obj) {
         //comparar dos intakes primero por horas y llegado el caso por minutos
@@ -69,4 +76,5 @@ public class MedicineIntake implements Comparable<MedicineIntake> {
                 return 0;
         }
     }
+    */
 }

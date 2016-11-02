@@ -54,8 +54,8 @@ public final class DBContract {
                         COLUMN_NAME_COMMENT + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_BOXPHOTO + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_MEDPHOTO + DBType.TEXT + DBType.COMMA +
-                        COLUMN_NAME_STARTDATE + DBType.INTEGER + DBType.COMMA +
-                        COLUMN_NAME_ENDDATE + DBType.INTEGER + DBType.COMMA +
+                        COLUMN_NAME_STARTDATE + DBType.TEXT + DBType.COMMA +
+                        COLUMN_NAME_ENDDATE + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_RECURRENCE + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_SCHEDULE + DBType.TEXT + DBType.PARENTHESIS_CLOSE;
 

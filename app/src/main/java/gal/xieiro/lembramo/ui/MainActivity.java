@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity implements
             c.moveToFirst();
             mMedicine.setId(c.getLong(c.getColumnIndex(DBContract.Medicines._ID)));
             mMedicine.setName(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_NAME)));
-            mMedicine.setStartDate(c.getLong(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
             mMedicine.setEndDate(c.getLong(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ENDDATE)));
             mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE)));
             mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE)));
@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity implements
 
         String resultado = "ID = " + mMedicine.getId() + "\n" +
                 "Name = " + mMedicine.getName() + "\n" +
-                "StartDate = " + TimeUtils.getStringDate(mMedicine.getStartDate()) + "\n" +
+                "StartDate = " + mMedicine.getStartDate() + "\n" +
                 "EndDate = " + TimeUtils.getStringDate(mMedicine.getEndDate()) + "\n" +
                 "Recurrence = " + mMedicine.getRecurrenceRule() + "\n" +
                 "Schedule = " + mMedicine.getSchedule() + "\n\n";
@@ -94,7 +94,7 @@ public class MainActivity extends BaseActivity implements
 
         //String myIntakeRule = "FREQ=HOURLY;INTERVAL=8;COUNT=3\n";
 
-        Time dtStart = TimeUtils.getTimeDateFromMillis(mMedicine.getStartDate());
+        Time dtStart = TimeUtils.getTimeDateFromString(mMedicine.getStartDate());
         RecurrenceSet recurrenceSet = new RecurrenceSet(
                 mMedicine.getRecurrenceRule(),
                 null, null, null

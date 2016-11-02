@@ -3,11 +3,16 @@ package gal.xieiro.lembramo.util;
 import android.text.format.Time;
 import android.util.Log;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeParseException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import org.threeten.bp.LocalDate;
 
 
 public class TimeUtils {
@@ -16,74 +21,55 @@ public class TimeUtils {
     public static final String HOUR_FORMAT = "HH:mm";
     public static final String DATE_HOUR_FORMAT = "dd/MM/yyyy HH:mm";
 
-
-    public TimeUtils() {
+    private TimeUtils() {
     }
 
     public static String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        return sdf.format(new Date());
+        return LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 
     public static String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat(HOUR_FORMAT);
-        return sdf.format(new Date());
+        return LocalTime.now().format(DateTimeFormatter.ofPattern(HOUR_FORMAT));
     }
 
     public static String getStringDate(long millis) {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_HOUR_FORMAT);
-        return sdf.format(new Date(millis));
+        return DateTimeFormatter.ofPattern(DATE_HOUR_FORMAT)
+                .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
+    }
+
+    public static String getStringDate(LocalDate date) {
+        return DateTimeFormatter.ofPattern(DATE_FORMAT).format(date);
+    }
+
+    public static long getMillis(LocalDate date) {
+        return date.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toEpochSecond();
     }
 
     public static int getHour(String time) {
         String[] pieces = time.split(":");
-
         return (Integer.parseInt(pieces[0]));
     }
 
     public static int getMinute(String time) {
         String[] pieces = time.split(":");
-
         return (Integer.parseInt(pieces[1]));
     }
 
-    public static Calendar parseTime(String time) {
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat(HOUR_FORMAT);
+    public static LocalDate parseDate(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT));
+    }
+
+    public static LocalDate getDateFromMillis(long millis) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static LocalTime parseTime(String time) {
         try {
-            c.setTime(sdf.parse(time));
-            return c;
-        } catch (ParseException e) {
+            return LocalTime.parse(time, DateTimeFormatter.ISO_LOCAL_TIME);
+        } catch (DateTimeParseException e) {
             Log.e(TAG, "Time parsing error: " + e);
         }
         return null;
-    }
-
-    public static Calendar getCalendarTimeFromString(String time) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, getHour(time));
-        c.set(Calendar.MINUTE, getMinute(time));
-        return c;
-    }
-
-    public static Calendar getCalendarDateFromString(String date) {
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        try {
-            c.setTime(sdf.parse(date));
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            return c;
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public static Calendar getCalendarDateFromMillis(long millis) {
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(millis);
-        return c;
     }
 
     public static Time getTimeDateFromString(String date) {
@@ -92,8 +78,8 @@ public class TimeUtils {
             Time t = new Time();
             t.set(sdf.parse(date).getTime());
             return t;
-        } catch(ParseException e) {
-            System.out.println(e.getMessage());
+        } catch (ParseException e) {
+            Log.e(TAG, "Time parsing error: " + e);
         }
         return null;
     }

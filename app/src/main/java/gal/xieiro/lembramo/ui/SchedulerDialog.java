@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +16,17 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.temporal.ChronoUnit;
+
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.ui.component.MinMaxTextWatcher;
 import gal.xieiro.lembramo.util.TimeUtils;
-import gal.xieiro.lembramo.util.Utils;
 
 
 public class SchedulerDialog extends DialogFragment implements View.OnClickListener {
@@ -96,7 +94,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
         mHoraInicio = TimeUtils.getCurrentTime();
         final TextView horaInicio = (TextView) view.findViewById(R.id.horaInicio);
         horaInicio.setText(mHoraInicio);
-        final Calendar c = Calendar.getInstance();
+        final LocalTime now = LocalTime.now();
         horaInicio.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -105,16 +103,14 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                                 getActivity(),
                                 new TimePickerDialog.OnTimeSetListener() {
                                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                        Calendar c = Calendar.getInstance();
-                                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                        c.set(Calendar.MINUTE, minute);
-                                        SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
-                                        mHoraInicio = sdf.format(c.getTime());
+                                        mHoraInicio = DateTimeFormatter
+                                                .ofPattern(TimeUtils.HOUR_FORMAT)
+                                                .format(LocalTime.of(hourOfDay, minute));
                                         horaInicio.setText(mHoraInicio);
                                     }
                                 },
-                                c.get(Calendar.HOUR_OF_DAY),
-                                c.get(Calendar.MINUTE),
+                                now.getHour(),
+                                now.getMinute(),
                                 DateFormat.is24HourFormat(getActivity())
                         );
                         tpd.show();
@@ -204,60 +200,32 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
     private List<MedicineIntake> createPlanning() {
         List<MedicineIntake> plan = new ArrayList<>();
         MedicineIntake intake;
-        Calendar time;
-        int hour, minute;
-
+        LocalTime time;
 
         if (mHourFreqButton.isChecked()) {
             // hora incicial y sumar x horas
-            time = TimeUtils.getCalendarTimeFromString(mHoraInicio);
-            intake = new MedicineIntake(time);
-            intake.setChecked(true);
-            plan.add(intake);
-
-            hour = time.get(Calendar.HOUR_OF_DAY);
-            minute = time.get(Calendar.MINUTE);
+            time = TimeUtils.parseTime(mHoraInicio);
             int hours = Integer.parseInt(mHourFreq.getText().toString());
+            int hour = time.getHour();
 
-            hour += hours;
             while (hour < 24) {
-                time = Calendar.getInstance();
-                time.set(Calendar.HOUR_OF_DAY, hour);
-                time.set(Calendar.MINUTE, minute);
                 intake = new MedicineIntake(time);
                 intake.setChecked(true);
                 plan.add(intake);
+                time = time.plusHours(hour);
                 hour += hours;
             }
         } else {
             if (mTimesFreqButton.isChecked()) {
                 // hora inicial y número de veces
-                time = TimeUtils.getCalendarTimeFromString(mHoraInicio);
-                intake = new MedicineIntake(time);
-                intake.setChecked(true);
-                plan.add(intake);
-
-                hour = time.get(Calendar.HOUR_OF_DAY);
-                minute = time.get(Calendar.MINUTE);
-
+                time = TimeUtils.parseTime(mHoraInicio);
                 int freq = Integer.parseInt(mTimesFreq.getText().toString());
-                SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.HOUR_FORMAT);
-
-                try {
-                    Date initial = sdf.parse(hour + ":" + minute);
-                    long interval = (sdf.parse("23:59").getTime() - initial.getTime()) / freq;
-                    Date other = new Date(initial.getTime());
-
-                    for (int i = 1; i < freq; i++) {
-                        other = new Date(other.getTime() + interval);
-                        time = Calendar.getInstance();
-                        time.setTime(other);
-                        intake = new MedicineIntake(time);
-                        intake.setChecked(true);
-                        plan.add(intake);
-                    }
-                } catch (ParseException e) {
-                    Log.e(TAG, "Error parsing difference" + e);
+                long interval = time.until(LocalTime.of(23, 59), ChronoUnit.MINUTES) / freq;
+                for (int i = 1; i <= freq; i++) {
+                    intake = new MedicineIntake(time);
+                    intake.setChecked(true);
+                    plan.add(intake);
+                    time = time.plusMinutes(interval);
                 }
             } else {
                 //mMealFreqButton.isChecked()
@@ -266,7 +234,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 //desayuno
                 if (mBreakfast.isChecked()) {
                     setting = getSetting("breakfast_time", R.string.default_breakfast_time);
-                    intake = new MedicineIntake(TimeUtils.getCalendarTimeFromString(setting));
+                    intake = new MedicineIntake(TimeUtils.parseTime(setting));
                     intake.setChecked(true);
                     plan.add(intake);
                 }
@@ -274,7 +242,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 //comida
                 if (mLunch.isChecked()) {
                     setting = getSetting("lunch_time", R.string.default_lunch_time);
-                    intake = new MedicineIntake(TimeUtils.getCalendarTimeFromString(setting));
+                    intake = new MedicineIntake(TimeUtils.parseTime(setting));
                     intake.setChecked(true);
                     plan.add(intake);
                 }
@@ -282,7 +250,7 @@ public class SchedulerDialog extends DialogFragment implements View.OnClickListe
                 //cena
                 if (mDinner.isChecked()) {
                     setting = getSetting("dinner_time", R.string.default_dinner_time);
-                    intake = new MedicineIntake(TimeUtils.getCalendarTimeFromString(setting));
+                    intake = new MedicineIntake(TimeUtils.parseTime(setting));
                     intake.setChecked(true);
                     plan.add(intake);
                 }

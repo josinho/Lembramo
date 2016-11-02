@@ -1,19 +1,20 @@
 package gal.xieiro.lembramo.alarm;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.text.format.Time;
 import android.util.Log;
-import android.util.TimeFormatException;
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.Period;
+
 import java.util.List;
 
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
-import gal.xieiro.lembramo.model.CalendarRange;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.recurrence.DateException;
@@ -30,36 +31,13 @@ public class ScheduleHelper {
     private static final int BY_INTAKES = 2;
     private static final int FOREVER = 3;
 
-    private Calendar startSchedule;
-    private EventRecurrence recurrence;
-    private List<MedicineIntake> dailyIntakes;
-    private List<MedicineIntake> schedule;
-
-
-    public ScheduleHelper(String startDate, String recurrenceRule, String intakesRule) {
-        schedule = new ArrayList<>();
-
-        startSchedule = TimeUtils.getCalendarDateFromString(startDate);
-
-        recurrence = new EventRecurrence();
-        recurrence.setStartDate(TimeUtils.getTimeDateFromString(startDate));
-        if (recurrenceRule != null) {
-            recurrence.parse(recurrenceRule);
-        }
-
-        dailyIntakes = IntakeUtils.parseDailyIntakes(intakesRule);
-    }
-
-    public ScheduleHelper(Medicine medicine) {
-
-    }
 
     public static void getLastIntake(Medicine medicine) {
         String recurrenceRule = medicine.getRecurrenceRule();
         String intakesRule = medicine.getSchedule();
 
         if (!TextUtils.isEmpty(recurrenceRule) && !TextUtils.isEmpty(intakesRule)) {
-            Time dtStart = TimeUtils.getTimeDateFromMillis(medicine.getStartDate());
+            Time dtStart = TimeUtils.getTimeDateFromString(medicine.getStartDate());
             EventRecurrence recurrence = new EventRecurrence();
             recurrence.setStartDate(dtStart);
             recurrence.parse(recurrenceRule);
@@ -120,11 +98,12 @@ public class ScheduleHelper {
         return FOREVER;
     }
 
-    private void scheduleAll (Context context) {
+    private void scheduleAll(Context context) {
         String[] projection = {
                 DBContract.Medicines._ID,
                 DBContract.Medicines.COLUMN_NAME_ALARM,
                 DBContract.Medicines.COLUMN_NAME_STARTDATE,
+                DBContract.Medicines.COLUMN_NAME_ENDDATE,
                 DBContract.Medicines.COLUMN_NAME_RECURRENCE,
                 DBContract.Medicines.COLUMN_NAME_SCHEDULE
         };
@@ -137,146 +116,63 @@ public class ScheduleHelper {
                 null, null, null
         );
 
+        boolean active, plan;
+        long id, endMillis;
+        LocalDate startDate, endDate;
+        LocalDate now = LocalDate.now();
+
         if (cursor != null) {
             while (cursor.moveToNext()) {
+                id = cursor.getLong(cursor.getColumnIndex(DBContract.Medicines._ID));
+                startDate = TimeUtils.parseDate(cursor.getString(
+                        cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+                endMillis = cursor.getLong(
+                        cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ENDDATE));
+
+
                 //medicina en vigor?
-                String startDate = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE));
-                Time dtStart = TimeUtils.getTimeDateFromString(startDate);
-                String recurrenceRule = cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
-
-                RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
-                RecurrenceProcessor rp = new RecurrenceProcessor();
-                long lastOcurrence;
-                try {
-                    lastOcurrence = rp.getLastOccurence(dtStart, recurrenceSet);
-                } catch (DateException de) {
-                    lastOcurrence = 0;
-                    Log.e(TAG, de.getMessage());
-                }
-
-                if (lastOcurrence == 0) {
-                    //no hay una fecha
-                } else if (lastOcurrence == -1) {
-                    //tratamiento es para siempre
+                if (endMillis == 0) {
+                    // tratamiento finalizado
                 } else {
-                    //fecha concreta
+                    // tratamiento para siempre o con fecha de finalización
+                    if (endMillis == -1) {
+                        // tratamiento para siempre
+                        active = true;
+                    } else {
+                        // fecha concreta de finalización
+                        endDate = TimeUtils.getDateFromMillis(endMillis);
 
+                        if (now.isAfter(endDate)) {
+                            active = false;
+                            setInactive(context, id);
+                        } else {
+                            active = true;
+                        }
+                    }
 
+                    // hemos comenzado el tratamiento?
+                    plan = true;
+                    if (now.isBefore(startDate)) {
+                        //aun no se ha llegado a la fecha de inicio del tratamiento
+                        // si queda más de un día no planificamos todavía
+                        if (Period.between(now, startDate).getDays() > 1) plan = false;
+                    }
+
+                    if (active && plan) {
+                        Log.i(TAG, "A Planificaaaaaar");
+                    }
                 }
             }
-        }
-    }
-
-    public int getDailyIntakesCount() {
-        return dailyIntakes.size();
-    }
-
-
-    //TODO renombrar
-    private void calcula_con_intervalo(long idMedicine, CalendarRange scheduleWindow) {
-
-        //caso de uso: freq: DAILY | with interval | duration forever
-
-        int interval = recurrence.interval;
-        Calendar lastScheduledIntake = null; //getLastScheduledIntake(idMedicine);
-
-
-        if (lastScheduledIntake == null) {
-            //nunca hubo una planificación --> tomamos como primera fecha la del inicio del tratamiento
-            lastScheduledIntake = startSchedule;
-        }
-
-        if (!scheduleWindow.isAfterRange(lastScheduledIntake)) {
-            //la última fecha de planificación no es posterior a la ventana de planificación
-            if (scheduleWindow.isInRange(lastScheduledIntake)) {
-                do {
-                    //planificar el día
-                    scheduleDay(lastScheduledIntake);
-                    //sumar el intervalo
-                    lastScheduledIntake.add(Calendar.DAY_OF_MONTH, interval);
-                } while (scheduleWindow.isInRange(lastScheduledIntake));
-
-            } else {
-                //la última fecha de planificación es anterior a la ventana de planificación
-            }
-        }
-        //else: la fecha de inicio del tratamiento es posterior a la ventana -> aún no toca planificar
-    }
-
-    private void scheduleDay(Calendar day) {
-        for (MedicineIntake intake : dailyIntakes) {
-            //por cada toma diaria creamos un objeto copia
-            MedicineIntake copy = new MedicineIntake(intake);
-            //al que le fijamos el día de la toma
-            copy.setDate(
-                    day.get(Calendar.YEAR),
-                    day.get(Calendar.MONTH),
-                    day.get(Calendar.DAY_OF_MONTH)
-            );
-            //y lo añadimos a la planificación
-            schedule.add(copy);
-        }
-    }
-
-
-    private void startSchedule(Context context, long idMedicine) {
-        boolean shouldSchedule = true;
-
-        switch (getDurationType(null)) {
-            case BY_DATE:
-                //si hoy es una fecha posterior al final del tratamiento no planificamos más
-                if (isExpired())
-                    shouldSchedule = false;
-                break;
-            case BY_INTAKES:
-                //comprobar si ya se han planificado todas las tomas
-                if (isFullyPlanned(context, idMedicine, recurrence.count))
-                    shouldSchedule = false;
-                break;
-            case FOREVER:
-                //ninguna comprobación
-                break;
-        }
-
-        if (shouldSchedule) {
-            //schedule
-        }
-    }
-
-    private boolean isExpired() {
-        try {
-            Time t = new Time();
-            t.parse(recurrence.until);
-            Calendar until = Calendar.getInstance();
-            until.setTimeInMillis(t.toMillis(false));
-
-            Calendar today = Calendar.getInstance();
-            if (today.after(until)) return true;
-        } catch (TimeFormatException e) {
-        }
-        return false;
-    }
-
-    private boolean isFullyPlanned(Context context, long idMedicine, int max) {
-        String[] projection = {"count(*)"};
-        String selection = DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + " = " + idMedicine;
-
-        Cursor cursor = context.getContentResolver().query(
-                LembramoContentProvider.CONTENT_URI_INTAKES,
-                projection,
-                selection,
-                null, //selectionArgs
-                null  //sortOrder
-        );
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int result = cursor.getInt(0);
             cursor.close();
-            if (result < max) {
-                return false;
-            }
         }
-        return true;
+    }
+
+    private void setInactive(Context context, long id) {
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Medicines.COLUMN_NAME_ENDDATE, 0);
+
+        String uri = LembramoContentProvider.CONTENT_URI_MEDICINES.toString() + "/" + id;
+        context.getContentResolver().update(Uri.parse(uri), cv, null, null);
     }
 }
+

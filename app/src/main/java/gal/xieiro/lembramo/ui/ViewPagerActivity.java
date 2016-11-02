@@ -246,7 +246,7 @@ public class ViewPagerActivity extends BaseActivity implements
             mMedicine.setComment(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_COMMENT)));
             mMedicine.setPillboxImage(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_BOXPHOTO)));
             mMedicine.setPillImage(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_MEDPHOTO)));
-            mMedicine.setStartDate(c.getLong(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            mMedicine.setStartDate(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
             mMedicine.setRecurrenceRule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE)));
             mMedicine.setSchedule(c.getString(c.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE)));
 
