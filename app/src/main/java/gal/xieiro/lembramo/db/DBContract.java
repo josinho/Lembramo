@@ -76,9 +76,9 @@ public final class DBContract {
                 DBType.CREATE_TABLE + TABLE_NAME + DBType.PARENTHESIS_OPEN +
                         _ID + DBType.INTEGER_PRIMARY_KEY + DBType.COMMA +
                         COLUMN_NAME_ID_MEDICINE + DBType.INTEGER + DBType.COMMA +
-                        COLUMN_NAME_DATE + DBType.TEXT + DBType.COMMA +
+                        COLUMN_NAME_DATE + DBType.INTEGER+ DBType.COMMA +
                         COLUMN_NAME_DOSE + DBType.TEXT + DBType.COMMA +
-                        COLUMN_NAME_INTAKE_DATE + DBType.TEXT + DBType.PARENTHESIS_CLOSE;
+                        COLUMN_NAME_INTAKE_DATE + DBType.INTEGER + DBType.PARENTHESIS_CLOSE;
 
         public static final String DELETE_TABLE = DBType.DROP_TABLE_IF_EXISTS + TABLE_NAME;
     }
