@@ -12,6 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.ZoneId;
+
 import java.text.SimpleDateFormat;
 
 import gal.xieiro.lembramo.R;
@@ -114,6 +118,7 @@ public class MainActivity extends BaseActivity implements
         } catch (DateException de) {
             Log.i("MainActivity", "DateException al hacer expand");
         }
+
         mResultados.setText(resultado);
     }
 

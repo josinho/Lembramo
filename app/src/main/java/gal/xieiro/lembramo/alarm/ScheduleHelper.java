@@ -100,7 +100,7 @@ public class ScheduleHelper {
         return FOREVER;
     }
 
-    private void scheduleAll(Context context) {
+    public static void scheduleAll(Context context) {
         String[] projection = {
                 DBContract.Medicines._ID,
                 DBContract.Medicines.COLUMN_NAME_ALARM,
@@ -119,13 +119,13 @@ public class ScheduleHelper {
         );
 
         boolean active, started;
-        long id, endMillis, rangeStartMillis, rangeEndMillis;
+        long idMedicine, endMillis, rangeStartMillis, rangeEndMillis;
         LocalDate startDate, endDate;
         LocalDate now = LocalDate.now();
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                id = cursor.getLong(cursor.getColumnIndex(DBContract.Medicines._ID));
+                idMedicine = cursor.getLong(cursor.getColumnIndex(DBContract.Medicines._ID));
                 startDate = TimeUtils.parseDate(cursor.getString(
                         cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
                 endMillis = cursor.getLong(
@@ -146,7 +146,7 @@ public class ScheduleHelper {
 
                         if (now.isAfter(endDate)) {
                             active = false;
-                            setInactive(context, id);
+                            setInactive(context, idMedicine);
                         } else {
                             active = true;
                         }
@@ -169,20 +169,33 @@ public class ScheduleHelper {
                                 cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
 
                         //buscar en tabla intakes última planificación
-                        Instant last = getLastPlannedIntakeDate(context, id);
+                        Instant last = getLastPlannedIntakeDate(context, idMedicine);
                         if (last.equals(Instant.EPOCH)) {
                             //no hay ninguna planificacion previa, partimos de cero
 
-                            int type = getDurationType(dtStart, recurrenceRule);
-
                             rangeStartMillis = TimeUtils.getMillis(startDate);
                             rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
-                            long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
 
-                            //TODO guardar millis en UTC en BD
+                        } else {
+                            //hubo planificaciones anteriores
+                            LocalDate d = TimeUtils.getDateFromMillis(last.toEpochMilli()).plusDays(1);
+                            rangeStartMillis = TimeUtils.getMillis(d);
+                            rangeEndMillis = TimeUtils.getMillis(d.plusDays(1));
                         }
 
+                        long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
+                        if (days.length > 0) {
+                            List<MedicineIntake> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
 
+                            for (long day : days) {
+                                LocalDate date = TimeUtils.getDateFromMillis(day);
+                                //añadir las tomas de ese día
+                                for (MedicineIntake intake : dailyIntakes) {
+                                    long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
+                                    saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -190,7 +203,16 @@ public class ScheduleHelper {
         }
     }
 
-    private void setInactive(Context context, long id) {
+    private static void saveIntake(Context context, long intakeInstant, double dose, long idMedicine) {
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Intakes.COLUMN_NAME_DATE, intakeInstant);
+        cv.put(DBContract.Intakes.COLUMN_NAME_DOSE, dose);
+        cv.put(DBContract.Intakes.COLUMN_NAME_ID_MEDICINE, idMedicine);
+
+        context.getContentResolver().insert(LembramoContentProvider.CONTENT_URI_INTAKES, cv);
+    }
+
+    private static void setInactive(Context context, long id) {
         ContentValues cv = new ContentValues();
         cv.put(DBContract.Medicines.COLUMN_NAME_ENDDATE, 0);
 
@@ -198,7 +220,7 @@ public class ScheduleHelper {
         context.getContentResolver().update(Uri.parse(uri), cv, null, null);
     }
 
-    private Instant getLastPlannedIntakeDate(Context context, long idMedicine) {
+    private static Instant getLastPlannedIntakeDate(Context context, long idMedicine) {
         String[] projection = {"MAX(" + DBContract.Intakes.COLUMN_NAME_DATE + ")"};
         String selection = DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + "= ?";
         String[] selectionArgs = {new Long(idMedicine).toString()};

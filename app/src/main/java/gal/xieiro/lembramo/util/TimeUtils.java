@@ -42,7 +42,11 @@ public class TimeUtils {
     }
 
     public static long getMillis(LocalDate date) {
-        return date.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toEpochSecond();
+        return getMillis(date, LocalTime.MIDNIGHT);
+    }
+
+    public static long getMillis(LocalDate date, LocalTime time) {
+        return date.atTime(time).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     public static int getHour(String time) {
@@ -82,11 +86,5 @@ public class TimeUtils {
             Log.e(TAG, "Time parsing error: " + e);
         }
         return null;
-    }
-
-    public static Time getTimeDateFromMillis(long millis) {
-        Time t = new Time();
-        t.set(millis);
-        return t;
     }
 }
