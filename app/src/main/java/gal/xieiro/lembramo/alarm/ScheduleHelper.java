@@ -170,29 +170,36 @@ public class ScheduleHelper {
 
                         //buscar en tabla intakes última planificación
                         Instant last = getLastPlannedIntakeDate(context, idMedicine);
+                        boolean plan = true;
                         if (last.equals(Instant.EPOCH)) {
                             //no hay ninguna planificacion previa, partimos de cero
-
                             rangeStartMillis = TimeUtils.getMillis(startDate);
                             rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
 
                         } else {
                             //hubo planificaciones anteriores
                             LocalDate d = TimeUtils.getDateFromMillis(last.toEpochMilli()).plusDays(1);
-                            rangeStartMillis = TimeUtils.getMillis(d);
-                            rangeEndMillis = TimeUtils.getMillis(d.plusDays(1));
+                            if (Period.between(now, d).getDays() > 1) {
+                                plan = false;
+                                rangeStartMillis = rangeEndMillis = 0;
+                            } else {
+                                rangeStartMillis = TimeUtils.getMillis(d);
+                                rangeEndMillis = TimeUtils.getMillis(d.plusDays(1));
+                            }
                         }
 
-                        long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
-                        if (days.length > 0) {
-                            List<MedicineIntake> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
+                        if (plan) {
+                            long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
+                            if (days.length > 0) {
+                                List<MedicineIntake> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
 
-                            for (long day : days) {
-                                LocalDate date = TimeUtils.getDateFromMillis(day);
-                                //añadir las tomas de ese día
-                                for (MedicineIntake intake : dailyIntakes) {
-                                    long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
-                                    saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
+                                for (long day : days) {
+                                    LocalDate date = TimeUtils.getDateFromMillis(day);
+                                    //añadir las tomas de ese día
+                                    for (MedicineIntake intake : dailyIntakes) {
+                                        long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
+                                        saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
+                                    }
                                 }
                             }
                         }
