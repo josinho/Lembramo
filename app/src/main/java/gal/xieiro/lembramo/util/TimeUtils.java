@@ -14,7 +14,7 @@ import org.threeten.bp.format.DateTimeParseException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-
+@SuppressWarnings("deprecation")
 public class TimeUtils {
     private static final String TAG = "TimeUtils";
     public static final String DATE_FORMAT = "dd/MM/yyyy";

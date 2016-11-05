@@ -25,6 +25,7 @@ import gal.xieiro.lembramo.recurrence.RecurrenceSet;
 import gal.xieiro.lembramo.util.IntakeUtils;
 import gal.xieiro.lembramo.util.TimeUtils;
 
+@SuppressWarnings("deprecation")
 public class ScheduleHelper {
     private static final String TAG = "ScheduleHelper";
 
@@ -230,7 +231,7 @@ public class ScheduleHelper {
     private static Instant getLastPlannedIntakeDate(Context context, long idMedicine) {
         String[] projection = {"MAX(" + DBContract.Intakes.COLUMN_NAME_DATE + ")"};
         String selection = DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + "= ?";
-        String[] selectionArgs = {new Long(idMedicine).toString()};
+        String[] selectionArgs = {Long.valueOf(idMedicine).toString()};
 
         Cursor cursor = context.getContentResolver().query(
                 LembramoContentProvider.CONTENT_URI_INTAKES,
@@ -243,6 +244,7 @@ public class ScheduleHelper {
         if (cursor != null) {
             cursor.moveToFirst();
             long millis = cursor.getLong(cursor.getColumnIndex(DBContract.Intakes.COLUMN_NAME_DATE));
+            cursor.close();
             return Instant.ofEpochMilli(millis);
         }
         return Instant.EPOCH;
