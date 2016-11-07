@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity implements
 
             resultado = resultado + "Last ocurrence: " + sdf.format(rp.getLastOccurence(dtStart, recurrenceSet));
         } catch (DateException de) {
-            Log.i("MainActivity", "DateException al hacer expand");
+            Log.i("MainActivity", de.toString());
         }
 
         mResultados.setText(resultado);

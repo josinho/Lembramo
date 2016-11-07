@@ -65,7 +65,7 @@ public final class DBContract {
     //clase interna para definir la tabla de toma de medicamentos
     public static abstract class Intakes implements BaseColumns {
         public static final String TABLE_NAME = "intakes";
-        //al implementar BasColumns tenemos un campo _ID que representa el ID de la toma
+        //al implementar BaseColumns tenemos un campo _ID que representa el ID de la toma
         public static final String COLUMN_NAME_ID_MEDICINE = "idMedicine";
         public static final String COLUMN_NAME_DATE = "date";
         public static final String COLUMN_NAME_DOSE = "dose";

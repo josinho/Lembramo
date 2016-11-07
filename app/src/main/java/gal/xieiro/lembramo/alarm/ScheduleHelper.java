@@ -29,9 +29,9 @@ import gal.xieiro.lembramo.util.TimeUtils;
 public class ScheduleHelper {
     private static final String TAG = "ScheduleHelper";
 
-    private static final int BY_DATE = 1;
-    private static final int BY_INTAKES = 2;
-    private static final int FOREVER = 3;
+    private static final int END_BY_DATE = 1;
+    private static final int END_BY_COUNT = 2;
+    private static final int END_NEVER = 3;
 
 
     public static void getLastIntake(Medicine medicine) {
@@ -44,7 +44,7 @@ public class ScheduleHelper {
             long[] dates;
             int length;
             switch (getDurationType(dtStart, recurrenceRule)) {
-                case BY_DATE:
+                case END_BY_DATE:
                     dates = expand(dtStart, recurrenceRule, dtStart.toMillis(false), -1);
                     length = dates.length;
                     if (length > 0) {
@@ -54,7 +54,7 @@ public class ScheduleHelper {
                     }
                     break;
 
-                case BY_INTAKES:
+                case END_BY_COUNT:
                     dates = expand(dtStart, recurrenceRule, dtStart.toMillis(false), -1);
                     length = dates.length;
                     if (length > 0) {
@@ -83,7 +83,6 @@ public class ScheduleHelper {
         RecurrenceProcessor rp = new RecurrenceProcessor();
         try {
             return rp.expand(dtStart, recurrenceSet, rangeStartMillis, rangeEndMillis);
-
         } catch (DateException de) {
             Log.e(TAG, de.getMessage());
         }
@@ -96,9 +95,9 @@ public class ScheduleHelper {
         recurrence.parse(recurrenceRule);
 
         //devolver el tipo de duración del tratamiento: fecha tope, nº de tomas, para siempre
-        if (recurrence.count > 0) return BY_INTAKES;
-        if (recurrence.until != null) return BY_DATE;
-        return FOREVER;
+        if (recurrence.count > 0) return END_BY_COUNT;
+        if (recurrence.until != null) return END_BY_DATE;
+        return END_NEVER;
     }
 
     public static void scheduleAll(Context context) {
@@ -131,20 +130,16 @@ public class ScheduleHelper {
                         cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
                 endMillis = cursor.getLong(
                         cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ENDDATE));
-
+                endDate = TimeUtils.getDateFromMillis(endMillis);
 
                 //medicina en vigor?
-                if (endMillis == 0) {
-                    // tratamiento finalizado
-                } else {
+                if (endMillis != 0) {
                     // tratamiento para siempre o con fecha de finalización
                     if (endMillis == -1) {
                         // tratamiento para siempre
                         active = true;
                     } else {
                         // fecha concreta de finalización
-                        endDate = TimeUtils.getDateFromMillis(endMillis);
-
                         if (now.isAfter(endDate)) {
                             active = false;
                             setInactive(context, idMedicine);
@@ -176,6 +171,8 @@ public class ScheduleHelper {
                             //no hay ninguna planificacion previa, partimos de cero
                             rangeStartMillis = TimeUtils.getMillis(startDate);
                             rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
+                            //TODO el móvil estuvo apagado, estamos en medio de la planificación
+                            //pero aún no hubo ninguna. se perdieron intakes
 
                         } else {
                             //hubo planificaciones anteriores
@@ -198,6 +195,7 @@ public class ScheduleHelper {
                                     LocalDate date = TimeUtils.getDateFromMillis(day);
                                     //añadir las tomas de ese día
                                     for (MedicineIntake intake : dailyIntakes) {
+                                        //TODO controlar las que son COUNT
                                         long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
                                         saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
                                     }
