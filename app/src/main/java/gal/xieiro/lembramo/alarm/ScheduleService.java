@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -33,10 +35,15 @@ public class ScheduleService extends WakefulIntentService {
 
 
     private void createNotification() {
+        Uri soundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.pastilla)
-                .setContentTitle("My notification")
-                .setContentText("Hello World!");
+                .setContentTitle("Lémbramo")
+                .setContentText("¡Tómate la pastilla!")
+                .setVibrate(new long[] { 1000, 200, 500, 200, 100, 200, 1000 })
+                .setSound(soundUri);
 
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
