@@ -19,6 +19,7 @@ import org.threeten.bp.ZoneId;
 import java.text.SimpleDateFormat;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.alarm.BootReceiver;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
@@ -51,6 +52,10 @@ public class MainActivity extends BaseActivity implements
         //cargar la pantalla para editar medicamentos
         Intent intent = new Intent(this, ListMedicinesActivity.class);
         startActivity(intent);
+    }
+
+    public void testStartService(View view) {
+        BootReceiver.initScheduleAlarm(this);
     }
 
     public void testExpansion(View view) {

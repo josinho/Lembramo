@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import gal.xieiro.lembramo.LembramoApp;
 
@@ -17,6 +18,8 @@ import gal.xieiro.lembramo.LembramoApp;
  */
 public class BootReceiver extends BroadcastReceiver {
 
+    public static final String TAG = "BootReceiver";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
@@ -25,6 +28,7 @@ public class BootReceiver extends BroadcastReceiver {
     }
 
     public static void initScheduleAlarm(Context context) {
+        Log.d(TAG, "initScheduleAlarm");
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(LembramoApp.ACTION_SCHEDULE);
 
@@ -36,10 +40,17 @@ public class BootReceiver extends BroadcastReceiver {
         );
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        /*
         alarmManager.setInexactRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 System.currentTimeMillis(),
                 AlarmManager.INTERVAL_DAY,
+                pendingIntent
+        );
+        */
+        alarmManager.set(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis(),
                 pendingIntent
         );
     }
