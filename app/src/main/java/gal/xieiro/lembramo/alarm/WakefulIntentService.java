@@ -10,7 +10,7 @@ import android.os.PowerManager;
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
  */
-public class WakefulIntentService extends IntentService {
+public abstract class WakefulIntentService extends IntentService {
 
     private static final String LOCK_NAME_STATIC = "gal.xieiro.lembramo.alarm.Static";
     private static final String LOCK_NAME_LOCAL = "gal.xieiro.lembramo.alarm.Local";
@@ -41,6 +41,14 @@ public class WakefulIntentService extends IntentService {
         return (lockStatic);
     }
 
+    /**
+     * Has to be overrated in the class that will inherit from this one and here is where
+     * the user of this class takes action.
+     *
+     * @param intent Intent.
+     */
+    public abstract void doReminderWork(Intent intent);
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -57,7 +65,12 @@ public class WakefulIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        lockLocal.release();
+    final protected void onHandleIntent(Intent intent) {
+        try {
+            doReminderWork(intent);
+        } finally {
+            lockLocal.release();
+        }
+
     }
 }

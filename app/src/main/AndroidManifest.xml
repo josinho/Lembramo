@@ -70,7 +70,7 @@
             android:exported="false" />
 
         <receiver
-            android:name=".alarm.ScheduleReceiver"
+            android:name=".alarm.AlarmReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":remote" />

@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import gal.xieiro.lembramo.LembramoApp;
+
 /**
  * This BroadcastReceiver automatically (re)starts the alarm when the device is
  * rebooted. This receiver is set to be disabled (android:enabled="false") in the
@@ -23,11 +25,13 @@ public class BootReceiver extends BroadcastReceiver {
     }
 
     public static void initScheduleAlarm(Context context) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.setAction(LembramoApp.ACTION_SCHEDULE);
 
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
-                ScheduleReceiver.REQUEST_CODE,
-                new Intent(context, ScheduleReceiver.class),
+                AlarmReceiver.REQUEST_CODE,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
