@@ -8,8 +8,8 @@ import android.text.TextUtils;
 import android.text.format.Time;
 import android.util.Log;
 
-import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalTime;
 import org.threeten.bp.Period;
 
 import java.util.List;
@@ -40,45 +40,45 @@ public class ScheduleHelper {
 
         if (!TextUtils.isEmpty(recurrenceRule) && !TextUtils.isEmpty(intakesRule)) {
             Time dtStart = TimeUtils.getTimeDateFromString(medicine.getStartDate());
+            List<MedicineIntake> intakes = IntakeUtils.parseDailyIntakes(intakesRule);
 
             long[] dates;
             int length;
-            switch (getDurationType(dtStart, recurrenceRule)) {
-                case END_BY_DATE:
-                    dates = expand(dtStart, recurrenceRule, dtStart.toMillis(false), -1);
-                    length = dates.length;
-                    if (length > 0) {
-                        medicine.setEndDate(dates[length - 1]);
-                    } else {
-                        medicine.setEndDate(0);
-                    }
-                    break;
+            LocalDate date;
+            LocalTime time;
 
-                case END_BY_COUNT:
-                    dates = expand(dtStart, recurrenceRule, dtStart.toMillis(false), -1);
-                    length = dates.length;
-                    if (length > 0) {
-                        List<MedicineIntake> intakes = IntakeUtils.parseDailyIntakes(intakesRule);
+            int durationType = getDurationType(dtStart, recurrenceRule);
+
+            if (durationType == END_NEVER) {
+                medicine.setEndDate(-1);
+            } else {
+                dates = expand(dtStart, recurrenceRule, dtStart.toMillis(false), -1);
+                length = dates.length;
+                if (length > 0) {
+                    if (durationType == END_BY_DATE) {
+                        date = TimeUtils.getDateFromMillis(dates[length - 1]);
+                        time = intakes.get(intakes.size() - 1).getTime();
+                    } else {
+                        // durationType == END_BY_COUNT
                         int dailyIntakes = intakes.size();
                         if (length % dailyIntakes == 0) {
-                            medicine.setEndDate(dates[(length / dailyIntakes) - 1]);
+                            date = TimeUtils.getDateFromMillis(dates[(length / dailyIntakes) - 1]);
+                            time = intakes.get(intakes.size() - 1).getTime();
                         } else {
-                            medicine.setEndDate(dates[length / dailyIntakes]);
+                            date = TimeUtils.getDateFromMillis(dates[length / dailyIntakes]);
+                            time = intakes.get((length % dailyIntakes) - 1).getTime();
                         }
-                    } else {
-                        medicine.setEndDate(0);
                     }
-                    break;
-
-                default: //forever
-                    medicine.setEndDate(-1);
-                    break;
+                    medicine.setEndDate(TimeUtils.getMillis(date, time));
+                } else {
+                    medicine.setEndDate(0);
+                }
             }
         }
     }
 
 
-    private static long[] expand(Time dtStart, String recurrenceRule, long rangeStartMillis, long rangeEndMillis) {
+    public static long[] expand(Time dtStart, String recurrenceRule, long rangeStartMillis, long rangeEndMillis) {
         RecurrenceSet recurrenceSet = new RecurrenceSet(recurrenceRule, null, null, null);
         RecurrenceProcessor rp = new RecurrenceProcessor();
         try {
@@ -89,7 +89,7 @@ public class ScheduleHelper {
         return new long[0];
     }
 
-    private static int getDurationType(Time dtStart, String recurrenceRule) {
+    public static int getDurationType(Time dtStart, String recurrenceRule) {
         EventRecurrence recurrence = new EventRecurrence();
         recurrence.setStartDate(dtStart);
         recurrence.parse(recurrenceRule);
@@ -110,103 +110,104 @@ public class ScheduleHelper {
                 DBContract.Medicines.COLUMN_NAME_SCHEDULE
         };
 
-        //quizas haya que poner selection: endDate != 0
+        String selection = DBContract.Medicines.COLUMN_NAME_ENDDATE + " != ?";
+        String[] selectionArgs = {"0"};
 
+        //obtener medicamentos en vigor: fecha fin distinta de cero
         Cursor cursor = context.getContentResolver().query(
                 LembramoContentProvider.CONTENT_URI_MEDICINES,
                 projection,
-                null, null, null
+                selection,
+                selectionArgs,
+                null
         );
 
         boolean active, started;
-        long idMedicine, endMillis, rangeStartMillis, rangeEndMillis;
+        long idMedicine, endMillis;
+        long rangeStartMillis = 0, rangeEndMillis = 0;
         LocalDate startDate, endDate;
         LocalDate now = LocalDate.now();
 
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                idMedicine = cursor.getLong(cursor.getColumnIndex(DBContract.Medicines._ID));
-                startDate = TimeUtils.parseDate(cursor.getString(
-                        cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
-                endMillis = cursor.getLong(
-                        cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ENDDATE));
-                endDate = TimeUtils.getDateFromMillis(endMillis);
 
-                //medicina en vigor?
-                if (endMillis != 0) {
-                    // tratamiento para siempre o con fecha de finalización
-                    if (endMillis == -1) {
-                        // tratamiento para siempre
-                        active = true;
+        while (cursor.moveToNext()) {
+            idMedicine = cursor.getLong(cursor.getColumnIndex(DBContract.Medicines._ID));
+            startDate = TimeUtils.parseDate(cursor.getString(
+                    cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+            endMillis = cursor.getLong(
+                    cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_ENDDATE));
+            endDate = TimeUtils.getDateFromMillis(endMillis);
+
+            // hemos comenzado el tratamiento?
+            started = true;
+            if (now.isBefore(startDate)) {
+                // aun no se ha llegado a la fecha de inicio del tratamiento
+                // si queda más de un día no planificamos todavía
+                if (Period.between(now, startDate).getDays() > 1) started = false;
+            }
+
+            // endMillis != 0 porque lo hemos pedido así en la consulta
+            // si endMillis == -1 es tratamiento para siempre
+            active = true;
+            if (endMillis != -1) {
+                // fecha concreta de finalización
+                if (now.isAfter(endDate)) {
+                    active = false;
+                    setInactive(context, idMedicine);
+                }
+            }
+
+            if (started && active) {
+                String recurrenceRule = cursor.getString(
+                        cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
+                String intakeRule = cursor.getString(
+                        cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE));
+                Time dtStart = TimeUtils.getTimeDateFromString(
+                        cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+
+                //buscar en tabla intakes última planificación
+                long last = getLastPlannedIntakeDate(context, idMedicine);
+                boolean plan = true;
+                if (last == 0) {
+                    //no hay ninguna planificacion previa, partimos de cero
+                    rangeStartMillis = TimeUtils.getMillis(startDate);
+                    rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
+                    //TODO el móvil estuvo apagado, estamos en medio de la planificación
+                    //pero aún no hubo ninguna. se perdieron intakes
+
+                } else {
+                    //hubo planificaciones anteriores
+                    LocalDate d = TimeUtils.getDateFromMillis(last).plusDays(1);
+                    if (Period.between(now, d).getDays() > 1) {
+                        plan = false;
                     } else {
-                        // fecha concreta de finalización
-                        if (now.isAfter(endDate)) {
-                            active = false;
-                            setInactive(context, idMedicine);
-                        } else {
-                            active = true;
-                        }
+                        rangeStartMillis = TimeUtils.getMillis(d);
+                        rangeEndMillis = TimeUtils.getMillis(d.plusDays(1));
                     }
+                }
 
-                    // hemos comenzado el tratamiento?
-                    started = true;
-                    if (now.isBefore(startDate)) {
-                        //aun no se ha llegado a la fecha de inicio del tratamiento
-                        // si queda más de un día no planificamos todavía
-                        if (Period.between(now, startDate).getDays() > 1) started = false;
-                    }
+                if (plan) {
+                    long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
+                    if (days.length > 0) {
+                        List<MedicineIntake> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
 
-                    if (active && started) {
-                        String recurrenceRule = cursor.getString(
-                                cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_RECURRENCE));
-                        String intakeRule = cursor.getString(
-                                cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_SCHEDULE));
-                        Time dtStart = TimeUtils.getTimeDateFromString(
-                                cursor.getString(cursor.getColumnIndex(DBContract.Medicines.COLUMN_NAME_STARTDATE)));
+                        for (long day : days) {
+                            LocalDate date = TimeUtils.getDateFromMillis(day);
+                            //TODO controlar las que son COUNT
 
-                        //buscar en tabla intakes última planificación
-                        Instant last = getLastPlannedIntakeDate(context, idMedicine);
-                        boolean plan = true;
-                        if (last.equals(Instant.EPOCH)) {
-                            //no hay ninguna planificacion previa, partimos de cero
-                            rangeStartMillis = TimeUtils.getMillis(startDate);
-                            rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
-                            //TODO el móvil estuvo apagado, estamos en medio de la planificación
-                            //pero aún no hubo ninguna. se perdieron intakes
+                            // date == last AND getDurationType(dtStart, recurrenceRule) == BY_COUNT;
+                            // sólo las que falten
 
-                        } else {
-                            //hubo planificaciones anteriores
-                            LocalDate d = TimeUtils.getDateFromMillis(last.toEpochMilli()).plusDays(1);
-                            if (Period.between(now, d).getDays() > 1) {
-                                plan = false;
-                                rangeStartMillis = rangeEndMillis = 0;
-                            } else {
-                                rangeStartMillis = TimeUtils.getMillis(d);
-                                rangeEndMillis = TimeUtils.getMillis(d.plusDays(1));
-                            }
-                        }
-
-                        if (plan) {
-                            long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
-                            if (days.length > 0) {
-                                List<MedicineIntake> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
-
-                                for (long day : days) {
-                                    LocalDate date = TimeUtils.getDateFromMillis(day);
-                                    //añadir las tomas de ese día
-                                    for (MedicineIntake intake : dailyIntakes) {
-                                        //TODO controlar las que son COUNT
-                                        long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
-                                        saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
-                                    }
-                                }
+                            //añadir las tomas de ese día
+                            for (MedicineIntake intake : dailyIntakes) {
+                                long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
+                                saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
                             }
                         }
                     }
                 }
             }
-            cursor.close();
         }
+        cursor.close();
     }
 
     private static void saveIntake(Context context, long intakeInstant, double dose, long idMedicine) {
@@ -226,10 +227,12 @@ public class ScheduleHelper {
         context.getContentResolver().update(Uri.parse(uri), cv, null, null);
     }
 
-    private static Instant getLastPlannedIntakeDate(Context context, long idMedicine) {
-        String[] projection = {"MAX(" + DBContract.Intakes.COLUMN_NAME_DATE + ")"};
-        String selection = DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + "= ?";
+    private static long getLastPlannedIntakeDate(Context context, long idMedicine) {
+        String[] projection = {"MAX(" + DBContract.Intakes.COLUMN_NAME_DATE + ") AS " +
+                DBContract.Intakes.COLUMN_NAME_DATE};
+        String selection = DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + " = ?";
         String[] selectionArgs = {Long.valueOf(idMedicine).toString()};
+        long last;
 
         Cursor cursor = context.getContentResolver().query(
                 LembramoContentProvider.CONTENT_URI_INTAKES,
@@ -239,13 +242,13 @@ public class ScheduleHelper {
                 null
         );
 
-        if (cursor != null) {
-            cursor.moveToFirst();
-            long millis = cursor.getLong(cursor.getColumnIndex(DBContract.Intakes.COLUMN_NAME_DATE));
-            cursor.close();
-            return Instant.ofEpochMilli(millis);
-        }
-        return Instant.EPOCH;
+        cursor.moveToFirst();
+        if (cursor.moveToFirst())
+            last = cursor.getLong(cursor.getColumnIndex(DBContract.Intakes.COLUMN_NAME_DATE));
+        else
+            last = 0;
+        cursor.close();
+        return last;
     }
 }
 

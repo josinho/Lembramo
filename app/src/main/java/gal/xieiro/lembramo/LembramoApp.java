@@ -20,7 +20,7 @@ public class LembramoApp extends Application {
     public void onCreate() {
         super.onCreate();
         initUniversalImageLoader();
-        BootReceiver.initScheduleAlarm(this);
+        //BootReceiver.initScheduleAlarm(this);
     }
 
     private void initUniversalImageLoader() {

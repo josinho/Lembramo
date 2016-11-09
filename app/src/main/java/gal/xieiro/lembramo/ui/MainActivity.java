@@ -8,24 +8,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalTime;
-import org.threeten.bp.ZoneId;
 
 import java.text.SimpleDateFormat;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.alarm.BootReceiver;
+import gal.xieiro.lembramo.alarm.ScheduleHelper;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
-import gal.xieiro.lembramo.recurrence.DateException;
-import gal.xieiro.lembramo.recurrence.RecurrenceProcessor;
-import gal.xieiro.lembramo.recurrence.RecurrenceSet;
 import gal.xieiro.lembramo.util.TimeUtils;
 
 
@@ -100,30 +93,15 @@ public class MainActivity extends BaseActivity implements
                 "Recurrence = " + mMedicine.getRecurrenceRule() + "\n" +
                 "Schedule = " + mMedicine.getSchedule() + "\n\n";
 
-
-        //String myIntakeRule = "FREQ=HOURLY;INTERVAL=8;COUNT=3\n";
-
         Time dtStart = TimeUtils.getTimeDateFromString(mMedicine.getStartDate());
-        RecurrenceSet recurrenceSet = new RecurrenceSet(
-                mMedicine.getRecurrenceRule(),
-                null, null, null
-        );
-        long rangeStartMillis = dtStart.toMillis(false); //Utils.getTimeDateFromString("01/12/2016").toMillis(false);
-        long rangeEndMilllis = -1; //TimeUtils.getTimeDateFromString("01/12/2016").toMillis(false);
+        long rangeStartMillis = dtStart.toMillis(false);
+        long rangeEndMilllis = -1;
 
-        try {
-            RecurrenceProcessor rp = new RecurrenceProcessor();
-            long[] dates = rp.expand(dtStart, recurrenceSet, rangeStartMillis, rangeEndMilllis);
-            SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DATE_HOUR_FORMAT);
-            for (long l : dates) {
-                resultado = resultado + sdf.format(l) + "\n";
-            }
-
-            resultado = resultado + "Last ocurrence: " + sdf.format(rp.getLastOccurence(dtStart, recurrenceSet));
-        } catch (DateException de) {
-            Log.i("MainActivity", de.toString());
+        long[] dates = ScheduleHelper.expand(dtStart, mMedicine.getRecurrenceRule(), rangeStartMillis, rangeEndMilllis);
+        SimpleDateFormat sdf = new SimpleDateFormat(TimeUtils.DATE_HOUR_FORMAT);
+        for (long l : dates) {
+            resultado = resultado + sdf.format(l) + "\n";
         }
-
         mResultados.setText(resultado);
     }
 

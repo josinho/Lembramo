@@ -30,16 +30,13 @@ public class AlarmHelper {
                 null
         );
 
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                //TODO idMedicine? params?
-                long instant = cursor.getLong(cursor.getColumnIndex(DBContract.Intakes.COLUMN_NAME_DATE));
-                setAlarm(context, instant);
+        while (cursor.moveToNext()) {
+            //TODO idMedicine? params?
+            long instant = cursor.getLong(cursor.getColumnIndex(DBContract.Intakes.COLUMN_NAME_DATE));
+            setAlarm(context, instant);
 
-            }
-            cursor.close();
         }
-
+        cursor.close();
     }
 
 
