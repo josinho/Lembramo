@@ -170,9 +170,14 @@ public class ScheduleHelper {
                 if (last == 0) {
                     //no hay ninguna planificacion previa, partimos de cero
                     rangeStartMillis = TimeUtils.getMillis(startDate);
-                    rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
-                    //TODO el móvil estuvo apagado, estamos en medio de la planificación
-                    //pero aún no hubo ninguna. se perdieron intakes
+
+                    if (now.isAfter(startDate))
+                        // el móvil estuvo apagado, estamos en medio de la planificación
+                        // pero aún no hubo ninguna. se perdieron intakes
+                        rangeEndMillis = TimeUtils.getMillis(now.plusDays(1));
+                    else
+                        rangeEndMillis = TimeUtils.getMillis(startDate.plusDays(1));
+
 
                 } else {
                     //hubo planificaciones anteriores
@@ -192,15 +197,23 @@ public class ScheduleHelper {
 
                         for (long day : days) {
                             LocalDate date = TimeUtils.getDateFromMillis(day);
-                            //TODO controlar las que son COUNT
+                            int max;
+                            // controlar las que son COUNT
+                            if ((getDurationType(dtStart, recurrenceRule) == END_BY_COUNT) &&
+                                    (date.isEqual(endDate)))
+                                max = getNumberOfLastIntakesByCount(dtStart, recurrenceRule, dailyIntakes.size());
+                            else
+                                max = dailyIntakes.size();
 
-                            // date == last AND getDurationType(dtStart, recurrenceRule) == BY_COUNT;
-                            // sólo las que falten
-
-                            //añadir las tomas de ese día
-                            for (MedicineIntake intake : dailyIntakes) {
-                                long intakeInstant = TimeUtils.getMillis(date, intake.getTime());
+                            MedicineIntake intake;
+                            long intakeInstant;
+                            int i = 0;
+                            while (i < max) {
+                                //añadir las tomas de ese día
+                                intake = dailyIntakes.get(i);
+                                intakeInstant = TimeUtils.getMillis(date, intake.getTime());
                                 saveIntake(context, intakeInstant, intake.getDose(), idMedicine);
+                                i++;
                             }
                         }
                     }
@@ -208,6 +221,16 @@ public class ScheduleHelper {
             }
         }
         cursor.close();
+    }
+
+    private static int getNumberOfLastIntakesByCount(Time dtStart, String recurrenceRule, int dailyIntakes) {
+        long[] dates = expand(dtStart, recurrenceRule, dtStart.toMillis(false), -1);
+        int length = dates.length;
+        if (length > 0) {
+            int result = length % dailyIntakes;
+            return (result == 0) ? dailyIntakes : result;
+        }
+        return 0;
     }
 
     private static void saveIntake(Context context, long intakeInstant, double dose, long idMedicine) {
