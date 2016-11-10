@@ -313,7 +313,7 @@ public class ListMedicinesActivity extends BaseActivity implements
         }
 
         private void deleteMed() {
-            String where = DBContract.Medicines._ID + " IN(";
+            String where = " IN(";
             SparseBooleanArray checked = mAdapter.getSelectedPositions();
             for (int i = (checked.size() - 1); i >= 0; i--) {
                 if (checked.valueAt(i)) {
@@ -321,7 +321,20 @@ public class ListMedicinesActivity extends BaseActivity implements
                 }
             }
             where = where.substring(0, where.length() - 1) + ")";
-            int result = getContentResolver().delete(LembramoContentProvider.CONTENT_URI_MEDICINES, where, null);
+
+            // borrar intakes
+            getContentResolver().delete(
+                    LembramoContentProvider.CONTENT_URI_INTAKES,
+                    DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + where,
+                    null
+            );
+
+            // borrar medicinas
+            int result = getContentResolver().delete(
+                    LembramoContentProvider.CONTENT_URI_MEDICINES,
+                    DBContract.Medicines._ID + where,
+                    null
+            );
             Toast.makeText(mContext,
                     getResources().getQuantityString(R.plurals.deleted, result, result),
                     Toast.LENGTH_LONG).show();
