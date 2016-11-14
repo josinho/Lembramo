@@ -1,6 +1,7 @@
 package gal.xieiro.lembramo.ui;
 
 import android.app.LoaderManager;
+import android.content.AsyncQueryHandler;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -27,11 +28,12 @@ import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.lang.ref.WeakReference;
+
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.ui.component.SquareImageView;
-import gal.xieiro.lembramo.util.Utils;
 
 
 public class ListMedicinesActivity extends BaseActivity implements
@@ -40,6 +42,8 @@ public class ListMedicinesActivity extends BaseActivity implements
     //TODO comprobar por qué ImageLoader carga imágenes que no corresponden con la medicina
 
     private static final int LOADER_ID = 1;
+    private static final int INTAKE_TOKEN = 2;
+    private static final int MEDICINE_TOKEN = 3;
 
     private Context mContext;
     private ListView mListaMedicamentos;
@@ -177,7 +181,7 @@ public class ListMedicinesActivity extends BaseActivity implements
     }
 
 
-    private class ListAdapter extends ResourceCursorAdapter {
+    private final class ListAdapter extends ResourceCursorAdapter {
         private SparseBooleanArray mSelectedItems;
 
         public ListAdapter(Context context, Cursor cursor) {
@@ -273,7 +277,7 @@ public class ListMedicinesActivity extends BaseActivity implements
     }
 
 
-    private class ActionModeCallback implements AbsListView.MultiChoiceModeListener {
+    private final class ActionModeCallback implements AbsListView.MultiChoiceModeListener {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.menu_delete, menu);
@@ -311,37 +315,60 @@ public class ListMedicinesActivity extends BaseActivity implements
                     return false;
             }
         }
+    }
 
-        private void deleteMed() {
-            String where = " IN(";
-            SparseBooleanArray checked = mAdapter.getSelectedPositions();
-            for (int i = (checked.size() - 1); i >= 0; i--) {
-                if (checked.valueAt(i)) {
-                    where += mAdapter.getItemId(checked.keyAt(i)) + ",";
-                }
+    private static final class DeleteHandler extends AsyncQueryHandler {
+        private Context mContext;
+        private final WeakReference<ListMedicinesActivity> mActivity;
+
+        private DeleteHandler(Context context, ListMedicinesActivity activity) {
+            super(context.getContentResolver());
+            mContext = context;
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected void onDeleteComplete(int token, Object cookie, int result) {
+            if (token == MEDICINE_TOKEN) {
+                Toast.makeText(mContext,
+                        mContext.getResources().getQuantityString(R.plurals.deleted, result, result),
+                        Toast.LENGTH_LONG).show();
+                ListMedicinesActivity activity = mActivity.get();
+                if (activity != null) activity.restartLoader();
             }
-            where = where.substring(0, where.length() - 1) + ")";
-
-            // borrar intakes
-            getContentResolver().delete(
-                    LembramoContentProvider.CONTENT_URI_INTAKES,
-                    DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + where,
-                    null
-            );
-
-            // borrar medicinas
-            int result = getContentResolver().delete(
-                    LembramoContentProvider.CONTENT_URI_MEDICINES,
-                    DBContract.Medicines._ID + where,
-                    null
-            );
-            Toast.makeText(mContext,
-                    getResources().getQuantityString(R.plurals.deleted, result, result),
-                    Toast.LENGTH_LONG).show();
-            restartLoader();
         }
     }
 
+    private void deleteMed() {
+        String where = " IN(";
+        SparseBooleanArray checked = mAdapter.getSelectedPositions();
+        for (int i = (checked.size() - 1); i >= 0; i--) {
+            if (checked.valueAt(i)) {
+                where += mAdapter.getItemId(checked.keyAt(i)) + ",";
+            }
+        }
+        where = where.substring(0, where.length() - 1) + ")";
+
+        DeleteHandler deleteHandler = new DeleteHandler(mContext, this);
+
+        // borrar intakes
+        deleteHandler.startDelete(
+                INTAKE_TOKEN,
+                null,
+                LembramoContentProvider.CONTENT_URI_INTAKES,
+                DBContract.Intakes.COLUMN_NAME_ID_MEDICINE + where,
+                null
+        );
+
+        // borrar medicinas
+        deleteHandler.startDelete(
+                MEDICINE_TOKEN,
+                null,
+                LembramoContentProvider.CONTENT_URI_MEDICINES,
+                DBContract.Medicines._ID + where,
+                null
+        );
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

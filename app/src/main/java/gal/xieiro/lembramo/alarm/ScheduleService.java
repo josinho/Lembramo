@@ -20,6 +20,4 @@ public class ScheduleService extends WakefulIntentService {
             //ScheduleHelper.scheduleAll(this);
         }
     }
-
-
 }
