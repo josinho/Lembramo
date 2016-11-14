@@ -25,11 +25,18 @@
         android:onClick="testExpansion"
         android:id="@+id/button2" />
     <Button
-        android:text="Test start service"
+    android:text="Test start service"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:onClick="testStartService"
+    android:id="@+id/button3" />
+    <Button
+        android:text="View Sqlite DB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="testStartService"
-        android:id="@+id/button3" />
+        android:onClick="viewSQlite"
+        android:id="@+id/button4" />
+
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

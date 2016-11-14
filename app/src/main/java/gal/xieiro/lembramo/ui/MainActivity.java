@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.alarm.BootReceiver;
 import gal.xieiro.lembramo.alarm.ScheduleHelper;
+import gal.xieiro.lembramo.db.AndroidDatabaseManager;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
@@ -49,6 +50,11 @@ public class MainActivity extends BaseActivity implements
 
     public void testStartService(View view) {
         BootReceiver.initScheduleAlarm(this);
+    }
+
+    public void viewSQlite(View view) {
+        Intent intent = new Intent(this, AndroidDatabaseManager.class);
+        startActivity(intent);
     }
 
     public void testExpansion(View view) {
