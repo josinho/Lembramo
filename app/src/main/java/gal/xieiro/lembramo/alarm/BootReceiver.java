@@ -18,7 +18,8 @@ import gal.xieiro.lembramo.LembramoApp;
  */
 public class BootReceiver extends BroadcastReceiver {
 
-    public static final String TAG = "BootReceiver";
+    private static final String TAG = "BootReceiver";
+    private static final long INTERVAL_MINUTE = 60000;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,8 +43,8 @@ public class BootReceiver extends BroadcastReceiver {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         alarmManager.setInexactRepeating(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis(),
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                INTERVAL_MINUTE,
                 AlarmManager.INTERVAL_DAY,
                 pendingIntent
         );
