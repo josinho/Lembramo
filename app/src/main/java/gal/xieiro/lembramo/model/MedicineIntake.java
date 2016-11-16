@@ -1,21 +1,57 @@
 package gal.xieiro.lembramo.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.LocalTime;
 
-public class MedicineIntake implements Comparable<MedicineIntake> {
+import gal.xieiro.lembramo.util.TimeUtils;
+
+
+
+public class MedicineIntake implements Comparable<MedicineIntake>, Parcelable {
     private LocalTime time;
     private double dose;
     private boolean checked;
 
-    public MedicineIntake(LocalTime time) {
-        this.time = time;
-        this.dose = 1;
+    private long id;
+    private long medicineId;
+    private LocalDateTime intakeInstant;
+    private LocalDateTime realIntakeInstant;
+
+    //////// getter and setter methods
+
+    public long getId() {
+        return id;
     }
 
-    public MedicineIntake(MedicineIntake m) {
-        time = m.getTime();
-        dose = m.getDose();
-        checked = m.isChecked();
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getMedicineId() {
+        return medicineId;
+    }
+
+    public void setMedicineId(long medicineId) {
+        this.medicineId = medicineId;
+    }
+
+    public LocalDateTime getIntakeInstant() {
+        return intakeInstant;
+    }
+
+    public void setIntakeInstant(LocalDateTime intakeInstant) {
+        this.intakeInstant = intakeInstant;
+    }
+
+    public LocalDateTime getRealIntakeInstant() {
+        return realIntakeInstant;
+    }
+
+    public void setRealIntakeInstant(LocalDateTime realIntakeInstant) {
+        this.realIntakeInstant = realIntakeInstant;
     }
 
     public LocalTime getTime() {
@@ -25,13 +61,6 @@ public class MedicineIntake implements Comparable<MedicineIntake> {
     public void setTime(LocalTime time) {
         this.time = time;
     }
-
-    /*
-    public void setDate(int year, int month, int day) {
-        //ojo que los meses van de 0 a 11
-        date.set(year, month, day);
-    }
-    */
 
     public double getDose() {
         return dose;
@@ -49,32 +78,72 @@ public class MedicineIntake implements Comparable<MedicineIntake> {
         this.checked = checked;
     }
 
+    public MedicineIntake() {
+    }
+
+    public MedicineIntake(LocalTime time) {
+        this.time = time;
+        this.dose = 1;
+    }
+
+    private MedicineIntake(Parcel in) {
+        id = in.readLong();
+        medicineId = in.readLong();
+        dose = in.readDouble();
+        checked = in.readByte() != 0;
+        time = TimeUtils.parseTime(in.readString());
+        intakeInstant = TimeUtils.parseDateTime(in.readString());
+        realIntakeInstant = TimeUtils.parseDateTime(in.readString());
+    }
+
+    /*
+    public MedicineIntake(MedicineIntake m) {
+        time = m.getTime();
+        dose = m.getDose();
+        checked = m.isChecked();
+    }
+    */
+
     @Override
     public int compareTo(MedicineIntake other) {
         return time.compareTo(other.getTime());
     }
 
-    /*
     @Override
-    public int compareTo(MedicineIntake obj) {
-        //comparar dos intakes primero por horas y llegado el caso por minutos
-        //para ordenar los posibles intakes de un día
-        int hourOfDay = date.get(Calendar.HOUR_OF_DAY);
-        int hourComp = hourOfDay - obj.getDate().get(Calendar.HOUR_OF_DAY);
-        if (hourComp < 0)
-            return -1;
-        else if (hourComp > 0)
-            return 1;
-        else {
-            int minute = date.get(Calendar.MINUTE);
-            int minuteComp = minute - obj.getDate().get(Calendar.MINUTE);
-            if (minuteComp < 0)
-                return -1;
-            else if (minuteComp > 0)
-                return 1;
-            else
-                return 0;
-        }
+    public int describeContents() {
+        return 0;
     }
-    */
+
+    @Override
+    public String toString() {
+        return medicineId + "." + id ;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(id);
+        out.writeLong(medicineId);
+        out.writeDouble(dose);
+        out.writeByte((byte) (checked ? 1 : 0));
+        out.writeString(TimeUtils.getStringTime(time));
+        out.writeString(TimeUtils.getStringDateTime(intakeInstant));
+        out.writeString(TimeUtils.getStringDateTime(realIntakeInstant));
+    }
+
+
+    public static final Parcelable.Creator<MedicineIntake> CREATOR =
+            new Parcelable.Creator<MedicineIntake>() {
+                public MedicineIntake createFromParcel(Parcel in) {
+                    return new MedicineIntake(in);
+                }
+
+                public MedicineIntake[] newArray(int size) {
+                    return new MedicineIntake[size];
+                }
+            };
+
+    @Override
+    public int hashCode() {
+        return Long.valueOf(id).hashCode();
+    }
 }

@@ -17,7 +17,7 @@ public class ScheduleService extends WakefulIntentService {
         if (intent != null) {
             Log.d(TAG, "Service working");
             NotificationHelper.createNotification(this);
-            //ScheduleHelper.scheduleAll(this);
+            ScheduleHelper.scheduleAll(this);
         }
     }
 }

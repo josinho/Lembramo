@@ -113,6 +113,7 @@ public class Medicine implements Parcelable {
         schedule = in.readString();
     }
 
+    @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(id);
         out.writeString(name);
@@ -136,7 +137,7 @@ public class Medicine implements Parcelable {
                 }
             };
 
-
+    @Override
     public int describeContents() {
         return 0;
     }
