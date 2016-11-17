@@ -58,18 +58,8 @@ public class AlarmHelper {
 
 
     private static void setAlarm(Context context, MedicineIntake intake) {
-        Intent intent = new Intent(context, LembramoReceiver.class);
-        intent.putExtra(EXTRA_PARAMS, intake);
-
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                intake.hashCode(),
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
-
+        final PendingIntent pendingIntent = getPendingIntent(context, intake);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
         if (alarmManager != null) {
             alarmManager.set(
                     AlarmManager.RTC_WAKEUP,
@@ -80,20 +70,22 @@ public class AlarmHelper {
     }
 
     private static void cancelAlarm(Context context, MedicineIntake intake) {
+        final PendingIntent pendingIntent = getPendingIntent(context, intake);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+
+    private static PendingIntent getPendingIntent(Context context, MedicineIntake intake) {
         Intent intent = new Intent(context, LembramoReceiver.class);
         intent.putExtra(EXTRA_PARAMS, intake);
 
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(
+        return PendingIntent.getBroadcast(
                 context,
                 intake.hashCode(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        if (alarmManager != null) {
-            alarmManager.cancel(pendingIntent);
-        }
     }
 }
