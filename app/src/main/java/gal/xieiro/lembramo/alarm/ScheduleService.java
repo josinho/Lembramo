@@ -18,6 +18,7 @@ public class ScheduleService extends WakefulIntentService {
             Log.d(TAG, "Service working");
             NotificationHelper.createNotification(this);
             ScheduleHelper.scheduleAll(this);
+            AlarmHelper.createAlarms(this);
         }
     }
 }

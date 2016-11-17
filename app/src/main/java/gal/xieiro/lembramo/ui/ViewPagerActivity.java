@@ -25,7 +25,6 @@ import gal.xieiro.lembramo.alarm.ScheduleHelper;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
-import gal.xieiro.lembramo.util.Utils;
 
 public class ViewPagerActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -89,6 +88,7 @@ public class ViewPagerActivity extends BaseActivity implements
                             Toast.LENGTH_LONG
                     ).show();
                 } else {
+                    //todo AsyncQueryHandler
                     saveMedicineBD();
                     setResult(RESULT_OK);
                     finish();

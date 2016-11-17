@@ -31,7 +31,7 @@ import java.util.List;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.Medicine;
-import gal.xieiro.lembramo.model.MedicineIntake;
+import gal.xieiro.lembramo.model.IntakeHelper;
 import gal.xieiro.lembramo.recurrence.EventRecurrence;
 import gal.xieiro.lembramo.ui.recurrencepicker.EventRecurrenceFormatter;
 import gal.xieiro.lembramo.ui.recurrencepicker.RecurrencePickerDialog;
@@ -221,7 +221,7 @@ public class FrequencyFragment extends Fragment implements
     }
 
     @Override
-    public void onPlanningSet(List<MedicineIntake> intakes) {
+    public void onPlanningSet(List<IntakeHelper> intakes) {
         mIntakeFragment.addIntakes(intakes);
     }
 

@@ -58,7 +58,7 @@ public class AlarmHelper {
 
 
     private static void setAlarm(Context context, MedicineIntake intake) {
-        Intent intent = new Intent(context, AlarmReceiver.class);
+        Intent intent = new Intent(context, LembramoReceiver.class);
         intent.putExtra(EXTRA_PARAMS, intake);
 
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(
@@ -80,7 +80,7 @@ public class AlarmHelper {
     }
 
     private static void cancelAlarm(Context context, MedicineIntake intake) {
-        Intent intent = new Intent(context, AlarmReceiver.class);
+        Intent intent = new Intent(context, LembramoReceiver.class);
         intent.putExtra(EXTRA_PARAMS, intake);
 
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(

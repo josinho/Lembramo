@@ -2,14 +2,12 @@ package gal.xieiro.lembramo;
 
 import android.app.Application;
 import android.graphics.Bitmap;
-import android.os.StrictMode;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
-import gal.xieiro.lembramo.alarm.BootReceiver;
 import gal.xieiro.lembramo.util.Utils;
 
 public class LembramoApp extends Application {
@@ -20,7 +18,7 @@ public class LembramoApp extends Application {
     public void onCreate() {
         super.onCreate();
         initUniversalImageLoader();
-        //BootReceiver.initScheduleAlarm(this);
+        //ScheduleHelper.initScheduleAlarm(this);
     }
 
     private void initUniversalImageLoader() {
@@ -46,7 +44,7 @@ public class LembramoApp extends Application {
             Bitmap result;
 
             result = Utils.getSquareBitmap(bitmap);
-            if(result != bitmap) bitmap.recycle();
+            if (result != bitmap) bitmap.recycle();
             return result;
         }
     }

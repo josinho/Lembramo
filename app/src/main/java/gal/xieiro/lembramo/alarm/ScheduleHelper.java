@@ -1,7 +1,10 @@
 package gal.xieiro.lembramo.alarm;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -14,8 +17,10 @@ import org.threeten.bp.Period;
 
 import java.util.List;
 
+import gal.xieiro.lembramo.LembramoApp;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
+import gal.xieiro.lembramo.model.IntakeHelper;
 import gal.xieiro.lembramo.model.Medicine;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.recurrence.DateException;
@@ -28,11 +33,33 @@ import gal.xieiro.lembramo.util.TimeUtils;
 @SuppressWarnings("deprecation")
 public class ScheduleHelper {
     private static final String TAG = "ScheduleHelper";
-
+    private static final long INTERVAL_MINUTE = 60000;
     private static final int END_BY_DATE = 1;
     private static final int END_BY_COUNT = 2;
     private static final int END_NEVER = 3;
 
+
+    public static void initScheduleAlarm(Context context) {
+        Log.d(TAG, "initScheduleAlarm");
+        Intent intent = new Intent(context, LembramoReceiver.class);
+        intent.setAction(LembramoApp.ACTION_SCHEDULE);
+
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                LembramoReceiver.REQUEST_CODE,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setInexactRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                INTERVAL_MINUTE,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+        );
+    }
 
     public static void getLastIntake(Medicine medicine) {
         String recurrenceRule = medicine.getRecurrenceRule();
@@ -40,7 +67,7 @@ public class ScheduleHelper {
 
         if (!TextUtils.isEmpty(recurrenceRule) && !TextUtils.isEmpty(intakesRule)) {
             Time dtStart = TimeUtils.getTimeDateFromString(medicine.getStartDate());
-            List<MedicineIntake> intakes = IntakeUtils.parseDailyIntakes(intakesRule);
+            List<IntakeHelper> intakes = IntakeUtils.parseDailyIntakes(intakesRule);
 
             long[] dates;
             int length;
@@ -193,7 +220,7 @@ public class ScheduleHelper {
                 if (plan) {
                     long[] days = expand(dtStart, recurrenceRule, rangeStartMillis, rangeEndMillis);
                     if (days.length > 0) {
-                        List<MedicineIntake> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
+                        List<IntakeHelper> dailyIntakes = IntakeUtils.parseDailyIntakes(intakeRule);
 
                         for (long day : days) {
                             LocalDate date = TimeUtils.getDateFromMillis(day);
@@ -205,7 +232,7 @@ public class ScheduleHelper {
                             else
                                 max = dailyIntakes.size();
 
-                            MedicineIntake intake;
+                            IntakeHelper intake;
                             long intakeInstant;
                             int i = 0;
                             while (i < max) {

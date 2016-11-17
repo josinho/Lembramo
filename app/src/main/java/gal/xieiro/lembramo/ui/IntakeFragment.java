@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gal.xieiro.lembramo.R;
-import gal.xieiro.lembramo.model.MedicineIntake;
+import gal.xieiro.lembramo.model.IntakeHelper;
 import gal.xieiro.lembramo.ui.component.DividerItemDecoration;
 import gal.xieiro.lembramo.ui.component.DosePicker;
 import gal.xieiro.lembramo.util.TimeUtils;
@@ -88,7 +88,7 @@ public class IntakeFragment extends Fragment {
                         getActivity(),
                         new TimePickerDialog.OnTimeSetListener() {
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                MedicineIntake med = new MedicineIntake(LocalTime.of(hourOfDay, minute));
+                                IntakeHelper med = new IntakeHelper(LocalTime.of(hourOfDay, minute));
                                 med.setChecked(true);
                                 int position = mIntakeAdapter.add(med);
                                 mIntakeList.scrollToPosition(position);
@@ -105,12 +105,12 @@ public class IntakeFragment extends Fragment {
         return view;
     }
 
-    private ArrayList<MedicineIntake> setInitialIntakes() {
-        ArrayList<MedicineIntake> intakes = new ArrayList<>();
+    private ArrayList<IntakeHelper> setInitialIntakes() {
+        ArrayList<IntakeHelper> intakes = new ArrayList<>();
 
         for (int hour = 0; hour < 24; hour++) {
-            intakes.add(new MedicineIntake(LocalTime.of(hour, 0)));
-            intakes.add(new MedicineIntake(LocalTime.of(hour, 30)));
+            intakes.add(new IntakeHelper(LocalTime.of(hour, 0)));
+            intakes.add(new IntakeHelper(LocalTime.of(hour, 30)));
         }
         return intakes;
     }
@@ -120,19 +120,19 @@ public class IntakeFragment extends Fragment {
             String[] intakeStrings = schedule.split(";");
             for (String intakeString : intakeStrings) {
                 String[] intake = intakeString.split(",");
-                MedicineIntake medicineIntake = new MedicineIntake(TimeUtils.parseTime(intake[0]));
-                medicineIntake.setDose(Double.valueOf(intake[1]));
-                medicineIntake.setChecked(true);
-                mIntakeAdapter.add(medicineIntake);
+                IntakeHelper IntakeHelper = new IntakeHelper(TimeUtils.parseTime(intake[0]));
+                IntakeHelper.setDose(Double.valueOf(intake[1]));
+                IntakeHelper.setChecked(true);
+                mIntakeAdapter.add(IntakeHelper);
             }
         }
     }
 
-    public void addIntakes(List<MedicineIntake> intakes) {
+    public void addIntakes(List<IntakeHelper> intakes) {
         int pos = 0;
         if (intakes != null) {
             for (int i = intakes.size() - 1; i >= 0; i--) {
-                MedicineIntake intake = intakes.get(i);
+                IntakeHelper intake = intakes.get(i);
                 pos = mIntakeAdapter.add(intake);
             }
             mIntakeList.scrollToPosition(pos);
@@ -140,12 +140,12 @@ public class IntakeFragment extends Fragment {
     }
 
     public String getIntakes() {
-        List<MedicineIntake> intakes = mIntakeAdapter.getIntakes();
+        List<IntakeHelper> intakes = mIntakeAdapter.getIntakes();
         StringBuilder s = new StringBuilder();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TimeUtils.HOUR_FORMAT);
 
         for (int i = 0; i < intakes.size(); i++) {
-            MedicineIntake intake = intakes.get(i);
+            IntakeHelper intake = intakes.get(i);
             if (intake.isChecked()) {
                 s.append(dtf.format(intake.getTime()))
                         .append(",").append(intake.getDose()).append(";");
@@ -170,9 +170,9 @@ public class IntakeFragment extends Fragment {
             }
         }
 
-        private List<MedicineIntake> mIntakes;
+        private List<IntakeHelper> mIntakes;
 
-        public IntakeAdapter(List<MedicineIntake> intakes) {
+        public IntakeAdapter(List<IntakeHelper> intakes) {
             mIntakes = intakes;
         }
 
@@ -192,7 +192,7 @@ public class IntakeFragment extends Fragment {
         @Override
         public void onBindViewHolder(final IntakeAdapter.ViewHolder viewHolder, int position) {
             // Get the data model based on position
-            final MedicineIntake intake = mIntakes.get(position);
+            final IntakeHelper intake = mIntakes.get(position);
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TimeUtils.HOUR_FORMAT);
             viewHolder.hour.setText(dtf.format(intake.getTime()));
 
@@ -237,7 +237,7 @@ public class IntakeFragment extends Fragment {
         }
 
         // Returns the insertion position
-        public int add(MedicineIntake intake) {
+        public int add(IntakeHelper intake) {
             int i, comparison;
 
             //insertar en orden
@@ -256,7 +256,7 @@ public class IntakeFragment extends Fragment {
             return i;
         }
 
-        public List<MedicineIntake> getIntakes() {
+        public List<IntakeHelper> getIntakes() {
             return mIntakes;
         }
     }

@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import gal.xieiro.lembramo.model.MedicineIntake;
+import gal.xieiro.lembramo.model.IntakeHelper;
 
 public class IntakeUtils {
     private static String TAG = "IntakeUtils";
@@ -14,14 +14,14 @@ public class IntakeUtils {
     public IntakeUtils() {
     }
 
-    public static List<MedicineIntake> parseDailyIntakes(String intakesRule) {
-        ArrayList<MedicineIntake> intakes = new ArrayList<>();
+    public static List<IntakeHelper> parseDailyIntakes(String intakesRule) {
+        ArrayList<IntakeHelper> intakes = new ArrayList<>();
 
         if (!TextUtils.isEmpty(intakesRule)) {
             String[] intakeStrings = intakesRule.split(";");
             for (String intakeString : intakeStrings) {
                 String[] intake = intakeString.split(",");
-                MedicineIntake medicineIntake = new MedicineIntake(TimeUtils.parseTime(intake[0]));
+                IntakeHelper medicineIntake = new IntakeHelper(TimeUtils.parseTime(intake[0]));
                 medicineIntake.setDose(Double.valueOf(intake[1]));
                 medicineIntake.setChecked(true);
                 intakes.add(medicineIntake);
