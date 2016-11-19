@@ -12,6 +12,7 @@ public class LembramoReceiver extends BroadcastReceiver {
 
     public static final int REQUEST_CODE = 123;
 
+
     @Override
     public void onReceive(Context context, Intent intent) {
         switch (intent.getAction()) {
@@ -29,6 +30,9 @@ public class LembramoReceiver extends BroadcastReceiver {
                 Log.d(TAG, "intent ACTION SCHEDULE");
                 ScheduleService.acquireStaticLock(context);
                 context.startService(new Intent(context, ScheduleService.class));
+                break;
+            case LembramoApp.ACTION_ALARM:
+                NotificationHelper.createNotification(context, intent);
                 break;
         }
     }

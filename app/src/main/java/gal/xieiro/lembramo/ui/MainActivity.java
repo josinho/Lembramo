@@ -56,6 +56,11 @@ public class MainActivity extends BaseActivity implements
         startActivity(intent);
     }
 
+    public void alarmViewTest(View view) {
+        Intent intent = new Intent(this, AlarmActivity.class);
+        startActivity(intent);
+    }
+
     public void testExpansion(View view) {
         mMedicine = new Medicine(LembramoContentProvider.NO_ID);
         long id = 1;

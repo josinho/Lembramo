@@ -13,7 +13,7 @@
 
     <Button
         android:id="@+id/btn_medicamentos"
-        android:text="@string/btn_medicamentos"
+        android:text="@string/btn_medicines"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="editMedicamentos"/>
@@ -31,11 +31,17 @@
     android:onClick="testStartService"
     android:id="@+id/button3" />
     <Button
-        android:text="View Sqlite DB"
+    android:text="View Sqlite DB"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:onClick="viewSQlite"
+    android:id="@+id/button4" />
+    <Button
+        android:text="Alarm View Test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="viewSQlite"
-        android:id="@+id/button4" />
+        android:onClick="alarmViewTest"
+        android:id="@+id/button5" />
 
 <ScrollView
     android:layout_width="match_parent"

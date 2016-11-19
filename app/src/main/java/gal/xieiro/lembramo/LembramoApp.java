@@ -13,6 +13,7 @@ import gal.xieiro.lembramo.util.Utils;
 public class LembramoApp extends Application {
 
     public static final String ACTION_SCHEDULE = "gal.xieiro.lembramo.action.SCHEDULE";
+    public static final String ACTION_ALARM = "gal.xieiro.lembramo.action.ALARM";
 
     @Override
     public void onCreate() {

@@ -8,6 +8,7 @@ import android.database.Cursor;
 
 import org.threeten.bp.Instant;
 
+import gal.xieiro.lembramo.LembramoApp;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.MedicineIntake;
@@ -79,6 +80,7 @@ public class AlarmHelper {
 
     private static PendingIntent getPendingIntent(Context context, MedicineIntake intake) {
         Intent intent = new Intent(context, LembramoReceiver.class);
+        intent.setAction(LembramoApp.ACTION_ALARM);
         intent.putExtra(EXTRA_PARAMS, intake);
 
         return PendingIntent.getBroadcast(

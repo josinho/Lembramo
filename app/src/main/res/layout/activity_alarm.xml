@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/intake_alarm"
+        android:id="@+id/intake_alarm"
+        />
+
+    <gal.xieiro.lembramo.ui.component.SwipeButton
+        android:id="@+id/cancel_alarm_button"
+        android:layout_width="400dp"
+        android:layout_height="50dp"
+        android:text="@string/intake_alarm"
+        android:layout_below="@id/intake_alarm"
+        android:background="#888888"
+        android:textColor="#ffffff"
+        />
+</RelativeLayout>

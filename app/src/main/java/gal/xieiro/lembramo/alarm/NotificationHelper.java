@@ -13,11 +13,12 @@ import android.support.v4.app.TaskStackBuilder;
 import org.threeten.bp.Instant;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.ui.AlarmActivity;
 import gal.xieiro.lembramo.ui.MainActivity;
 
 public class NotificationHelper {
 
-    public static void createNotification(Context context) {
+    public static void createNotification(Context context, Intent alarmIntent) {
         Uri soundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 
@@ -31,7 +32,7 @@ public class NotificationHelper {
 
 
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(context, MainActivity.class);
+        Intent resultIntent = new Intent(context, AlarmActivity.class);
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.

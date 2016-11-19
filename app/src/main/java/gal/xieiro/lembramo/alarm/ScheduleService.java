@@ -16,7 +16,6 @@ public class ScheduleService extends WakefulIntentService {
     public void doReminderWork(Intent intent) {
         if (intent != null) {
             Log.d(TAG, "Service working");
-            NotificationHelper.createNotification(this);
             ScheduleHelper.scheduleAll(this);
             AlarmHelper.createAlarms(this);
         }

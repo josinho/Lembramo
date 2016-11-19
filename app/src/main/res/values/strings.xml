@@ -5,8 +5,8 @@
     <string name="action_settings">Preferencias</string>
     <string name="album_name">lembramo</string>
 
-    <string name="btn_medicamentos">Medicamentos</string>
-    <string name="title_activity_medicamentos">Medicamentos</string>
+    <string name="btn_medicines">Medicamentos</string>
+    <string name="title_activity_medicines">Medicamentos</string>
     <string name="act_medicamentos">Gestión de medicamentos</string>
 
     <string name="hint_nombre">Escribe un nombre de medicamento...</string>
@@ -18,6 +18,7 @@
     <string name="title_new_medicine">Nuevo medicamento</string>
     <string name="title_edit_medicine">Editar medicamento</string>
     <string name="title_activity_image_zoom">Ampliación de imagen</string>
+    <string name="title_activity_alarm">Alarma de toma de medicamento</string>
     <string name="alarm_description">Encender/apagar alarma</string>
 
     <string name="action_save">Guardar</string>
@@ -54,4 +55,8 @@
     <string name="required">Campo requerido</string>
     <string name="more_fields_required">Faltan datos por completar</string>
     <string name="schedule_required">Debe establecer la planificación horaria</string>
+
+    <string name="intake_alarm">Tomar el medicamento</string>
+    <string name="swipe_alarm">Deslice para apagar la alarma</string>
+    <string name="intake_done">Medicamento tomado</string>
 </resources>
