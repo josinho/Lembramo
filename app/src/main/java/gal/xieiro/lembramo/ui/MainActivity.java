@@ -11,14 +11,18 @@ import android.text.format.Time;
 import android.view.View;
 import android.widget.TextView;
 
+import org.threeten.bp.LocalDateTime;
+
 import java.text.SimpleDateFormat;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.alarm.AlarmHelper;
 import gal.xieiro.lembramo.alarm.ScheduleHelper;
 import gal.xieiro.lembramo.db.AndroidDatabaseManager;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.model.Medicine;
+import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.util.TimeUtils;
 
 
@@ -57,7 +61,14 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void alarmViewTest(View view) {
+        MedicineIntake intake = new MedicineIntake();
+        intake.setId(1);
+        intake.setMedicineId(1);
+        intake.setDose(1.0);
+        intake.setIntakeInstant(LocalDateTime.now());
+
         Intent intent = new Intent(this, AlarmActivity.class);
+        intent.putExtra(AlarmHelper.EXTRA_PARAMS, intake);
         startActivity(intent);
     }
 

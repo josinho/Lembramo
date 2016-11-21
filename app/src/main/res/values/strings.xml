@@ -59,4 +59,5 @@
     <string name="intake_alarm">Tomar el medicamento</string>
     <string name="swipe_alarm">Deslice para apagar la alarma</string>
     <string name="intake_done">Medicamento tomado</string>
+    <string name="lbl_dose">Dosis</string>
 </resources>

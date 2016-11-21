@@ -91,6 +91,7 @@ public class ViewPagerActivity extends BaseActivity implements
                     //todo AsyncQueryHandler
                     saveMedicineBD();
                     setResult(RESULT_OK);
+                    ScheduleHelper.initScheduleAlarm(this);
                     finish();
                 }
                 return true;

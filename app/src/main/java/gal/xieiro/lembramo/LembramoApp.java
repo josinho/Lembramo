@@ -8,6 +8,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
+import gal.xieiro.lembramo.alarm.ScheduleHelper;
 import gal.xieiro.lembramo.util.Utils;
 
 public class LembramoApp extends Application {
@@ -19,7 +20,7 @@ public class LembramoApp extends Application {
     public void onCreate() {
         super.onCreate();
         initUniversalImageLoader();
-        //ScheduleHelper.initScheduleAlarm(this);
+        ScheduleHelper.initScheduleAlarm(this);
     }
 
     private void initUniversalImageLoader() {
