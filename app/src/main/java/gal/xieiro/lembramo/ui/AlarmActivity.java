@@ -58,6 +58,7 @@ public class AlarmActivity extends BaseActivity implements
                 if (intake != null)
                     // TODO AsyncTask
                     intakeDone(intake.getId());
+                finish();
             }
         };
 
