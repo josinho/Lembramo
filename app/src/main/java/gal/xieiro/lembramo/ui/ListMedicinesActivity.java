@@ -31,6 +31,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.lang.ref.WeakReference;
 
 import gal.xieiro.lembramo.R;
+import gal.xieiro.lembramo.alarm.AlarmHelper;
 import gal.xieiro.lembramo.db.DBContract;
 import gal.xieiro.lembramo.db.LembramoContentProvider;
 import gal.xieiro.lembramo.ui.component.SquareImageView;
@@ -345,6 +346,10 @@ public class ListMedicinesActivity extends BaseActivity implements
         for (int i = (checked.size() - 1); i >= 0; i--) {
             if (checked.valueAt(i)) {
                 where += mAdapter.getItemId(checked.keyAt(i)) + ",";
+
+                //borrar alarmas
+                // TODO asyncTask
+                AlarmHelper.cancelAlarms(this, mAdapter.getItemId(checked.keyAt(i)) );
             }
         }
         where = where.substring(0, where.length() - 1) + ")";

@@ -33,6 +33,10 @@ public class TimeUtils {
         return LocalTime.now().format(DateTimeFormatter.ofPattern(HOUR_FORMAT));
     }
 
+    public static String getCurrentStringMillis() {
+        return Long.valueOf(Instant.now().toEpochMilli()).toString();
+    }
+
     public static String getStringDate(long millis) {
         return DateTimeFormatter.ofPattern(DATE_HOUR_FORMAT)
                 .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
