@@ -37,12 +37,12 @@ public final class DBContract {
         public static final String COLUMN_NAME_ALARM = "alarm";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_COMMENT = "comment";
-        public static final String COLUMN_NAME_BOXPHOTO = "boxphoto";
-        public static final String COLUMN_NAME_MEDPHOTO = "medphoto";
+        public static final String COLUMN_NAME_BOXPHOTO = "boxPhoto";
+        public static final String COLUMN_NAME_MEDPHOTO = "medPhoto";
 
         //información del tratamiento
-        public static final String COLUMN_NAME_STARTDATE = "startdate";
-        public static final String COLUMN_NAME_ENDDATE = "enddate";
+        public static final String COLUMN_NAME_STARTDATE = "startDate";
+        public static final String COLUMN_NAME_ENDDATE = "endDate";
         public static final String COLUMN_NAME_RECURRENCE = "recurrence";
         public static final String COLUMN_NAME_SCHEDULE = "shedule";
 
@@ -55,7 +55,7 @@ public final class DBContract {
                         COLUMN_NAME_BOXPHOTO + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_MEDPHOTO + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_STARTDATE + DBType.TEXT + DBType.COMMA +
-                        COLUMN_NAME_ENDDATE + DBType.TEXT + DBType.COMMA +
+                        COLUMN_NAME_ENDDATE + DBType.INTEGER + DBType.COMMA +
                         COLUMN_NAME_RECURRENCE + DBType.TEXT + DBType.COMMA +
                         COLUMN_NAME_SCHEDULE + DBType.TEXT + DBType.PARENTHESIS_CLOSE;
 

@@ -132,7 +132,6 @@ public class ViewPagerActivity extends BaseActivity implements
         private MedicineFragment mMedicineFragment;
         private FrequencyFragment mFrequencyFragment;
         private CommentFragment mCommentFragment;
-        private ShapeFragment mShapeFragment;
 
 
         public MedicineFragmentPagerAdapter(FragmentManager fm, String[] tabTitles) {
@@ -165,9 +164,6 @@ public class ViewPagerActivity extends BaseActivity implements
                 case 2:
                     f = CommentFragment.newInstance(new Medicine(mMedicine));
                     break;
-                case 3:
-                    f = ShapeFragment.newInstance();
-                    break;
                 default:
                     //no debería pasar
                     return null;
@@ -189,9 +185,6 @@ public class ViewPagerActivity extends BaseActivity implements
                     break;
                 case 2:
                     mCommentFragment = (CommentFragment) fragment;
-                    break;
-                case 3:
-                    mShapeFragment = (ShapeFragment) fragment;
                     break;
             }
             return fragment;

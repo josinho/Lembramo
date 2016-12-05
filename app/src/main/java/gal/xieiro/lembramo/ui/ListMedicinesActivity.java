@@ -55,6 +55,7 @@ public class ListMedicinesActivity extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setNavigationIcon(R.mipmap.ic_launcher);
         mContext = this;
         mListaMedicamentos = (ListView) findViewById(R.id.listaMedicamentos);
         mListaMedicamentos.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -69,19 +70,6 @@ public class ListMedicinesActivity extends BaseActivity implements
             }
         });
 
-        /*
-        mListaMedicamentos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mActionMode != null)
-                    return false;
-
-                mActionMode = startActionMode(mActionModeCallback);
-                view.setSelected(true);
-                return true;
-            }
-        });
-*/
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override

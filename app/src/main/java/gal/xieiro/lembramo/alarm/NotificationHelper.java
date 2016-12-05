@@ -9,14 +9,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 
 import org.threeten.bp.Instant;
 
 import gal.xieiro.lembramo.R;
 import gal.xieiro.lembramo.model.MedicineIntake;
 import gal.xieiro.lembramo.ui.AlarmActivity;
-import gal.xieiro.lembramo.ui.MainActivity;
+import gal.xieiro.lembramo.ui.ListMedicinesActivity;
+
 
 public class NotificationHelper {
     public static final String TAG = "NotificationHelper";
@@ -47,7 +47,7 @@ public class NotificationHelper {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 
         // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(ListMedicinesActivity.class);
 
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
